@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signes de funcions exponencials</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    /* Selector d'idioma */
+    #lang-switch {
+      text-align: right;
+      margin-bottom: 20px;
+    }
+    #lang-switch button {
+      padding: 6px 12px;
+      font-size: 14px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      margin-left: 5px;
+      transition: background-color 0.3s ease;
+    }
+    /* Botó actiu: fons verd, text en negreta i borda diferenciada */
+    #lang-switch button.active-lang {
+      background-color: #28a745;
+      font-weight: bold;
+      border: 2px solid #1c7430;
+    }
+    #lang-switch button:hover {
+      background-color: #45a049;
+    }
+    .ejercicio {
+      border: 1px solid #ccc;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 5px;
+    }
+    .solucion {
+      display: none;
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f9f9f9;
+      border-radius: 5px;
+    }
+    /* Botons dins de l'exercici */
+    #btn-verify, #btn-new {
+      margin: 10px 5px;
+      padding: 8px 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    #btn-verify:hover, #btn-new:hover {
+      background-color: #45a049;
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 0.9em;
+      text-align: center;
+    }
+    .paso {
+      margin: 10px 0;
+      padding: 5px;
+    }
+    .calculo {
+      margin-left: 20px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Selector d'idioma -->
+  <div id="lang-switch">
+    <button id="btn-ca" onclick="setLanguage('ca')">CA</button>
+    <button id="btn-es" onclick="setLanguage('es')">ES</button>
+  </div>
+  
+  <h1 id="header">Practica els signes de funcions exponencials</h1>
+  
+  <div id="ejercicio" class="ejercicio">
+    <div id="enunciado"></div>
+    <button id="btn-verify" onclick="mostrarSolucion()">Verifica</button>
+    <button id="btn-new" onclick="nuevoEjercicio()">Nova funció</button>
+    <div id="solucion" class="solucion">
+      <h3 id="solution-title">Solució:</h3>
+      <div id="pasos"></div>
+    </div>
+  </div>
+  
+  <div class="footer">
+    <p id="footer1">Aplicació feta per <a href="https://bilateria.org">Juan José de Haro</a></p>
+    <p id="footer2">Aquesta obra està sota una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ca">llicència Creative Commons BY-SA</a></p>
+  </div>
+  
+  <script>
+    // Detecció de l'idioma (si el navegador comença per "ca", s'usa el català; altrament, el castellà)
+    let currentLanguage = (navigator.language && navigator.language.toLowerCase().startsWith("ca")) ? "ca" : "es";
+    
+    const translations = {
+      ca: {
+        title: "Signes de funcions exponencials",
+        header: "Practica els signes de funcions exponencials",
+        verifyButton: "Verifica",
+        newFunctionButton: "Nova funció",
+        solutionTitle: "Solució:",
+        enunciadoPrefix: "Determina els signes de la funció: \\[f(x) = ",
+        enunciadoSuffix: "\\]",
+        domainText: "Domini: \\(D = \\mathbb{R}\\)",
+        xInterceptText: "Punts de tall amb l'eix X:",
+        resolveText: "Resolem \\(f(x)=0\\):",
+        logText: "Prenem logaritmes en base",
+        baseChangeText: "Utilitzant el canvi de base:",
+        interceptResultText: "El punt de tall amb l'eix X és",
+        signsText: "Signes de la funció:",
+        alwaysPositiveInterval: "Positiva a \\({interval}\\)",
+        alwaysNegativeInterval: "Negativa a \\({interval}\\)",
+        alwaysPositiveFull: "La funció és sempre positiva a \\((-\\infty,\\infty)\\)",
+        alwaysNegativeFull: "La funció és sempre negativa a \\((-\\infty,\\infty)\\)",
+        noSolution: "No existeix solució real perquè \\({b}^x\\) sempre és positiu i no pot ser igual a",
+        noXIntercept: "No hi ha punt de tall amb l'eix X",
+        footer1: "Aplicació feta per ",
+        footer2: "Aquesta obra està sota una llicència Creative Commons BY-SA"
+      },
+      es: {
+        title: "Signos de funciones exponenciales",
+        header: "Practica los signos de funciones exponenciales",
+        verifyButton: "Verificar",
+        newFunctionButton: "Nueva función",
+        solutionTitle: "Solución:",
+        enunciadoPrefix: "Determina los signos de la función: \\[f(x) = ",
+        enunciadoSuffix: "\\]",
+        domainText: "Dominio: \\(D = \\mathbb{R}\\)",
+        xInterceptText: "Puntos de corte con el eje X:",
+        resolveText: "Resolvemos \\(f(x)=0\\):",
+        logText: "Tomamos logaritmos en base",
+        baseChangeText: "Utilizando el cambio de base:",
+        interceptResultText: "El punto de corte con el eje X es",
+        signsText: "Signos de la función:",
+        alwaysPositiveInterval: "Positiva en \\({interval}\\)",
+        alwaysNegativeInterval: "Negativa en \\({interval}\\)",
+        alwaysPositiveFull: "La función es siempre positiva en \\((-\\infty,\\infty)\\)",
+        alwaysNegativeFull: "La función es siempre negativa en \\((-\\infty,\\infty)\\)",
+        noSolution: "No existe solución real porque \\({b}^x\\) siempre es positivo y no puede ser igual a",
+        noXIntercept: "No hay punto de corte con el eje X",
+        footer1: "Aplicación hecha por ",
+        footer2: "Esta obra está bajo una licencia Creative Commons BY-SA"
+      }
+    };
+    
+    function updateUI() {
+      document.title = translations[currentLanguage].title;
+      document.getElementById('header').innerText = translations[currentLanguage].header;
+      document.getElementById('btn-verify').innerText = translations[currentLanguage].verifyButton;
+      document.getElementById('btn-new').innerText = translations[currentLanguage].newFunctionButton;
+      document.getElementById('solution-title').innerText = translations[currentLanguage].solutionTitle;
+      document.getElementById('footer1').innerHTML = translations[currentLanguage].footer1 + '<a href="https://bilateria.org">Juan José de Haro</a>';
+      if (currentLanguage === "ca") {
+        document.getElementById('footer2').innerHTML = translations[currentLanguage].footer2.replace("Creative Commons BY-SA", '<a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ca">Creative Commons BY-SA</a>');
+      } else {
+        document.getElementById('footer2').innerHTML = translations[currentLanguage].footer2.replace("Creative Commons BY-SA", '<a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es">Creative Commons BY-SA</a>');
+      }
+      // Actualitza els botons d'idioma: el botó actiu rep la classe "active-lang"
+      document.getElementById("btn-ca").classList.remove("active-lang");
+      document.getElementById("btn-es").classList.remove("active-lang");
+      if (currentLanguage === "ca") {
+        document.getElementById("btn-ca").classList.add("active-lang");
+      } else {
+        document.getElementById("btn-es").classList.add("active-lang");
+      }
+      // Si hi ha un enunciat generat, l'actualitza
+      if (document.getElementById('enunciado').innerHTML.trim() !== "") {
+        nuevoEjercicio();
+      }
+    }
+    
+    function setLanguage(lang) {
+      currentLanguage = lang;
+      updateUI();
+    }
+    
+    let funcionActual;
+    
+    function generarFuncionExponencial() {
+      const bases = [2, 3];
+      const factores = [-2, -1, 1, 2];
+      const a = factores[Math.floor(Math.random() * factores.length)];
+      const b = bases[Math.floor(Math.random() * bases.length)];
+      const c = Math.floor(Math.random() * 5) - 2;
+      let latex;
+      if (a === 1) {
+        latex = `${b}^x`;
+      } else if (a === -1) {
+        latex = `-${b}^x`;
+      } else {
+        latex = `${a}\\cdot${b}^x`;
+      }
+      if (c !== 0) {
+        latex += `${c > 0 ? '+' + c : c}`;
+      }
+      return { a, b, c, latex };
+    }
+    
+    function calcularLogaritmo(base, numero) {
+      return Math.log(numero) / Math.log(base);
+    }
+    
+    function calcularRaiz(funcion) {
+      if (funcion.c === 0) return null;
+      const valor = -funcion.c / funcion.a;
+      if (valor <= 0) return null;
+      return calcularLogaritmo(funcion.b, valor);
+    }
+    
+    function formatearNumero(num) {
+      return Math.round(num * 10000) / 10000;
+    }
+    
+    function mostrarSolucion() {
+      const solucion = document.getElementById('solucion');
+      const pasos = document.getElementById('pasos');
+      const raiz = calcularRaiz(funcionActual);
+      let pasosHTML = '';
+      const t = translations[currentLanguage];
+      
+      pasosHTML += `<div class="paso">1. ${t.domainText}</div>`;
+      pasosHTML += `<div class="paso">2. ${t.xInterceptText}</div>`;
+      pasosHTML += `<div class="calculo">${t.resolveText}</div>`;
+      const valorDerecha = -funcionActual.c;
+      const valorIntermedio = formatearNumero(-funcionActual.c / funcionActual.a);
+      pasosHTML += `<div class="calculo">\\(${funcionActual.a}\\cdot${funcionActual.b}^x ${funcionActual.c >= 0 ? '+' + funcionActual.c : funcionActual.c} = 0\\)</div>`;
+      pasosHTML += `<div class="calculo">\\(${funcionActual.a}\\cdot${funcionActual.b}^x = ${valorDerecha}\\)</div>`;
+      pasosHTML += `<div class="calculo">\\(${funcionActual.b}^x = ${valorIntermedio}\\)</div>`;
+      
+      if (raiz !== null) {
+        const logNum = formatearNumero(Math.log(Math.abs(valorIntermedio)));
+        const logDen = formatearNumero(Math.log(funcionActual.b));
+        const resultado = formatearNumero(raiz);
+        pasosHTML += `<div class="calculo">${t.logText} ${funcionActual.b}:</div>`;
+        pasosHTML += `<div class="calculo">\\(x = \\log_{${funcionActual.b}}(${valorIntermedio})\\)</div>`;
+        pasosHTML += `<div class="calculo">${t.baseChangeText}</div>`;
+        pasosHTML += `<div class="calculo">\\(x = \\frac{\\log(${valorIntermedio})}{\\log(${funcionActual.b})} \\approx \\frac{${logNum}}{${logDen}} \\approx ${resultado}\\)</div>`;
+        pasosHTML += `<div class="calculo">${t.interceptResultText} \\((${resultado},0)\\)</div>`;
+      } else {
+        if (valorIntermedio <= 0) {
+          pasosHTML += `<div class="calculo">${t.noSolution.replace("{b}", funcionActual.b)} ${valorIntermedio}</div>`;
+        } else {
+          pasosHTML += `<div class="calculo">${t.noXIntercept}</div>`;
+        }
+      }
+      
+      pasosHTML += `<div class="paso">3. ${t.signsText}</div>`;
+      if (raiz !== null) {
+        const corte = formatearNumero(raiz);
+        if (funcionActual.a > 0) {
+          pasosHTML += `<div class="calculo">• ${t.alwaysNegativeInterval.replace("{interval}", "(-\\infty," + corte + ")")}</div>`;
+          pasosHTML += `<div class="calculo">• ${t.alwaysPositiveInterval.replace("{interval}", "(" + corte + ",\\infty)")}</div>`;
+        } else {
+          pasosHTML += `<div class="calculo">• ${t.alwaysPositiveInterval.replace("{interval}", "(-\\infty," + corte + ")")}</div>`;
+          pasosHTML += `<div class="calculo">• ${t.alwaysNegativeInterval.replace("{interval}", "(" + corte + ",\\infty)")}</div>`;
+        }
+      } else {
+        if (funcionActual.a > 0) {
+          if (-funcionActual.c / funcionActual.a > 0) {
+            pasosHTML += `<div class="calculo">${t.alwaysPositiveFull}</div>`;
+          } else {
+            pasosHTML += `<div class="calculo">${t.alwaysNegativeFull}</div>`;
+          }
+        } else {
+          if (-funcionActual.c / funcionActual.a > 0) {
+            pasosHTML += `<div class="calculo">${t.alwaysNegativeFull}</div>`;
+          } else {
+            pasosHTML += `<div class="calculo">${t.alwaysPositiveFull}</div>`;
+          }
+        }
+      }
+      
+      pasos.innerHTML = pasosHTML;
+      solucion.style.display = 'block';
+      MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+    }
+    
+    function nuevoEjercicio() {
+      funcionActual = generarFuncionExponencial();
+      const t = translations[currentLanguage];
+      const enunciado = t.enunciadoPrefix + funcionActual.latex + t.enunciadoSuffix;
+      document.getElementById('enunciado').innerHTML = enunciado;
+      document.getElementById('solucion').style.display = 'none';
+      MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+    }
+    
+    window.onload = function() {
+      updateUI();
+      nuevoEjercicio();
+    };
+  </script>
+</body>
+</html>
+

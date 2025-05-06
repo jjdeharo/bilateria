@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="page-title">Signes de funcions polinòmiques</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    #lang-switcher {
+      text-align: right;
+      margin-bottom: 10px;
+    }
+    #lang-switcher button {
+      margin: 0 5px;
+      padding: 8px 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #lang-switcher button:hover {
+      background-color: #45a049;
+    }
+    .active-lang {
+      background-color: #2a7;
+    }
+    h1, h2, h3 {
+      margin: 1em 0 0.5em;
+    }
+    .ejercicio {
+      border: 1px solid #ccc;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 5px;
+    }
+    .solucion {
+      display: none;
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f9f9f9;
+      border-radius: 5px;
+    }
+    button {
+      margin: 10px 5px;
+      padding: 8px 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 0.9em;
+      text-align: center;
+    }
+    .paso {
+      margin: 10px 0;
+      padding: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div id="lang-switcher">
+    <button id="btn-ca" onclick="setLanguage('ca')">CA</button>
+    <button id="btn-es" onclick="setLanguage('es')">ES</button>
+  </div>
+  
+  <h1 id="header-title">Practica els signes de funcions polinòmiques</h1>
+  
+  <div id="ejercicio" class="ejercicio">
+    <div id="enunciado"></div>
+    <button id="btn-verify" onclick="mostrarSolucion()">Verificar</button>
+    <button id="btn-new" onclick="nuevoEjercicio()">Nova funció</button>
+    <div id="solucion" class="solucion">
+      <h3 id="sol-title">Solució:</h3>
+      <div id="pasos"></div>
+    </div>
+  </div>
+  
+  <div class="footer">
+    <p id="footer-line1">Aplicació feta per Juan José de Haro</p>
+    <p id="footer-line2">Aquesta obra està sota una llicència Creative Commons BY-SA</p>
+  </div>
+  
+  <script>
+    // Diccionari de traduccions
+    const translations = {
+      ca: {
+        pageTitle: "Signes de funcions polinòmiques",
+        headerTitle: "Practica els signes de funcions polinòmiques",
+        btnVerify: "Verificar",
+        btnNew: "Nova funció",
+        solTitle: "Solució:",
+        enunciado: "Determina els signes de la funció:",
+        step1: "1. Domini: El domini és ℝ (tots els nombres reals) ja que és una funció polinòmica.",
+        step2: "2. Punts de tall amb l'eix X:",
+        noXIntersections: "No hi ha punts de tall amb l'eix X",
+        step3: "3. Asímptotes verticals: No hi ha asímptotes verticals en les funcions polinòmiques.",
+        step4: "4. Signes en els intervals:",
+        positive: "Positiva en",
+        negative: "Negativa en",
+        footerLine1: "Aplicació feta per Juan José de Haro",
+        footerLine2: "Aquesta obra està sota una llicència Creative Commons BY-SA"
+      },
+      es: {
+        pageTitle: "Signos de funciones polinómicas",
+        headerTitle: "Practica los signos de funciones polinómicas",
+        btnVerify: "Verificar",
+        btnNew: "Nueva función",
+        solTitle: "Solución:",
+        enunciado: "Determina los signos de la función:",
+        step1: "1. Dominio: El dominio es ℝ (todos los números reales) ya que es una función polinómica.",
+        step2: "2. Puntos de corte con el eje X:",
+        noXIntersections: "No hay puntos de corte con el eje X",
+        step3: "3. Asíntotas verticales: No hay asíntotas verticales en las funciones polinómicas.",
+        step4: "4. Signos en los intervalos:",
+        positive: "Positiva en",
+        negative: "Negativa en",
+        footerLine1: "Aplicación hecha por Juan José de Haro",
+        footerLine2: "Esta obra está bajo una licencia Creative Commons BY-SA"
+      }
+    };
+
+    let currentLang = 'ca';
+
+    function updateLangButtons() {
+      document.getElementById('btn-ca').classList.toggle('active-lang', currentLang === 'ca');
+      document.getElementById('btn-es').classList.toggle('active-lang', currentLang === 'es');
+    }
+
+    function updateStaticTexts() {
+      document.title = translations[currentLang].pageTitle;
+      document.getElementById('page-title').textContent = translations[currentLang].pageTitle;
+      document.getElementById('header-title').textContent = translations[currentLang].headerTitle;
+      document.getElementById('btn-verify').textContent = translations[currentLang].btnVerify;
+      document.getElementById('btn-new').textContent = translations[currentLang].btnNew;
+      document.getElementById('sol-title').textContent = translations[currentLang].solTitle;
+      document.getElementById('footer-line1').textContent = translations[currentLang].footerLine1;
+      document.getElementById('footer-line2').textContent = translations[currentLang].footerLine2;
+      document.documentElement.lang = currentLang;
+    }
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      updateLangButtons();
+      updateStaticTexts();
+      nuevoEjercicio();
+    }
+
+    window.addEventListener("load", function() {
+      const navLang = navigator.language || navigator.userLanguage;
+      if (navLang && navLang.toLowerCase().startsWith("ca")) {
+        currentLang = "ca";
+      } else {
+        currentLang = "es";
+      }
+      updateLangButtons();
+      updateStaticTexts();
+      nuevoEjercicio();
+    });
+
+    // Codi de la funció polinòmica
+
+    let polinomioActual;
+
+    function simplificarTermino(coef, grado) {
+      if (coef === 0) return '';
+      let termino = '';
+      
+      // Signo
+      if (coef > 0) termino += '+';
+      if (coef === -1 && grado > 0) termino += '-';
+      
+      // Coeficient
+      if (grado === 0 || Math.abs(coef) !== 1) {
+        termino += coef === -1 ? '-1' : coef.toString();
+      }
+      
+      // Variable i exponent
+      if (grado === 1) termino += 'x';
+      else if (grado > 1) termino += `x^${grado}`;
+      
+      return termino;
+    }
+
+    function generarPolinomioGrado1() {
+      const a = Math.floor(Math.random() * 5) + 1;
+      const b = Math.floor(Math.random() * 10) - 5;
+      const raiz = -b / a;
+      let latex = simplificarTermino(a, 1) + simplificarTermino(b, 0);
+      if (latex.startsWith('+')) latex = latex.substring(1);
+      return {
+        latex: latex,
+        raices: [raiz],
+        grado: 1,
+        coefPrincipal: a
+      };
+    }
+
+    function generarPolinomioGrado2() {
+      const a = Math.floor(Math.random() * 3) + 1;
+      const raiz1 = Math.floor(Math.random() * 5) - 2;
+      const raiz2 = Math.floor(Math.random() * 5) - 2;
+      const b = -a * (raiz1 + raiz2);
+      const c = a * raiz1 * raiz2;
+      let latex = simplificarTermino(a, 2) + simplificarTermino(b, 1) + simplificarTermino(c, 0);
+      if (latex.startsWith('+')) latex = latex.substring(1);
+      return {
+        latex: latex,
+        raices: [raiz1, raiz2].sort((a, b) => a - b),
+        grado: 2,
+        coefPrincipal: a
+      };
+    }
+
+    function generarPolinomioGrado3() {
+      const a = Math.floor(Math.random() * 2) + 1;
+      const raizEntera = Math.floor(Math.random() * 5) - 2;
+      const b = Math.floor(Math.random() * 6) - 3;
+      const c = Math.floor(Math.random() * 6) - 3;
+      const d = -a * raizEntera * (raizEntera * raizEntera + b * raizEntera + c);
+      let latex = simplificarTermino(a, 3) + simplificarTermino(b, 2) +
+                  simplificarTermino(c, 1) + simplificarTermino(d, 0);
+      if (latex.startsWith('+')) latex = latex.substring(1);
+      return {
+        latex: latex,
+        raices: [raizEntera],
+        grado: 3,
+        coefPrincipal: a
+      };
+    }
+
+    function generarPolinomioGrado4() {
+      const raiz1 = Math.floor(Math.random() * 3) - 1;
+      const raiz2 = Math.floor(Math.random() * 3) - 1;
+      const b = -2 * (raiz1 + raiz2);
+      const c = (raiz1 * raiz1) + 4 * raiz1 * raiz2 + (raiz2 * raiz2);
+      const d = -2 * raiz1 * raiz2 * (raiz1 + raiz2);
+      const e = (raiz1 * raiz1) * (raiz2 * raiz2);
+      let latex = 'x^4' + simplificarTermino(b, 3) + simplificarTermino(c, 2) +
+                  simplificarTermino(d, 1) + simplificarTermino(e, 0);
+      return {
+        latex: latex,
+        raices: [raiz1, raiz2].sort((a, b) => a - b),
+        grado: 4,
+        coefPrincipal: 1
+      };
+    }
+
+    function generarPolinomio() {
+      const grado = Math.floor(Math.random() * 4) + 1;
+      switch (grado) {
+        case 1: return generarPolinomioGrado1();
+        case 2: return generarPolinomioGrado2();
+        case 3: return generarPolinomioGrado3();
+        case 4: return generarPolinomioGrado4();
+      }
+    }
+
+    function calcularSignos(polinomio) {
+      const raices = [...new Set(polinomio.raices)].sort((a, b) => a - b);
+      const signos = [];
+      let signoActual = (polinomio.grado % 2 === 0) ? 1 : Math.sign(polinomio.coefPrincipal);
+      for (let i = 0; i <= raices.length; i++) {
+        signos.push(signoActual);
+        signoActual *= -1;
+      }
+      return signos;
+    }
+
+    function mostrarSolucion() {
+      const solucion = document.getElementById('solucion');
+      const pasos = document.getElementById('pasos');
+      const raices = [...new Set(polinomioActual.raices)].sort((a, b) => a - b);
+      const signos = calcularSignos(polinomioActual);
+      
+      let pasosHTML = '';
+      pasosHTML += `<div class="paso">${translations[currentLang].step1}</div>`;
+      pasosHTML += `<div class="paso">${translations[currentLang].step2} `;
+      if (raices.length > 0) {
+        pasosHTML += `x = ${raices.join(', x = ')}`;
+      } else {
+        pasosHTML += translations[currentLang].noXIntersections;
+      }
+      pasosHTML += `</div>`;
+      pasosHTML += `<div class="paso">${translations[currentLang].step3}</div>`;
+      pasosHTML += `<div class="paso">${translations[currentLang].step4}</div>`;
+      
+      let intervalosPositivos = [];
+      let intervalosNegativos = [];
+      
+      for (let i = 0; i <= raices.length; i++) {
+        const limiteInf = i === 0 ? '-\\infty' : raices[i - 1];
+        const limiteSup = i === raices.length ? '\\infty' : raices[i];
+        const intervalo = `(${limiteInf}, ${limiteSup})`;
+        if (signos[i] > 0) {
+          intervalosPositivos.push(intervalo);
+        } else {
+          intervalosNegativos.push(intervalo);
+        }
+      }
+      
+      if (intervalosPositivos.length > 0) {
+        pasosHTML += `<div class="paso">${translations[currentLang].positive} \\(${intervalosPositivos.join(' \\cup ')}\\)</div>`;
+      }
+      if (intervalosNegativos.length > 0) {
+        pasosHTML += `<div class="paso">${translations[currentLang].negative} \\(${intervalosNegativos.join(' \\cup ')}\\)</div>`;
+      }
+      
+      pasos.innerHTML = pasosHTML;
+      solucion.style.display = 'block';
+      
+      MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+    }
+
+    function nuevoEjercicio() {
+      polinomioActual = generarPolinomio();
+      const enunciado = `${translations[currentLang].enunciado} \\[f(x) = ${polinomioActual.latex}\\]`;
+      document.getElementById('enunciado').innerHTML = enunciado;
+      document.getElementById('solucion').style.display = 'none';
+      
+      MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+    }
+
+    window.onload = nuevoEjercicio;
+  </script>
+</body>
+</html>
+

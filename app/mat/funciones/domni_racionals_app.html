@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practica el domini de funcions racionals</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.12.0/math.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        /* Selector de idioma */
+        #lang-switch {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        #lang-switch button {
+            padding: 6px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #4a90e2;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            margin-left: 5px;
+            transition: all 0.3s ease;
+        }
+        /* Botón activo en verde */
+        #lang-switch button.active-lang {
+            background-color: #28a745;
+        }
+        #lang-switch button:hover {
+            background-color: #357abd;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        button {
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4a90e2;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background-color: #357abd;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        button.nova-funcio {
+            background-color: #28a745;
+            margin-top: 20px;
+        }
+        button.nova-funcio:hover {
+            background-color: #218838;
+        }
+        #resultat {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        #estadistiques {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+        .correcte {
+            color: green;
+        }
+        .incorrecte {
+            color: red;
+        }
+        footer {
+            margin-top: 40px;
+            font-size: 0.9em;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Botones para cambiar el idioma -->
+    <div id="lang-switch">
+      <button id="btn-ca" onclick="setLanguage('ca')">CA</button>
+      <button id="btn-es" onclick="setLanguage('es')">ES</button>
+    </div>
+    
+    <h1>Practica el domini de funcions racionals</h1>
+    <div id="funcio"></div>
+    <div class="options" id="opcions"></div>
+    <div id="resultat"></div>
+    <div id="estadistiques"></div>
+    <button onclick="novaFuncio()" class="nova-funcio">Nova funció</button>
+    
+    <footer>
+        <p>Aplicació feta per <a href="https://bilateria.org">Juan José de Haro</a></p>
+        <p>Aquesta obra està sota una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ca">llicència Creative Commons BY-SA</a></p>
+    </footer>
+
+    <script>
+        // Detecció i traduccions
+        let currentLanguage = (navigator.language && navigator.language.toLowerCase().startsWith("ca")) ? "ca" : "es";
+
+        const translations = {
+            ca: {
+                title: "Practica el domini de funcions racionals",
+                header: "Practica el domini de funcions racionals",
+                newFunction: "Nova funció",
+                correct: "Correcte!",
+                incorrect: "Incorrecte. La resposta correcta és: ",
+                statistics: "Encerts: ",
+                by: "Aplicació feta per ",
+                license: "Aquesta obra està sota una llicència Creative Commons BY-SA"
+            },
+            es: {
+                title: "Practica el dominio de las funciones racionales",
+                header: "Practica el dominio de las funciones racionales",
+                newFunction: "Nueva función",
+                correct: "¡Correcto!",
+                incorrect: "Incorrecto. La respuesta correcta es: ",
+                statistics: "Aciertos: ",
+                by: "Aplicación hecha por ",
+                license: "Esta obra está bajo una licencia Creative Commons BY-SA"
+            }
+        };
+
+        function updateUI() {
+            document.title = translations[currentLanguage].title;
+            document.querySelector('h1').innerText = translations[currentLanguage].header;
+            document.querySelector('.nova-funcio').innerText = translations[currentLanguage].newFunction;
+            // Actualitzar el peu de pàgina
+            const footerParagraphs = document.querySelectorAll('footer p');
+            if (footerParagraphs.length >= 2) {
+                footerParagraphs[0].innerHTML = translations[currentLanguage].by + '<a href="https://bilateria.org">Juan José de Haro</a>';
+                if (currentLanguage === "ca") {
+                    footerParagraphs[1].innerHTML = translations[currentLanguage].license.replace("Creative Commons BY-SA", '<a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ca">Creative Commons BY-SA</a>');
+                } else {
+                    footerParagraphs[1].innerHTML = translations[currentLanguage].license.replace("Creative Commons BY-SA", '<a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es">Creative Commons BY-SA</a>');
+                }
+            }
+            // Actualitzar l'estil dels botons d'idioma
+            document.getElementById("btn-ca").classList.remove("active-lang");
+            document.getElementById("btn-es").classList.remove("active-lang");
+            if (currentLanguage === "ca") {
+                document.getElementById("btn-ca").classList.add("active-lang");
+            } else {
+                document.getElementById("btn-es").classList.add("active-lang");
+            }
+            actualitzarEstadistiques();
+        }
+
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            updateUI();
+        }
+
+        // Funcions per generar funcions racionals
+        let encerts = 0;
+        let intents = 0;
+        let funcioActual = null;
+        let dominiCorrecte = null;
+
+        function generarCoeficient() {
+            return Math.floor(Math.random() * 11) - 5;
+        }
+
+        function generarArrelEntera() {
+            return Math.floor(Math.random() * 11) - 5;
+        }
+
+        function generarPolinomi(grau, arrels = []) {
+            if (arrels.length > 0) {
+                let coefs = [1];
+                for (let arrel of arrels) {
+                    const factor = [-arrel, 1];
+                    const nouCoefs = Array(coefs.length + 1).fill(0);
+                    for (let i = 0; i < coefs.length; i++) {
+                        for (let j = 0; j < factor.length; j++) {
+                            nouCoefs[i + j] += coefs[i] * factor[j];
+                        }
+                    }
+                    coefs = nouCoefs;
+                }
+                while (coefs.length <= grau) {
+                    const factorAleatori = [generarCoeficient(), 1];
+                    const nouCoefs = Array(coefs.length + 1).fill(0);
+                    for (let i = 0; i < coefs.length; i++) {
+                        for (let j = 0; j < factorAleatori.length; j++) {
+                            nouCoefs[i + j] += coefs[i] * factorAleatori[j];
+                        }
+                    }
+                    coefs = nouCoefs;
+                }
+                return coefs;
+            } else {
+                let coefs = [];
+                for (let i = 0; i <= grau; i++) {
+                    coefs.push(generarCoeficient());
+                }
+                while (coefs[grau] === 0) {
+                    coefs[grau] = generarCoeficient();
+                }
+                return coefs;
+            }
+        }
+
+        function calcularArrels(coefs) {
+            try {
+                const f = (x) => {
+                    let result = 0;
+                    for (let i = 0; i < coefs.length; i++) {
+                        result += coefs[i] * Math.pow(x, i);
+                    }
+                    return result;
+                };
+
+                const arrels = [];
+                for (let x = -10; x <= 10; x += 0.01) {
+                    const y = f(x);
+                    const yNext = f(x + 0.01);
+                    if (Math.abs(y) < 0.01 || (y * yNext < 0)) {
+                        let root = x;
+                        for (let i = 0; i < 10; i++) {
+                            const fx = f(root);
+                            if (Math.abs(fx) < 1e-10) break;
+                            const h = 1e-7;
+                            const df = (f(root + h) - f(root)) / h;
+                            if (Math.abs(df) < 1e-10) break;
+                            root = root - fx / df;
+                        }
+                        root = Math.round(root * 100) / 100;
+                        if (!arrels.includes(root) && Math.abs(f(root)) < 0.1) {
+                            arrels.push(root);
+                        }
+                    }
+                }
+                return arrels.sort((a, b) => a - b);
+            } catch (error) {
+                console.error('Error calculant arrels:', error);
+                return [];
+            }
+        }
+
+        function generarFuncioRacional() {
+            const grauNum = Math.floor(Math.random() * 4) + 1;
+            const grauDen = Math.floor(Math.random() * 4) + 1;
+            
+            const sinSolucions = Math.random() < 0.2;
+            
+            if (sinSolucions) {
+                let denominador = [1, 0, 1];
+                while (denominador.length <= grauDen) {
+                    if (Math.random() < 0.5 && denominador.length + 1 <= grauDen) {
+                        const a = Math.floor(Math.random() * 5) + 1;
+                        const factor = [a, 1];
+                        const nouDen = Array(denominador.length + 1).fill(0);
+                        for (let i = 0; i < denominador.length; i++) {
+                            for (let j = 0; j < factor.length; j++) {
+                                nouDen[i + j] += denominador[i] * factor[j];
+                            }
+                        }
+                        denominador = nouDen;
+                    } else {
+                        const b = Math.floor(Math.random() * 5) + 1;
+                        const factor = [b, 0, 1];
+                        const nouDen = Array(denominador.length + 2).fill(0);
+                        for (let i = 0; i < denominador.length; i++) {
+                            for (let j = 0; j < factor.length; j++) {
+                                nouDen[i + j] += denominador[i] * factor[j];
+                            }
+                        }
+                        denominador = nouDen;
+                    }
+                }
+                return {
+                    numerador: generarPolinomiAleatori(grauNum),
+                    denominador: denominador.slice(0, grauDen + 1),
+                    arrelsDen: []
+                };
+            }
+            
+            let arrelsDen = [];
+            let numSolucions = grauDen >= 3 ? (grauDen === 4 ? 4 : 3) : grauDen;
+            let possiblesSolucions = Array.from({length: 11}, (_, i) => i - 5);
+            while(arrelsDen.length < numSolucions) {
+                const index = Math.floor(Math.random() * possiblesSolucions.length);
+                const novaArrel = possiblesSolucions[index];
+                arrelsDen.push(novaArrel);
+                possiblesSolucions.splice(index, 1);
+            }
+            arrelsDen.sort((a, b) => a - b);
+            let denominador = [1];
+            for (let arrel of arrelsDen) {
+                const factorActual = [-arrel, 1];
+                const nouDenominador = Array(denominador.length + 1).fill(0);
+                for (let i = 0; i < denominador.length; i++) {
+                    for (let j = 0; j < factorActual.length; j++) {
+                        nouDenominador[i + j] += denominador[i] * factorActual[j];
+                    }
+                }
+                denominador = nouDenominador;
+            }
+            return {
+                numerador: generarPolinomiAleatori(grauNum),
+                denominador,
+                arrelsDen
+            };
+        }
+
+        function generarPolinomiAleatori(grau) {
+            const coefs = [];
+            for (let i = 0; i <= grau; i++) {
+                coefs.push(Math.floor(Math.random() * 11) - 5);
+            }
+            while (coefs[grau] === 0) {
+                coefs[grau] = Math.floor(Math.random() * 11) - 5;
+            }
+            return coefs;
+        }
+
+        function polinomiAString(coefs) {
+            let resultat = '';
+            for (let i = coefs.length - 1; i >= 0; i--) {
+                if (coefs[i] !== 0) {
+                    if (resultat !== '' && coefs[i] > 0) resultat += '+';
+                    if (coefs[i] === -1 && i > 0) resultat += '-';
+                    else if (coefs[i] !== 1 || i === 0) resultat += coefs[i];
+                    if (i > 0) resultat += 'x';
+                    if (i > 1) resultat += '^' + i;
+                }
+            }
+            return resultat || '0';
+        }
+
+        function generarOpcions(arrelsDen) {
+            let opcions = [];
+            let correcta = arrelsDen.length === 0 ? 'ℝ' : 'ℝ-{' + arrelsDen.sort((a, b) => a - b).join(',') + '}';
+            opcions.push(correcta);
+            while (opcions.length < 4) {
+                if (Math.random() < 0.2) {
+                    if (!opcions.includes('ℝ')) {
+                        opcions.push('ℝ');
+                    }
+                } else {
+                    let arrelsFalses = [];
+                    let numArrels = Math.floor(Math.random() * 3) + 1;
+                    for (let i = 0; i < numArrels; i++) {
+                        arrelsFalses.push(generarArrelEntera());
+                    }
+                    let opcio = 'ℝ-{' + arrelsFalses.sort((a, b) => a - b).join(',') + '}';
+                    if (!opcions.includes(opcio)) {
+                        opcions.push(opcio);
+                    }
+                }
+            }
+            return opcions;
+        }
+
+        function barrejarArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function comprovarResposta(resposta) {
+            intents++;
+            const correcte = resposta === dominiCorrecte;
+            if (correcte) encerts++;
+            
+            document.getElementById('resultat').innerHTML = correcte ? 
+                '<p class="correcte">' + translations[currentLanguage].correct + '</p>' : 
+                '<p class="incorrecte">' + translations[currentLanguage].incorrect + dominiCorrecte + '</p>';
+            
+            actualitzarEstadistiques();
+            setTimeout(novaFuncio, correcte ? 1000 : 2000);
+        }
+
+        function actualitzarEstadistiques() {
+            const percentatge = intents === 0 ? 0 : Math.round((encerts / intents) * 100);
+            document.getElementById('estadistiques').innerHTML = translations[currentLanguage].statistics + `${encerts}/${intents} (${percentatge}%)`;
+        }
+
+        function novaFuncio() {
+            funcioActual = generarFuncioRacional();
+            const numStr = polinomiAString(funcioActual.numerador);
+            const denStr = polinomiAString(funcioActual.denominador);
+            
+            document.getElementById('funcio').innerHTML = `\\[f(x)=\\frac{${numStr}}{${denStr}}\\]`;
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+            
+            const opcions = generarOpcions(funcioActual.arrelsDen);
+            dominiCorrecte = opcions[0];
+            const opcionsBarrejades = barrejarArray(opcions);
+            
+            const botonesHtml = opcionsBarrejades.map(opcio => 
+                `<button onclick="comprovarResposta('${opcio}')">${opcio}</button>`
+            ).join('');
+            
+            document.getElementById('opcions').innerHTML = botonesHtml;
+            document.getElementById('resultat').innerHTML = '';
+        }
+
+        window.onload = function() {
+            updateUI();
+            novaFuncio();
+        };
+    </script>
+</body>
+</html>
+

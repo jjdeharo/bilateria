@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practica las derivadas simples</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        .contenidor {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .opcions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            background-color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #f1f3f5;
+        }
+        .boto-control {
+            background-color: #e9ecef;
+            margin-top: 10px;
+            width: 200px;
+        }
+        .missatge {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .correcte {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .incorrecte {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .peu {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .peu a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        .peu a:hover {
+            text-decoration: underline;
+        }
+        .idioma-selector {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+        .boto-idioma {
+            padding: 5px 10px;
+            cursor: pointer;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 3px;
+        }
+        .boto-idioma.actiu {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="idioma-selector">
+        <button id="ca-btn" class="boto-idioma">CA</button>
+        <button id="es-btn" class="boto-idioma">ES</button>
+    </div>
+
+    <div class="contenidor">
+        <h1 id="titol"></h1>
+        <div id="puntuacio"><span id="text-puntuacio"></span>: <span id="encerts">0</span>/<span id="total">0</span></div>
+        
+        <div class="contenidor">
+            <h2 id="pregunta"></h2>
+            <div id="funcio" style="font-size: 24px;"></div>
+        </div>
+        
+        <div id="opcions" class="opcions"></div>
+        <div id="missatge" class="missatge"></div>
+        
+        <button id="botoPropera" class="boto-control"></button>
+    </div>
+    
+    <div class="peu">
+        <span id="footer-text"></span> <a href="https://bilateria.org" target="_blank">Juan José de Haro</a> - <span id="footer-license"></span> <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA</a>
+    </div>
+
+    <script>
+        MathJax.Hub.Config({
+            tex2jax: {
+                inlineMath: [['$','$'], ['\\(','\\)']],
+                processEscapes: true
+            },
+            messageStyle: "none"
+        });
+
+        // Traducciones
+        const traducciones = {
+            ca: {
+                titol: "Practica les derivades simples",
+                puntuacio: "Puntuació",
+                pregunta: "Quina és la derivada d'aquesta funció?",
+                correcte: "Correcte! 🎉",
+                incorrecte: "Incorrecte. La resposta correcta era:",
+                botoPropera: "Propera funció ⏭️",
+                per: "Per",
+                llicencia: "Llicència"
+            },
+            es: {
+                titol: "Practica las derivadas simples",
+                puntuacio: "Puntuación",
+                pregunta: "¿Cuál es la derivada de esta función?",
+                correcte: "¡Correcto! 🎉",
+                incorrecte: "Incorrecto. La respuesta correcta era:",
+                botoPropera: "Siguiente función ⏭️",
+                per: "Por",
+                llicencia: "Licencia"
+            }
+        };
+
+        let funcioActual;
+        let puntuacio = 0;
+        let totalIntents = 0;
+        let idiomaActual;
+
+        // Detectar idioma del navegador
+        function detectarIdioma() {
+            const idiomaNavegador = navigator.language || navigator.userLanguage;
+            return idiomaNavegador.startsWith('ca') ? 'ca' : 'es';
+        }
+
+        // Cambiar idioma
+        function cambiarIdioma(idioma) {
+            idiomaActual = idioma;
+            document.documentElement.lang = idioma;
+            
+            // Actualizar clases activas en botones
+            document.getElementById('ca-btn').classList.toggle('actiu', idioma === 'ca');
+            document.getElementById('es-btn').classList.toggle('actiu', idioma === 'es');
+
+            // Actualizar todos los textos
+            document.getElementById('titol').textContent = traducciones[idioma].titol;
+            document.getElementById('text-puntuacio').textContent = traducciones[idioma].puntuacio;
+            document.getElementById('pregunta').textContent = traducciones[idioma].pregunta;
+            document.getElementById('botoPropera').textContent = traducciones[idioma].botoPropera;
+            document.getElementById('footer-text').textContent = traducciones[idioma].per;
+            document.getElementById('footer-license').textContent = traducciones[idioma].llicencia;
+
+            // Actualizar mensaje si existe
+            const divMissatge = document.getElementById('missatge');
+            if (divMissatge.innerHTML.includes(traducciones['ca'].correcte) || 
+                divMissatge.innerHTML.includes(traducciones['es'].correcte)) {
+                divMissatge.innerHTML = traducciones[idioma].correcte;
+            } else if (divMissatge.innerHTML.includes(traducciones['ca'].incorrecte) || 
+                      divMissatge.innerHTML.includes(traducciones['es'].incorrecte)) {
+                divMissatge.innerHTML = `${traducciones[idioma].incorrecte} $f'(x) = ${funcioActual.derivada}$`;
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub, divMissatge]);
+            }
+        }
+
+        function generarFuncioAleatoria() {
+            const tipus = [
+                'potencia',
+                'exponencial',
+                'trigonometrica',
+                'logaritmica',
+                'arrel'
+            ];
+            const tipus_escollit = tipus[Math.floor(Math.random() * tipus.length)];
+            
+            switch (tipus_escollit) {
+                case 'potencia': {
+                    const exponent = Math.floor(Math.random() * 8) - 3;
+                    return {
+                        original: `x^{${exponent}}`,
+                        derivada: exponent === 1 ? '1' : 
+                                exponent === 0 ? '0' : 
+                                `${exponent}x^{${exponent-1}}`
+                    };
+                }
+                case 'exponencial': {
+                    const bases = ['e', '2', '3', '10'];
+                    const base = bases[Math.floor(Math.random() * bases.length)];
+                    const coeficient = Math.floor(Math.random() * 5) + 1;
+                    if (base === 'e') {
+                        return {
+                            original: coeficient === 1 ? 'e^x' : `${coeficient}e^x`,
+                            derivada: coeficient === 1 ? 'e^x' : `${coeficient}e^x`
+                        };
+                    } else {
+                        return {
+                            original: coeficient === 1 ? `${base}^x` : `${coeficient}\\cdot${base}^x`,
+                            derivada: coeficient === 1 ? `${base}^x\\ln(${base})` : 
+                                    `${coeficient}\\cdot${base}^x\\ln(${base})`
+                        };
+                    }
+                }
+                case 'trigonometrica': {
+                    const funcions = [
+                        { orig: '\\sin', deriv: '\\cos' },
+                        { orig: '\\cos', deriv: '-\\sin' },
+                        { orig: '\\tan', deriv: '\\sec^2' }
+                    ];
+                    const seleccionada = funcions[Math.floor(Math.random() * funcions.length)];
+                    return {
+                        original: `${seleccionada.orig}(x)`,
+                        derivada: `${seleccionada.deriv}(x)`
+                    };
+                }
+                case 'logaritmica': {
+                    const bases = ['e', '2', '10'];
+                    const base = bases[Math.floor(Math.random() * bases.length)];
+                    if (base === 'e') {
+                        return {
+                            original: '\\ln(x)',
+                            derivada: '\\frac{1}{x}'
+                        };
+                    } else {
+                        return {
+                            original: `\\log_{${base}}(x)`,
+                            derivada: `\\frac{1}{x\\ln(${base})}`
+                        };
+                    }
+                }
+                case 'arrel': {
+                    const n = Math.floor(Math.random() * 2) + 2;
+                    return {
+                        original: n === 2 ? '\\sqrt{x}' : `\\sqrt[${n}]{x}`,
+                        derivada: n === 2 ? '\\frac{1}{2\\sqrt{x}}' : 
+                                `\\frac{1}{${n}\\sqrt[${n}]{x^{${n-1}}}}`
+                    };
+                }
+            }
+        }
+
+        function generarOpcionsIncorrectes(correcta) {
+            const opcionsIncorrectes = [];
+            for (let i = 0; i < 3; i++) {
+                const funcioIncorrecta = generarFuncioAleatoria();
+                if (funcioIncorrecta.derivada !== correcta.derivada && 
+                    !opcionsIncorrectes.includes(funcioIncorrecta.derivada)) {
+                    opcionsIncorrectes.push(funcioIncorrecta.derivada);
+                } else {
+                    i--;
+                }
+            }
+            return opcionsIncorrectes;
+        }
+
+        function verificarResposta(seleccionada) {
+            totalIntents++;
+            document.getElementById('total').textContent = totalIntents;
+            const divMissatge = document.getElementById('missatge');
+            
+            if (seleccionada === funcioActual.derivada) {
+                puntuacio++;
+                document.getElementById('encerts').textContent = puntuacio;
+                divMissatge.innerHTML = traducciones[idiomaActual].correcte;
+                divMissatge.className = 'missatge correcte';
+            } else {
+                divMissatge.innerHTML = `${traducciones[idiomaActual].incorrecte} $f'(x) = ${funcioActual.derivada}$`;
+                divMissatge.className = 'missatge incorrecte';
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub, divMissatge]);
+            }
+            
+            setTimeout(generarProblema, 2000);
+        }
+
+        function generarProblema() {
+            funcioActual = generarFuncioAleatoria();
+            const opcionsIncorrectes = generarOpcionsIncorrectes(funcioActual);
+            const totesLesOpcions = [...opcionsIncorrectes, funcioActual.derivada]
+                .sort(() => Math.random() - 0.5);
+
+            document.getElementById('funcio').textContent = `$f(x) = ${funcioActual.original}$`;
+            const contenidorOpcions = document.getElementById('opcions');
+            contenidorOpcions.innerHTML = '';
+            
+            totesLesOpcions.forEach(opcio => {
+                const boto = document.createElement('button');
+                boto.innerHTML = `$f'(x) = ${opcio}$`;
+                boto.onclick = () => verificarResposta(opcio);
+                contenidorOpcions.appendChild(boto);
+            });
+
+            document.getElementById('missatge').textContent = '';
+            
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+        }
+
+        // Inicializar idioma
+        idiomaActual = detectarIdioma();
+        cambiarIdioma(idiomaActual);
+        
+        // Event pels botons de idioma
+        document.getElementById('ca-btn').addEventListener('click', () => cambiarIdioma('ca'));
+        document.getElementById('es-btn').addEventListener('click', () => cambiarIdioma('es'));
+
+        // Event pel botó de propera funció
+        document.getElementById('botoPropera').addEventListener('click', generarProblema);
+
+        // Iniciar el primer problema
+        generarProblema();
+    </script>
+</body>
+</html>

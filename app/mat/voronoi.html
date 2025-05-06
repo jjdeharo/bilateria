@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagrama de Voronoi Interactivo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            cursor: crosshair;
+            background-color: #fff;
+        }
+        button {
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .reset-btn {
+            background-color: #ea4335;
+            color: white;
+        }
+        .reset-btn:hover {
+            background-color: #d33426;
+        }
+        .info-btn {
+            background-color: #34a853;
+            color: white;
+        }
+        .info-btn:hover {
+            background-color: #2e8b57;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: black;
+        }
+        .instructions {
+            margin: 10px 0;
+            padding: 15px;
+            background-color: #f1f8ff;
+            border-left: 4px solid #4285f4;
+            border-radius: 4px;
+            text-align: left;
+        }
+        .status {
+            font-weight: bold;
+            margin: 10px 0;
+            color: #4285f4;
+        }
+        footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #666;
+        }
+        a {
+            color: #4285f4;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Diagrama de Voronoi interactivo</h1>
+        
+        <div class="instructions">
+            <p><strong>Instrucciones:</strong></p>
+            <ol>
+                <li>Haz clic en el lienzo para colocar puntos.</li>
+                <li>El diagrama se actualiza automáticamente con cada nuevo punto.</li>
+                <li>Usa "Restablecer" para empezar de nuevo.</li>
+            </ol>
+        </div>
+        
+        <div class="controls">
+            <button id="resetBtn" class="reset-btn">Restablecer</button>
+            <button id="infoBtn" class="info-btn">¿Qué es un diagrama de Voronoi?</button>
+        </div>
+        
+        <!-- Modal de información -->
+        <div id="infoModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>¿Qué es un diagrama de Voronoi?</h2>
+                <p>Un diagrama de Voronoi es una partición del plano en regiones basada en la distancia a unos puntos específicos. Cada región contiene todos los puntos que están más cerca de un punto semilla particular que de cualquier otro punto semilla.</p>
+                <p>Esta estructura matemática tiene muchas aplicaciones prácticas:</p>
+                <ul>
+                    <li>En urbanismo: para determinar áreas de influencia de servicios como hospitales, estaciones de bomberos o escuelas.</li>
+                    <li>En ecología: para estudiar territorios de especies animales.</li>
+                    <li>En geografía: para analizar áreas de influencia comercial.</li>
+                    <li>En redes de comunicación: para planificar la distribución de antenas.</li>
+                    <li>En gráficos por computadora: para generar texturas y patrones.</li>
+                </ul>
+                <p>En este programa, cada vez que haces clic se añade un nuevo punto y se recalcula el diagrama, mostrando cada región con un color distinto.</p>
+            </div>
+        </div>
+        
+        <div class="status" id="status">Haz clic en el lienzo para colocar puntos</div>
+        
+        <canvas id="voronoiCanvas" width="600" height="400"></canvas>
+    </div>
+    
+    <footer>
+        Aplicación hecha por <a href="https://bilateria.org">Juan José de Haro</a><br>
+        Esta obra está bajo una licencia <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es">Creative Commons BY-SA</a>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('voronoiCanvas');
+            const ctx = canvas.getContext('2d');
+            const resetBtn = document.getElementById('resetBtn');
+            const statusEl = document.getElementById('status');
+            
+            let points = [];
+            
+            // Inicializar canvas
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Función para calcular la distancia entre dos puntos
+            function distance(x1, y1, x2, y2) {
+                return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+            }
+            
+            // Función para generar el diagrama de Voronoi
+            function generateVoronoi() {
+                if (points.length === 0) return;
+                
+                // Limpiar canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Para cada pixel del canvas, encontrar el punto más cercano
+                const pixelSize = 2; // Usar pixels más grandes para mejor rendimiento
+                for (let x = 0; x < canvas.width; x += pixelSize) {
+                    for (let y = 0; y < canvas.height; y += pixelSize) {
+                        let minDist = Infinity;
+                        let closestPoint = null;
+                        
+                        // Encontrar el punto más cercano
+                        points.forEach((point, index) => {
+                            const dist = distance(x, y, point.x, point.y);
+                            if (dist < minDist) {
+                                minDist = dist;
+                                closestPoint = index;
+                            }
+                        });
+                        
+                        // Colorear el pixel según el punto más cercano
+                        if (closestPoint !== null) {
+                            ctx.fillStyle = `hsl(${(closestPoint * 360) / points.length}, 70%, 80%)`;
+                            ctx.fillRect(x, y, pixelSize, pixelSize);
+                        }
+                    }
+                }
+                
+                // Dibujar puntos encima
+                points.forEach(point => {
+                    ctx.beginPath();
+                    ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
+                    ctx.fillStyle = '#000';
+                    ctx.fill();
+                });
+                
+                statusEl.textContent = points.length === 1 
+                    ? "Has colocado 1 punto. Añade más para ver el diagrama."
+                    : "Diagrama de Voronoi con " + points.length + " puntos.";
+            }
+            
+            // Manejar clics en el canvas
+            canvas.addEventListener('click', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                points.push({ x, y });
+                
+                // Generar el diagrama automáticamente
+                generateVoronoi();
+            });
+            
+            // Restablecer todo
+            resetBtn.addEventListener('click', function() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                points = [];
+                
+                statusEl.textContent = "Haz clic en el lienzo para colocar puntos";
+            });
+            
+            // Modal de información
+            const infoBtn = document.getElementById('infoBtn');
+            const infoModal = document.getElementById('infoModal');
+            const closeBtn = document.querySelector('.close');
+            
+            infoBtn.addEventListener('click', function() {
+                infoModal.style.display = "block";
+            });
+            
+            closeBtn.addEventListener('click', function() {
+                infoModal.style.display = "none";
+            });
+            
+            window.addEventListener('click', function(event) {
+                if (event.target === infoModal) {
+                    infoModal.style.display = "none";
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2044 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario ODS</title>
+
+        <!-- Favicons -->
+        <link rel="icon" type="image/png" sizes="32x32" href="icono-32.png">
+        <link rel="icon" type="image/png" sizes="192x192" href="icono-192.png">
+
+    <style>
+        :root {
+            --primary: #0a97b0;
+            --secondary: #e57e25;
+            --bg-light: #f8f9fa;
+            --bg-dark: #343a40;
+            --text: #333;
+            --text-light: #f8f9fa;
+            --border: #dee2e6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            color: var(--text);
+            background-color: var(--bg-light);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .language-selector button {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 5px 10px;
+            margin-left: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        
+        .language-selector button.active {
+            background: white;
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+            gap: 1rem;
+        }
+        
+        .sidebar {
+            flex: 1;
+            min-width: 250px;
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .calendar-container {
+            flex: 3;
+            min-width: 300px;
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+        
+        .ods-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .ods-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: all 0.3s;
+            font-weight: bold;
+            font-size: 0.7rem;
+            color: white;
+            border: 2px solid transparent;
+        }
+        
+        .ods-icon:hover {
+            opacity: 1;
+        }
+        
+        .ods-icon.active {
+            opacity: 1;
+            transform: scale(1.1);
+            border: 3px solid black;
+            /* Color de fondo más claro al estar activo */
+            filter: brightness(1.3);
+        }
+        
+        /* Colores ODS */
+        .ods1 { background-color: #e5243b; }
+        .ods2 { background-color: #DDA63A; }
+        .ods3 { background-color: #4C9F38; }
+        .ods4 { background-color: #C5192D; }
+        .ods5 { background-color: #FF3A21; }
+        .ods6 { background-color: #26BDE2; }
+        .ods7 { background-color: #FCC30B; }
+        .ods8 { background-color: #A21942; }
+        .ods9 { background-color: #FD6925; }
+        .ods10 { background-color: #DD1367; }
+        .ods11 { background-color: #FD9D24; }
+        .ods12 { background-color: #BF8B2E; }
+        .ods13 { background-color: #3F7E44; }
+        .ods14 { background-color: #0A97D9; }
+        .ods15 { background-color: #56C02B; }
+        .ods16 { background-color: #00689D; }
+        .ods17 { background-color: #19486A; }
+        
+        /* Modal para descripciones ODS */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 1.5rem;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #777;
+        }
+        
+        .ods-details-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .ods-icon-large {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: white;
+            margin-right: 1rem;
+        }
+        
+        .ods-info h3 {
+            margin: 0;
+            color: var(--primary);
+        }
+        
+        .ods-description {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        
+        .ods-description ul {
+            padding-left: 1.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .ods-button {
+            display: inline-block;
+            margin-top: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        #search-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        .calendar-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .calendar-nav button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 1rem;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1/1;
+            border: 1px solid var(--border);
+            padding: 5px;
+            text-align: center;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .calendar-day:hover {
+            background-color: rgba(10, 151, 176, 0.1);
+        }
+        
+        .weekday {
+            background: var(--bg-light);
+            font-weight: bold;
+            border: none;
+            cursor: default;
+        }
+        
+        .weekday:hover {
+            background: var(--bg-light);
+        }
+        
+        .day-number {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            font-size: 0.8rem;
+        }
+        
+        .has-events {
+            background-color: rgba(229, 126, 37, 0.1);
+        }
+        
+        .has-events:hover {
+            background-color: rgba(229, 126, 37, 0.2);
+        }
+        
+        .event-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background-color: var(--secondary);
+            display: inline-block;
+            margin: 2px;
+        }
+        
+        .event-dots {
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .other-month {
+            color: #aaa;
+        }
+        
+        .today {
+            background-color: rgba(10, 151, 176, 0.1);
+            font-weight: bold;
+        }
+        
+        .selected-date {
+            margin-top: 1rem;
+        }
+        
+        .event-cards {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .event-card {
+            border-left: 4px solid var(--secondary);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: var(--bg-light);
+            border-radius: 4px;
+        }
+        
+        .event-title {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .event-title h3 {
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        .event-ods {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .event-ods span {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            color: white;
+        
+            cursor: pointer;
+        }
+        
+        .event-description {
+            margin-bottom: 0.5rem;
+        }
+        
+        .activities-list h4 {
+            margin-top: 0.5rem;
+            margin-bottom: 0.3rem;
+            color: var(--secondary);
+        }
+        
+        .activities-list ul {
+            padding-left: 1.5rem;
+        }
+        
+        .favorite-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .ai-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        
+            margin-left: 0.5rem;
+        }
+
+        /* Modal para seleccionar chatbot */
+        .chatbot-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1200;
+            display: none;
+        }
+
+        .chatbot-modal-content {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .chatbot-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .chatbot-login-msg {
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            color: var(--text);
+        }
+
+
+        .chatbot-btn {
+            flex: 1 1 45%;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--primary);
+            color: white;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+
+        
+        .favorite-btn.active {
+            background: var(--secondary);
+        }
+        
+        .favorites-list {
+            margin-top: 0.5rem;
+        }
+        
+        .favorite-item {
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+        }
+        
+        .favorite-item:hover {
+            background-color: var(--bg-light);
+        }
+        
+        .no-events {
+            padding: 1rem;
+            text-align: center;
+            color: #666;
+        }
+        
+        footer {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            padding: 1rem 0;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        
+        footer a {
+            color: var(--text-light);
+            text-decoration: underline;
+        }
+        
+        /* Nuevos estilos para la lista de fechas por ODS */
+        .ods-dates-list {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+            border-top: 1px solid var(--border);
+            padding-top: 0.5rem;
+            display: none;
+        }
+        
+        .ods-dates-item {
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        
+        .ods-dates-item:hover {
+            background-color: var(--bg-light);
+        }
+        
+        .ods-dates-item .date-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--secondary);
+            margin-right: 8px;
+        }
+        
+        .ods-dates-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .ods-dates-title {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .ods-dates-count {
+            background: var(--secondary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .calendar {
+                font-size: 0.8rem;
+            }
+            
+            .day-number {
+                font-size: 0.7rem;
+            }
+            
+            .event-dots {
+                display: none;
+            }
+        }
+    
+        .ods-date-title {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+    
+        /* Mostrar el nombre del evento dentro de las casillas */
+        .event-list {
+            position: absolute;
+            bottom: 2px;
+            left: 2px;
+            right: 2px;
+            font-size: 0.55rem;
+            line-height: 0.6rem;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .event-title-cell {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .event-more {
+            text-align: right;
+            font-weight: bold;
+        }
+
+    
+        /* Ajustes para mostrar el texto completo de los eventos dentro de las casillas */
+        .event-list {
+            position: absolute;
+            bottom: 2px;
+            left: 2px;
+            right: 2px;
+            font-size: 0.6rem;
+            line-height: 0.7rem;
+            overflow-y: hidden;
+        }
+        .event-title-cell {
+            white-space: normal;
+            overflow: hidden;
+        }
+        .event-more {
+            text-align: right;
+            font-weight: bold;
+        }
+
+    
+        /* Ajustes estéticos: eventos centrados verticalmente y fuente ligeramente mayor */
+        .event-list {
+            top: 50% !important;
+            bottom: auto !important;
+            left: 4px !important;
+            right: 4px !important;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 0.75rem;
+            line-height: 0.85rem;
+        }
+        .event-title-cell {
+            white-space: normal;
+        }
+
+    
+        /* Reducir altura de cabecera de días de la semana */
+        .weekday {
+            aspect-ratio: auto !important;
+            height: 32px !important;
+            padding: 0 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Selector de mes y año */
+        .calendar-picker {
+            display: inline-flex;
+            gap: 0.3rem;
+            margin-left: 0.75rem;
+        }
+        .calendar-picker select {
+            padding: 4px 6px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+    
+        /* Resaltar celda seleccionada */
+        .selected-cell {
+            border: 2px solid var(--secondary);
+            font-weight: bold;
+            background-color: rgba(229,126,37,0.12);
+        }
+
+        /* Botón Hoy */
+        .today-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 0.5rem;
+        }
+
+    
+        /* Botón de ayuda flotante */
+        .help-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            font-size: 1.5rem;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            z-index: 1100;
+        }
+
+    
+/* Ajustes extra para pantallas muy estrechas */
+@media (max-width: 576px) {
+    /* La celda del calendario puede crecer verticalmente para acomodar texto */
+    .calendar-day{
+        aspect-ratio: auto;
+        min-height: 64px;
+    }
+
+    /* Lista de eventos dentro de la celda: estilo bloque, con texto más pequeño y envoltura */
+    .event-list{
+        position: static !important;
+        transform: none !important;
+        font-size: .60rem;
+        line-height: .70rem;
+        text-align: left;
+        margin-top: 2px;
+    }
+
+    /* Título del evento: permitir varias líneas si es necesario */
+    .event-title-cell{
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
+    }
+}
+
+
+/* Ajustes complementarios móvil: evita columnas estrechas y separa número del texto */
+@media (max-width: 576px) {
+
+    /* Reparto equitativo de las 7 columnas */
+    .calendar{
+        grid-template-columns: repeat(7, minmax(0,1fr));
+    }
+
+    /* Celda crece en alto, mantiene ancho uniforme y deja espacio al número */
+    .calendar-day{
+        aspect-ratio: auto;
+        min-height: 72px;
+        padding-top: 22px;   /* hueco para el número */
+    }
+
+    /* Número del día */
+    .day-number{
+        font-size: .75rem;
+    }
+
+    /* Texto del evento: flujo normal, tamaño menor */
+    .event-list{
+        position: static !important;
+        transform: none !important;
+        font-size: .60rem;
+        line-height: .70rem;
+        text-align: left;
+        margin-top: 0;
+    }
+
+    .event-title-cell{
+        white-space: normal !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+}
+
+
+/* Permitir corte de palabras dentro de los títulos de eventos en pantallas estrechas */
+@media (max-width: 576px) {
+    .event-title-cell{
+        white-space: normal !important;
+        overflow-wrap: break-word !important;
+        word-wrap: break-word !important;
+        word-break: break-word !important;
+        hyphens: auto;
+    }
+}
+
+</style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo" id="title"><img src="icono-32.png" alt="Logo" style="width:24px;height:24px;vertical-align:middle;margin-right:6px;"> Calendario ODS</div>
+            <div class="language-selector">
+                <button id="es-btn" class="active">ES</button>
+                <button id="ca-btn">CA</button>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="main-content">
+            <div class="sidebar">
+                <h2 id="ods-title">Filtrar ODS</h2>
+                <div class="ods-filter" id="ods-filter">
+                    <!-- Los ODS se generan dinámicamente con JavaScript -->
+                </div>
+                <button id="show-ods-info" class="ods-button">Ver descripción completa de ODS</button>
+                
+                <!-- Nuevo elemento para mostrar las fechas por ODS -->
+                <div id="ods-dates-container" class="ods-dates-list">
+                    <div class="ods-dates-header">
+                        <span class="ods-dates-title" id="ods-dates-title">Fechas con eventos</span>
+                        <span class="ods-dates-count" id="ods-dates-count">0</span>
+                    </div>
+                    <div id="ods-dates-list">
+                        <!-- Las fechas se generan dinámicamente con JavaScript -->
+                    </div>
+                </div>
+                
+                <h2 id="favorites-title">Favoritos</h2>
+                <div id="favorites-list" class="favorites-list">
+                    <p id="no-favorites">No hay eventos favoritos.</p>
+                </div>
+            </div>
+            
+            <div class="calendar-container">
+                <div class="calendar-controls">
+                    <div class="calendar-nav">
+                        <button id="prev-month">&lt;</button>
+                        <span id="current-month">Abril 2025</span>
+                        <button id="next-month">&gt;</button>
+                    </div>
+                </div>
+                
+                <div class="calendar" id="calendar">
+                    <!-- El calendario se genera dinámicamente con JavaScript -->
+                </div>
+                
+                <div class="selected-date">
+                    <h2 id="current-date">24 de abril de 2025</h2>
+                    <div id="event-cards" class="event-cards">
+                        <!-- Las tarjetas de eventos se generan dinámicamente con JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    <!-- Modal de ayuda -->
+    <div id="help-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" id="help-close">&times;</button>
+            <div id="help-modal-content"></div>
+        </div>
+    </div>
+
+    <!-- Modal para mostrar información de ODS -->
+    <div id="ods-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" id="close-modal">&times;</button>
+            <div id="ods-modal-content">
+                <!-- Contenido generado dinámicamente -->
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p><a href="https://labia.tiddlyhost.com" target="_blank">Laboratorio de aplicaciones educativas</a></p>
+            <p><a href="https://bilateria.org" target="_blank">Aplicación hecha por Juan José de Haro</a></p>
+            <p><a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank">Esta obra está bajo una licencia Creative Commons BY-SA</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // Configuración de idiomas
+        const translations = {
+            es: {
+                title: "Calendario ODS",
+                odsTitle: "Filtrar ODS",
+                favoritesTitle: "Favoritos",
+                noFavorites: "No hay eventos favoritos.",
+                weekdays: ["L", "M", "X", "J", "V", "S", "D"],
+                months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+                activitiesTitle: "Ideas para el aula",
+                addFavorite: "Añadir a favoritos",
+                removeFavorite: "Quitar de favoritos",
+                noEvents: "No hay eventos para esta fecha.",
+                showOdsInfo: "Ver descripción completa de ODS",
+                closeModal: "Cerrar",
+                loadingOdsData: "Cargando información de ODS...",
+                errorLoadingOdsData: "Error al cargar la información de ODS. Inténtelo de nuevo más tarde.",
+                odsDatesTitle: "Fechas con eventos",
+                totalEvents: "eventos encontrados",
+                jumpToDate: "Ir a esta fecha",
+                todayBtn: "Hoy",
+                helpTitle: "¿Qué es esta aplicación?",
+                helpText: `Esta herramienta ofrece un calendario escolar con efemérides y días internacionales vinculados a los Objetivos de Desarrollo Sostenible (ODS). 
+Puedes filtrar por ODS, consultar ideas de actividades para el aula y marcar tus fechas favoritas para acceder rápido.`,
+            },
+            ca: {
+                title: "Calendari ODS",
+                odsTitle: "Filtrar ODS",
+                favoritesTitle: "Favorits",
+                noFavorites: "No hi ha esdeveniments favorits.",
+                weekdays: ["Dl", "Dt", "Dc", "Dj", "Dv", "Ds", "Dg"],
+                months: ["Gener", "Febrer", "Març", "Abril", "Maig", "Juny", "Juliol", "Agost", "Setembre", "Octubre", "Novembre", "Desembre"],
+                activitiesTitle: "Idees per a l'aula",
+                addFavorite: "Afegir a favorits",
+                removeFavorite: "Treure de favorits",
+                noEvents: "No hi ha esdeveniments per a aquesta data.",
+                showOdsInfo: "Veure descripció completa d'ODS",
+                closeModal: "Tancar",
+                loadingOdsData: "Carregant informació d'ODS...",
+                errorLoadingOdsData: "Error en carregar la informació d'ODS. Torneu-ho a provar més tard.",
+                odsDatesTitle: "Dates amb esdeveniments",
+                totalEvents: "esdeveniments trobats",
+                jumpToDate: "Anar a aquesta data",
+                todayBtn: "Avui",
+                helpTitle: "Què és aquesta aplicació?",
+                helpText: `Aquesta eina mostra un calendari escolar amb efemèrides i dies internacionals relacionats amb els Objectius de Desenvolupament Sostenible (ODS).
+Pots filtrar per ODS, consultar idees d'activitats per a l'aula i desar les teves dates preferides per accedir-hi ràpidament.`,
+            }
+        };
+        
+        // URLs de los archivos JSON
+        const ODS_DATA_URL = 'https://bilateria.org/app/ods/ods-data.json';
+        const EVENTS_DATA_URL = 'https://bilateria.org/app/ods/events-data.json';
+
+        /* === Base URLs de chatbots === */
+        const chatbotBaseURLs = {
+            chatgpt: 'https://chatgpt.com/?q=',
+            grok: 'https://grok.com/?q=',
+            lechat: 'https://chat.mistral.ai/chat/?q=',
+            copilot: 'https://copilot.microsoft.com/?q=',
+            perplexity: 'https://www.perplexity.ai/?q=',
+            claude: 'https://claude.ai/new?q='
+        };
+
+        /* === Traducciones para modal de chatbot === */
+        
+        
+        const chatbotTranslations = {
+            es: {
+                title: 'Selecciona un chatbot',
+                cancel: 'Cancelar',
+                loginHint: 'Debes haber iniciado sesión previamente en el chatbot seleccionado para que funcione correctamente.'
+            },
+            ca: {
+                title: 'Selecciona un chatbot',
+                cancel: 'Cancel·lar',
+                loginHint: 'Has d’haver iniciat sessió prèviament en el chatbot seleccionat perquè funcioni correctament.'
+            }
+        };
+
+const chatbotNames = {
+            chatgpt : 'ChatGPT',
+            grok : 'Grok',
+            lechat : 'Le Chat',
+            copilot : 'Copilot',
+            perplexity : 'Perplexity',
+            claude : 'Claude'
+        };
+
+        function construirURLPrompt(chatbot, prompt) {
+            if (!chatbotBaseURLs[chatbot]) {
+                console.error(`Chatbot "${chatbot}" no soportado.`);
+                return null;
+            }
+            const promptCodificado = encodeURIComponent(prompt);
+            return chatbotBaseURLs[chatbot] + promptCodificado;
+        }
+
+        function abrirURLChatbot(url) {
+            if (!url) return;
+            window.open(url, '_blank');
+        }
+
+        function enviarPromptAChatbot(chatbot, prompt) {
+            const url = construirURLPrompt(chatbot, prompt);
+            abrirURLChatbot(url);
+        }
+
+        /* === Modal de selección de chatbot === */
+        function showChatbotModal(prompt) {
+            const modal = document.getElementById('chatbot-modal');
+            const buttonsContainer = document.getElementById('chatbot-buttons');
+            const cancelBtn = document.getElementById('chatbot-cancel');
+            const titleEl = document.getElementById('chatbot-modal-title');
+            const levelLabelEl = document.getElementById('student-level-label');
+            const levelInputEl = document.getElementById('student-level-input');
+            levelLabelEl.textContent = (currentLang === 'ca') ? "Edat o nivell de l'alumnat:" : "Edad o nivel del alumnado:";
+            levelInputEl.value = '';
+
+
+            // Títulos según idioma
+            titleEl.textContent = chatbotTranslations[currentLang].title;
+            document.getElementById('chatbot-login-msg').textContent = chatbotTranslations[currentLang].loginHint;
+            cancelBtn.textContent = chatbotTranslations[currentLang].cancel;
+
+            // Limpiar botones
+            buttonsContainer.innerHTML = '';
+
+            // Crear botón por cada chatbot
+            Object.keys(chatbotBaseURLs).forEach(id => {
+                const btn = document.createElement('button');
+                btn.className = 'chatbot-btn';
+                btn.textContent = chatbotNames[id];
+                btn.addEventListener('click', function() {
+                                        const level = document.getElementById('student-level-input').value.trim();
+                    let finalPrompt = prompt;
+                    if (level) {
+                        const prefix = (currentLang === 'ca') ? `Nivell educatiu o edat de l'alumnat: ${level}\n\n` : `Nivel educativo o edad del alumnado: ${level}\n\n`;
+                        finalPrompt = prefix + prompt;
+                    }
+                    enviarPromptAChatbot(id, finalPrompt);
+                    hideChatbotModal();
+                });
+                buttonsContainer.appendChild(btn);
+            });
+
+            cancelBtn.onclick = hideChatbotModal;
+
+            modal.style.display = 'flex';
+        }
+
+        function hideChatbotModal() {
+            const modal = document.getElementById('chatbot-modal');
+            modal.style.display = 'none';
+        }
+
+        /* === Generar y mostrar prompt de actividad didáctica === */
+        function openAiActivity(eventData) {
+            const day = eventData.day;
+            const month = eventData.month;
+            const monthName = translations[currentLang].months[month - 1];
+            const title = eventData.title[currentLang];
+            const odsNames = eventData.relatedODS.map(ods => {
+                const odsItem = odsData.ods.find(o => o.id === ods);
+                return odsItem ? odsItem.titles[currentLang] : `ODS ${ods}`;
+            }).join(', ');
+
+            let prompt = '';
+            if (currentLang === 'ca') {
+                prompt = `Crea una activitat didàctica per treballar el ${title} (${day} ${monthName}) relacionada amb ${odsNames}.
+
+L'activitat ha d'incloure:
+- Una breu introducció sobre la importància del ${title}.
+- Una connexió clara amb els ODS seleccionats.
+- Una proposta concreta de tasca que l'alumnat pugui realitzar en una o dues sessions de classe.
+- Una pregunta final que convidi a la reflexió personal sobre el paper que cadascú pot tenir en el tema treballat.
+
+Adapta el llenguatge i la complexitat al nivell educatiu o edat de l'alumnat.`;
+            } else {
+                prompt = `Crea una actividad didáctica para trabajar el ${title} (${day} de ${monthName}) relacionada con ${odsNames}.
+
+La actividad debe incluir:
+- Una breve introducción sobre la importancia del ${title}.
+- Una conexión clara con los ODS seleccionados.
+- Una propuesta concreta de tarea que el alumnado pueda realizar en una o dos sesiones de clase.
+- Una pregunta final que invite a la reflexión personal sobre el papel que cada uno puede tener en el tema trabajado.
+
+Adapta el lenguaje y la complejidad al nivel educativo o edad del alumnado.`;
+            }
+
+            showChatbotModal(prompt);
+        }
+
+        
+        // Variables globales para almacenar los datos
+        let odsData = null;
+        let eventsData = null;
+        
+        // Variables globales
+        let currentDate = new Date();
+        let storedLang = localStorage.getItem('odsLang');
+        let currentLang = storedLang ? storedLang : (navigator.language.startsWith('ca') ? 'ca' : 'es');
+        let activeODSFilters = [];
+        let favorites = JSON.parse(localStorage.getItem('odsFavorites')) || [];
+        let initialized = false;
+        
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            createHelpInteractions();
+            createTodayButton();
+            /* Crear selectores de mes y año */
+            createMonthYearSelectors();
+            // Cargar todos los datos necesarios
+            Promise.all([fetchOdsData(), fetchEventsData()])
+                .then(([odsResult, eventsResult]) => {
+                    odsData = odsResult;
+                    eventsData = eventsResult;
+                    
+                    // Establecer inicializado antes de renderizar
+                    initialized = true;
+                    
+                    // Inicializar la interfaz después de cargar los datos
+                    updateLanguage(currentLang);
+                    initODSFilter();
+                    renderCalendar();
+                    updateSelectedDate();
+                })
+                .catch(error => {
+                    console.error('Error al cargar datos:', error);
+                    // Mostrar mensaje de error en la interfaz
+                    showErrorMessage();
+                });
+            
+            // Configurar eventos
+            document.getElementById('es-btn').addEventListener('click', () => updateLanguage('es'));
+            document.getElementById('ca-btn').addEventListener('click', () => updateLanguage('ca'));
+            document.getElementById('prev-month').addEventListener('click', prevMonth);
+            document.getElementById('next-month').addEventListener('click', nextMonth);
+            
+            // Eventos para el modal de ODS
+            document.getElementById('show-ods-info').addEventListener('click', showOdsModal);
+            document.getElementById('close-modal').addEventListener('click', hideOdsModal);
+            document.getElementById('ods-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    hideOdsModal();
+                }
+            });
+        });
+        
+        // Mostrar mensaje de error cuando no se pueden cargar los datos
+        function showErrorMessage() {
+            const sidebar = document.querySelector('.sidebar');
+            const calendarContainer = document.querySelector('.calendar-container');
+            
+            // Limpiar contenido
+            sidebar.innerHTML = '';
+            calendarContainer.innerHTML = '';
+            
+            // Mostrar mensaje de error
+            const errorMessage = document.createElement('div');
+            errorMessage.style.padding = '2rem';
+            errorMessage.style.textAlign = 'center';
+            errorMessage.style.color = '#e57e25';
+            errorMessage.innerHTML = `
+                <h2>Error de carga</h2>
+                <p>${translations[currentLang].errorLoadingOdsData}</p>
+                <button class="ods-button" onclick="location.reload()">Reintentar</button>
+            `;
+            
+            sidebar.appendChild(errorMessage);
+        }
+        
+        // Función para convertir favoritos del formato antiguo al nuevo (compatibilidad)
+        function migrateFavorites() {
+            if (favorites.length === 0) return;
+            
+            // Comprobar si ya están en el nuevo formato
+            const isNewFormat = favorites.some(fav => {
+                const parts = fav.split('-');
+                return parts.length >= 3 && !isNaN(parseInt(parts[0])) && !isNaN(parseInt(parts[1]));
+            });
+            
+            if (isNewFormat) return; // Ya está en el nuevo formato
+            
+            console.log('Migrando favoritos al nuevo formato...');
+            localStorage.removeItem('odsFavorites');
+            favorites = [];
+        }
+        
+        // Función para cargar datos de ODS desde el archivo JSON
+        async function fetchOdsData() {
+            try {
+                const response = await fetch(ODS_DATA_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching ODS data:', error);
+                throw error;
+            }
+        }
+        
+        // Función para cargar datos de eventos desde el archivo JSON
+        async function fetchEventsData() {
+            try {
+                const response = await fetch(EVENTS_DATA_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching events data:', error);
+                throw error;
+            }
+        }
+        
+        // Actualizar idioma de la interfaz
+        function updateLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('odsLang', lang);
+            
+            if (!initialized && !odsData) {
+                return; // No hacer nada si aún no se han cargado los datos
+            }
+            
+            // Actualizar botones de idioma
+            document.getElementById('es-btn').classList.toggle('active', lang === 'es');
+            document.getElementById('ca-btn').classList.toggle('active', lang === 'ca');
+            
+            // Actualizar textos
+            document.getElementById('title').innerHTML = `<img src="icono-32.png" alt="Logo" style="width:24px;height:24px;vertical-align:middle;margin-right:6px;"> ${translations[lang].title}`;
+            document.getElementById('ods-title').textContent = translations[lang].odsTitle;
+            document.getElementById('favorites-title').textContent = translations[lang].favoritesTitle;
+            document.getElementById('no-favorites').textContent = translations[lang].noFavorites;
+            document.getElementById('show-ods-info').textContent = translations[lang].showOdsInfo;
+            document.getElementById('ods-dates-title').textContent = translations[lang].odsDatesTitle;
+            
+            // Actualizar nombre del mes
+            updateMonthDisplay();
+            updateTodayButtonText();
+            updateMonthYearSelectors();
+            
+            // Actualizar eventos mostrados
+            if (initialized) {
+                initODSFilter(); // Reinicializar los filtros con el nuevo idioma
+                renderCalendar();
+                updateSelectedDate();
+                renderFavorites();
+                renderOdsDates(); // Actualizar la lista de fechas por ODS
+            }
+        }
+        
+        // Mostrar modal con información de ODS
+        function showOdsModal() {
+            const modalContent = document.getElementById('ods-modal-content');
+            modalContent.innerHTML = '';
+            
+            // Si los datos no están cargados, mostrar mensaje de carga
+            if (!odsData) {
+                modalContent.innerHTML = `<p>${translations[currentLang].loadingOdsData}</p>`;
+                document.getElementById('ods-modal').style.display = 'flex';
+                
+                // Intentar cargar los datos de nuevo
+                fetchOdsData()
+                    .then(data => {
+                        odsData = data;
+                        populateOdsModal();
+                    })
+                    .catch(error => {
+                        console.error('Error al cargar datos de ODS:', error);
+                        modalContent.innerHTML = `<p>${translations[currentLang].errorLoadingOdsData}</p>`;
+                    });
+                return;
+            }
+            
+            populateOdsModal();
+        }
+        
+        // Función para llenar el modal con datos de ODS
+        function populateOdsModal() {
+            const modalContent = document.getElementById('ods-modal-content');
+            modalContent.innerHTML = '';
+            
+            // Crear título
+            const modalTitle = document.createElement('h2');
+            modalTitle.textContent = odsData.ui[currentLang].odsDescModalTitle;
+            modalContent.appendChild(modalTitle);
+            
+            // Crear contenido para cada ODS
+            odsData.ods.forEach(ods => {
+                const odsSection = document.createElement('div');
+                odsSection.className = 'ods-details';
+                
+                // Encabezado con icono y título
+                const header = document.createElement('div');
+                header.className = 'ods-details-header';
+                
+                const icon = document.createElement('div');
+                icon.className = `ods-icon-large ods${ods.id}`;
+                icon.textContent = ods.id;
+                
+                const info = document.createElement('div');
+                info.className = 'ods-info';
+                info.innerHTML = `<h3>ODS ${ods.id}: ${ods.titles[currentLang]}</h3>`;
+                
+                header.appendChild(icon);
+                header.appendChild(info);
+                
+                // Descripción
+                const description = document.createElement('div');
+                description.className = 'ods-description';
+                description.innerHTML = `<p>${ods.descriptions[currentLang]}</p>`;
+                
+                // Metas principales (si están disponibles)
+                if (ods.metas && ods.metas[currentLang]) {
+                    const metasList = document.createElement('ul');
+                    ods.metas[currentLang].forEach(meta => {
+                        const metaItem = document.createElement('li');
+                        metaItem.textContent = meta + '.';
+                        metasList.appendChild(metaItem);
+                    });
+                    description.appendChild(metasList);
+                }
+                
+                odsSection.appendChild(header);
+                odsSection.appendChild(description);
+                modalContent.appendChild(odsSection);
+                
+                // Añadir separador excepto para el último
+                if (ods.id < 17) {
+                    const divider = document.createElement('hr');
+                    divider.style.margin = '1.5rem 0';
+                    modalContent.appendChild(divider);
+                }
+            });
+            
+            // Mostrar modal
+            document.getElementById('ods-modal').style.display = 'flex';
+        }
+        
+        // Mostrar modal con la información de un solo ODS
+function showSingleOdsModal(odsNumber) {
+    if (!odsData) return;
+    const odsItem = odsData.ods.find(o => o.id === odsNumber);
+    if (!odsItem) return;
+
+    const modalContent = document.getElementById('ods-modal-content');
+    modalContent.innerHTML = '';
+
+    // Encabezado con icono y título
+    const header = document.createElement('div');
+    header.className = 'ods-details-header';
+
+    const icon = document.createElement('div');
+    icon.className = `ods-icon-large ods${odsItem.id}`;
+    icon.textContent = odsItem.id;
+
+    const info = document.createElement('div');
+    info.className = 'ods-info';
+    info.innerHTML = `<h3>ODS ${odsItem.id}: ${odsItem.titles[currentLang]}</h3>`;
+
+    header.appendChild(icon);
+    header.appendChild(info);
+
+    // Descripción
+    const description = document.createElement('div');
+    description.className = 'ods-description';
+    description.innerHTML = `<p>${odsItem.descriptions[currentLang]}</p>`;
+
+    // Metas principales
+    if (odsItem.metas && odsItem.metas[currentLang]) {
+        const metasList = document.createElement('ul');
+        odsItem.metas[currentLang].forEach(meta => {
+            const metaItem = document.createElement('li');
+            metaItem.textContent = meta + '.';
+            metasList.appendChild(metaItem);
+        });
+        description.appendChild(metasList);
+    }
+
+    // Mostrar contenido en el modal
+    modalContent.appendChild(header);
+    modalContent.appendChild(description);
+
+    // Mostrar modal
+    document.getElementById('ods-modal').style.display = 'flex';
+}
+
+// Ocultar modal de ODS
+        function hideOdsModal() {
+            document.getElementById('ods-modal').style.display = 'none';
+        }
+        
+        // Inicializar filtros ODS
+        function initODSFilter() {
+            if (!odsData) return; // No hacer nada si no hay datos
+            
+            const odsFilter = document.getElementById('ods-filter');
+            odsFilter.innerHTML = '';
+            
+            for (let i = 1; i <= 17; i++) {
+                // Buscar el ODS correspondiente en los datos cargados
+                const odsItem = odsData.ods.find(ods => ods.id === i);
+                if (!odsItem) continue; // Saltar si no se encuentra el ODS
+                
+                const odsIcon = document.createElement('div');
+                odsIcon.className = `ods-icon ods${i}`;
+                odsIcon.textContent = i;
+                odsIcon.title = odsItem.titles[currentLang];
+                odsIcon.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    toggleODSFilter(i);
+                });
+                odsFilter.appendChild(odsIcon);
+            }
+        }
+        
+        // Alternar filtro ODS
+        function toggleODSFilter(odsNumber) {
+            const index = activeODSFilters.indexOf(odsNumber);
+            if (index === -1) {
+                activeODSFilters.push(odsNumber);
+            } else {
+                activeODSFilters.splice(index, 1);
+            }
+            renderCalendar();
+            updateSelectedDate();
+            renderOdsDates(); // Actualizar lista de fechas por ODS
+                updateHelpContent();
+        }
+        
+        // Obtener todas las fechas para los ODS filtrados
+        function getDatesByODSFilter() {
+            if (!eventsData || !eventsData.events || activeODSFilters.length === 0) {
+                return [];
+            }
+            
+            // Filtrar eventos por ODS activos
+            const filteredEvents = eventsData.events.filter(event => {
+                return event.relatedODS.some(ods => activeODSFilters.includes(ods));
+            });
+            
+            // Extraer las fechas y ordenarlas por mes/día
+            return filteredEvents
+                .map(event => {
+                    return {
+                        day: event.day,
+                        month: event.month,
+                        title: event.title[currentLang],
+                        relatedODS: event.relatedODS
+                    };
+                })
+                .sort((a, b) => {
+                    // Ordenar primero por mes y luego por día
+                    if (a.month !== b.month) {
+                        return a.month - b.month;
+                    }
+                    return a.day - b.day;
+                });
+        }
+        
+        // Actualizar encabezado de la lista de fechas con el título del ODS seleccionado
+function updateOdsDatesTitle() {
+    const titleElement = document.getElementById('ods-dates-title');
+
+    // Limpiar contenido
+    titleElement.innerHTML = '';
+
+    if (activeODSFilters.length > 0) {
+        // Construir pares [odsNumber, title]
+        const pairs = activeODSFilters.map(odsNumber => {
+            const odsItem = odsData.ods.find(o => o.id === odsNumber);
+            return odsItem ? { number: odsNumber, title: odsItem.titles[currentLang] } : null;
+        }).filter(Boolean);
+
+        if (pairs.length > 0) {
+            pairs.forEach((pair, idx) => {
+                const span = document.createElement('span');
+                span.className = 'ods-date-title';
+                span.dataset.ods = pair.number;
+                span.textContent = pair.title;
+
+                // Añadir coma y espacio entre títulos excepto después del último
+                if (idx < pairs.length - 1) {
+                    span.textContent += ', ';
+                }
+
+                span.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const odsNumber = parseInt(this.dataset.ods);
+                    showSingleOdsModal(odsNumber);
+                });
+
+                titleElement.appendChild(span);
+            });
+            return;
+        }
+    }
+
+    // Texto por defecto
+    titleElement.textContent = translations[currentLang].odsDatesTitle;
+}
+
+// Renderizar lista de fechas para los ODS filtrados
+        function renderOdsDates() {
+            updateOdsDatesTitle();
+            const container = document.getElementById('ods-dates-container');
+            const datesList = document.getElementById('ods-dates-list');
+            const countElement = document.getElementById('ods-dates-count');
+            
+            // Si no hay filtros ODS activos, ocultar la lista
+            if (activeODSFilters.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+            
+            // Mostrar la lista y actualizarla
+            container.style.display = 'block';
+            datesList.innerHTML = '';
+            
+            // Obtener fechas filtradas por ODS
+            const dates = getDatesByODSFilter();
+            
+            // Actualizar contador
+            countElement.textContent = dates.length;
+            
+            // Si no hay fechas, mostrar mensaje
+            if (dates.length === 0) {
+                const noEvents = document.createElement('div');
+                noEvents.className = 'ods-dates-item';
+                noEvents.textContent = translations[currentLang].noEvents;
+                datesList.appendChild(noEvents);
+                return;
+            }
+            
+            // Crear elementos para cada fecha
+            dates.forEach(date => {
+                const dateItem = document.createElement('div');
+                dateItem.className = 'ods-dates-item';
+                
+                // Crear punto de color para la fecha
+                const dateDot = document.createElement('span');
+                dateDot.className = 'date-dot';
+                
+                // Texto de la fecha
+                const dateText = document.createElement('span');
+                dateText.textContent = `${date.day} ${translations[currentLang].months[date.month - 1]}: ${date.title}`;
+                
+                // Añadir elementos a la fecha
+                dateItem.appendChild(dateDot);
+                dateItem.appendChild(dateText);
+                
+                // Añadir evento de clic para ir a la fecha
+                dateItem.addEventListener('click', function() {
+                    // Cambiar a la fecha del evento
+                    const eventDate = new Date(currentDate.getFullYear(), date.month - 1, date.day);
+                    currentDate = eventDate;
+                    renderCalendar();
+                    updateSelectedDate();
+                    
+                    // Desplazar la página al calendario
+                    document.querySelector('.calendar-container').scrollIntoView({ behavior: 'smooth' });
+                });
+                
+                datesList.appendChild(dateItem);
+            });
+        }
+        
+        // Renderizar calendario
+        function renderCalendar() {
+            if (!initialized) return; // No hacer nada si no se ha inicializado
+            
+            const calendar = document.getElementById('calendar');
+            calendar.innerHTML = '';
+            
+            // Añadir nombres de los días de la semana
+            translations[currentLang].weekdays.forEach(day => {
+                const weekday = document.createElement('div');
+                weekday.className = 'calendar-day weekday';
+                weekday.textContent = day;
+                calendar.appendChild(weekday);
+            });
+            
+            // Obtener datos del mes
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            
+            // Obtener el día de la semana del primer día (0 = Domingo, 1 = Lunes, ..., 6 = Sábado)
+            // Ajustamos para que 0 sea lunes en nuestro calendario
+            let firstDayOfWeek = firstDay.getDay() - 1;
+            if (firstDayOfWeek < 0) firstDayOfWeek = 6; // Si es domingo (0), convertirlo a 6
+            
+            // Añadir días del mes anterior (vacíos)
+            for (let i = 0; i < firstDayOfWeek; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day';
+                calendar.appendChild(emptyDay);
+            }
+            
+            // Añadir días del mes actual
+            const today = new Date();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const calendarDay = document.createElement('div');
+                calendarDay.className = 'calendar-day';
+                calendarDay.innerHTML = `<span class="day-number">${day}</span>`;
+                
+                // Marcar el día actual
+                if (today.getDate() === day && today.getMonth() === month && today.getFullYear() === year) {
+                    calendarDay.classList.add('today');
+                }
+                // Resaltar fecha seleccionada
+                if (currentDate.getDate() === day && currentDate.getMonth() === month && currentDate.getFullYear() === year) {
+                    calendarDay.classList.add('selected-cell');
+                }
+                
+                // Buscar eventos para este día
+                const events = getEventsForDate(day, month + 1);
+                
+                // Si hay eventos después del filtrado, marcar el día
+                if (events.length > 0) {
+                    calendarDay.classList.add('has-events');
+                    
+                    
+                    // Mostrar el título del evento en la casilla
+                    const eventList = document.createElement('div');
+                    eventList.className = 'event-list';
+
+                    const firstEvent = events[0];
+                    const evtTitle = document.createElement('div');
+                    evtTitle.className = 'event-title-cell';
+                    evtTitle.textContent = firstEvent.title[currentLang];
+                    eventList.appendChild(evtTitle);
+
+                    if (events.length > 1) {
+                        const more = document.createElement('div');
+                        more.className = 'event-more';
+                        more.textContent = `+${events.length - 1}`;
+                        eventList.appendChild(more);
+                    }
+
+                    calendarDay.appendChild(eventList);
+
+                }
+                
+                // Añadir evento click para mostrar los eventos del día
+                calendarDay.addEventListener('click', function() {
+                    const newDate = new Date(year, month, day);
+                    currentDate = newDate;
+                    renderCalendar();
+                    updateSelectedDate();
+                });
+                
+                calendar.appendChild(calendarDay);
+            }
+            
+            // Actualizar el mes mostrado
+            updateMonthDisplay();
+        }
+        
+        // Actualizar fecha seleccionada
+        function updateSelectedDate() {
+            if (!initialized) return; // No hacer nada si no se ha inicializado
+            
+            const day = currentDate.getDate();
+            const month = currentDate.getMonth();
+            const year = currentDate.getFullYear();
+            
+            // Actualizar texto de fecha
+            const currentDateElement = document.getElementById('current-date');
+            currentDateElement.textContent = `${day} de ${translations[currentLang].months[month]} de ${year}`;
+            
+            // Obtener y mostrar eventos para esta fecha
+            const events = getEventsForDate(day, month + 1);
+            renderEvents(events);
+        }
+        
+        // Actualizar texto del mes actual
+        function updateMonthDisplay() {
+            if (!initialized) return; // No hacer nada si no se ha inicializado
+            
+            const month = currentDate.getMonth();
+            const year = currentDate.getFullYear();
+            document.getElementById('current-month').textContent = `${translations[currentLang].months[month]} ${year}`;
+        }
+        
+        // Obtener eventos para una fecha específica
+        function getEventsForDate(day, month) {
+            if (!eventsData || !eventsData.events) {
+                return [];
+            }
+            
+            let events = eventsData.events.filter(event => event.day === day && event.month === month);
+            
+            // Aplicar filtros ODS si hay alguno activo
+            if (activeODSFilters.length > 0) {
+                events = events.filter(event => {
+                    return event.relatedODS.some(ods => activeODSFilters.includes(ods));
+                });
+            }
+            
+            return events;
+        }
+        
+        // Renderizar eventos para la fecha seleccionada
+        function renderEvents(events) {
+            const eventCards = document.getElementById('event-cards');
+            eventCards.innerHTML = '';
+            
+            if (events.length === 0) {
+                const noEvents = document.createElement('div');
+                noEvents.className = 'no-events';
+                noEvents.textContent = translations[currentLang].noEvents;
+                eventCards.appendChild(noEvents);
+                return;
+            }
+            
+            events.forEach(event => {
+                // Obtener datos del evento según el idioma actual
+                const { day, month } = event;
+                const title = event.title[currentLang];
+                const description = event.description[currentLang];
+                const activities = event.activities[currentLang];
+                const odsArray = event.relatedODS;
+                
+                // Crear tarjeta de evento
+                const card = document.createElement('div');
+                card.className = 'event-card';
+                
+                // Título y fecha
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'event-title';
+                titleDiv.innerHTML = `<h3>${title}</h3><span>${day}/${month}</span>`;
+                card.appendChild(titleDiv);
+                
+                // ODS relacionados
+                const odsDiv = document.createElement('div');
+                odsDiv.className = 'event-ods';
+                odsArray.forEach(ods => {
+                    const odsSpan = document.createElement('span');
+                    odsSpan.className = `ods${ods}`;
+                    odsSpan.textContent = ods;
+                    const odsItem = odsData.ods.find(o => o.id === ods);
+                    if (odsItem) {
+                        odsSpan.title = odsItem.titles[currentLang];
+                    odsSpan.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        showSingleOdsModal(ods);
+                    });
+
+                    }
+                    odsDiv.appendChild(odsSpan);
+                });
+                card.appendChild(odsDiv);
+                
+                // Descripción
+                const descDiv = document.createElement('div');
+                descDiv.className = 'event-description';
+                descDiv.innerHTML = `<p>${description}</p>`;
+                card.appendChild(descDiv);
+                
+                // Ideas para el aula
+                const activitiesDiv = document.createElement('div');
+                activitiesDiv.className = 'activities-list';
+                activitiesDiv.innerHTML = `<h4>${translations[currentLang].activitiesTitle}</h4>`;
+                
+                const ul = document.createElement('ul');
+                activities.forEach(activity => {
+                    const li = document.createElement('li');
+                    li.textContent = activity + '.';
+                    ul.appendChild(li);
+                });
+                
+                activitiesDiv.appendChild(ul);
+                card.appendChild(activitiesDiv);
+                
+                // Botón de favoritos
+                const favoriteBtn = document.createElement('button');
+                favoriteBtn.className = 'favorite-btn';
+                
+                // Crear ID único para el evento
+                const eventId = `${day}-${month}-${title}`;
+                const isFavorite = favorites.includes(eventId);
+                
+                if (isFavorite) {
+                    favoriteBtn.textContent = translations[currentLang].removeFavorite;
+                    favoriteBtn.classList.add('active');
+                } else {
+                    favoriteBtn.textContent = translations[currentLang].addFavorite;
+                }
+                
+                favoriteBtn.addEventListener('click', function() {
+                    toggleFavorite(eventId);
+                    renderEvents(events);
+                    renderFavorites();
+                });
+                
+                card.appendChild(favoriteBtn);
+                
+                // Botón para crear actividad con IA
+                const aiBtn = document.createElement('button');
+                aiBtn.className = 'ai-btn';
+                aiBtn.textContent = (currentLang === 'ca') ? 'Crear una activitat amb IA' : 'Crear una actividad con IA';
+                aiBtn.addEventListener('click', function() {
+                    openAiActivity(event);
+                });
+                card.appendChild(aiBtn);
+
+eventCards.appendChild(card);
+            });
+        }
+        
+        // Alternar favorito
+        function toggleFavorite(eventId) {
+            const index = favorites.indexOf(eventId);
+            if (index === -1) {
+                favorites.push(eventId);
+            } else {
+                favorites.splice(index, 1);
+            }
+            localStorage.setItem('odsFavorites', JSON.stringify(favorites));
+        }
+        
+        // Renderizar lista de favoritos
+        function renderFavorites() {
+            if (!initialized || !eventsData) return; // No hacer nada si no se ha inicializado
+            
+            const favoritesList = document.getElementById('favorites-list');
+            const noFavorites = document.getElementById('no-favorites');
+            
+            // Limpiar lista existente excepto el mensaje de no favoritos
+            Array.from(favoritesList.children).forEach(child => {
+                if (child !== noFavorites) {
+                    favoritesList.removeChild(child);
+                }
+            });
+            
+            // Mostrar u ocultar mensaje de no favoritos
+            if (favorites.length === 0) {
+                noFavorites.style.display = 'block';
+                return;
+            } else {
+                noFavorites.style.display = 'none';
+            }
+            
+            // Añadir cada favorito a la lista
+            favorites.forEach(favoriteId => {
+                const parts = favoriteId.split('-');
+                const day = parseInt(parts[0]);
+                const month = parseInt(parts[1]);
+                // El título puede contener guiones, así que reconstruimos el resto
+                const title = parts.slice(2).join('-');
+                
+                // Buscar el evento completo
+                const event = eventsData.events.find(e => 
+                    e.day === day && 
+                    e.month === month && 
+                    (e.title.es === title || e.title.ca === title)
+                );
+                
+                if (event) {
+                    const item = document.createElement('div');
+                    item.className = 'favorite-item';
+                    item.textContent = `${day}/${month} - ${event.title[currentLang]}`;
+                    
+                    item.addEventListener('click', function() {
+                        // Cambiar a la fecha del evento
+                        const eventDate = new Date(currentDate.getFullYear(), month - 1, day);
+                        currentDate = eventDate;
+                        renderCalendar();
+                        updateSelectedDate();
+                    });
+                    
+                    favoritesList.appendChild(item);
+                }
+            });
+        }
+        
+        // Ir al mes anterior
+        function prevMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        }
+        
+        // Ir al mes siguiente
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        }
+        
+        // Filtrar eventos según los filtros activos
+        function filterEvents() {
+            renderCalendar();
+            updateSelectedDate();
+            renderOdsDates(); // Actualizar lista de fechas por ODS
+        }
+    
+        /* === Selectores de mes y año === */
+        function createMonthYearSelectors() {
+            const nav = document.querySelector('.calendar-nav');
+            if (!nav || document.getElementById('month-select')) return; // evitar duplicados
+
+            const picker = document.createElement('div');
+            picker.className = 'calendar-picker';
+
+            // Selector de mes
+            const monthSelect = document.createElement('select');
+            monthSelect.id = 'month-select';
+            translations[currentLang].months.forEach((m, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+                opt.textContent = m;
+                monthSelect.appendChild(opt);
+            });
+            monthSelect.addEventListener('change', function () {
+                const newMonth = parseInt(this.value);
+                currentDate.setMonth(newMonth);
+                renderCalendar();
+                updateSelectedDate();
+            });
+
+            // Selector de año
+            const yearSelect = document.createElement('select');
+            yearSelect.id = 'year-select';
+            const startYear = 2000;
+            const endYear = 2100;
+            for (let y = startYear; y <= endYear; y++) {
+                const opt = document.createElement('option');
+                opt.value = y;
+                opt.textContent = y;
+                yearSelect.appendChild(opt);
+            }
+            yearSelect.addEventListener('change', function () {
+                const newYear = parseInt(this.value);
+                currentDate.setFullYear(newYear);
+                renderCalendar();
+                updateSelectedDate();
+            });
+
+            picker.appendChild(monthSelect);
+            picker.appendChild(yearSelect);
+            nav.appendChild(picker);
+
+            updateMonthYearSelectors();
+        }
+
+        function updateMonthYearSelectors() {
+            const monthSelect = document.getElementById('month-select');
+            const yearSelect = document.getElementById('year-select');
+            if (monthSelect) {
+                // Actualizar nombres de meses si cambia el idioma
+                translations[currentLang].months.forEach((m, idx) => {
+                    if (monthSelect.options[idx]) {
+                        monthSelect.options[idx].textContent = m;
+                    }
+                });
+                monthSelect.value = currentDate.getMonth();
+            }
+            if (yearSelect) {
+                yearSelect.value = currentDate.getFullYear();
+            }
+        }
+
+    
+        /* === Botón Hoy === */
+        function createTodayButton() {
+            const nav = document.querySelector('.calendar-nav');
+            if (!nav || document.getElementById('today-btn')) return;
+
+            const btn = document.createElement('button');
+            btn.id = 'today-btn';
+            btn.className = 'today-button';
+            btn.textContent = translations[currentLang].todayBtn;
+
+            btn.addEventListener('click', function() {
+                currentDate = new Date();
+                renderCalendar();
+                updateSelectedDate();
+            });
+
+            nav.appendChild(btn);
+        }
+
+        function updateTodayButtonText() {
+            const btn = document.getElementById('today-btn');
+            if (btn) {
+                btn.textContent = translations[currentLang].todayBtn;
+            }
+        }
+
+    
+        /* === Botón y modal de ayuda === */
+        function createHelpInteractions() {
+            const helpBtn = document.getElementById('help-btn');
+            const helpModal = document.getElementById('help-modal');
+            const helpClose = document.getElementById('help-close');
+            const helpContent = document.getElementById('help-modal-content');
+
+            if (!helpBtn) return;
+
+            helpBtn.addEventListener('click', showHelpModal);
+            helpClose.addEventListener('click', hideHelpModal);
+            helpModal.addEventListener('click', function(e) {
+                if (e.target === this) hideHelpModal();
+            });
+
+            updateHelpContent();
+        }
+
+        function updateHelpContent() {
+            const helpContent = document.getElementById('help-modal-content');
+            if (!helpContent) return;
+            helpContent.innerHTML = `
+                <h2>${translations[currentLang].helpTitle}</h2>
+                <p>${translations[currentLang].helpText.replace(/\n/g, '<br>')}</p>
+            `;
+        }
+
+        function showHelpModal() {
+            updateHelpContent();
+            document.getElementById('help-modal').style.display = 'flex';
+        }
+
+        function hideHelpModal() {
+            document.getElementById('help-modal').style.display = 'none';
+        }
+
+    </script>
+
+    <button id="help-btn" class="help-button">?</button>
+
+    <!-- Modal de selección de chatbot -->
+    <div id="chatbot-modal" class="chatbot-modal-overlay">
+        <div class="chatbot-modal-content">
+            <h3 id="chatbot-modal-title">Selecciona un chatbot</h3>
+            <p id="chatbot-login-msg" class="chatbot-login-msg"></p>
+            <div class="student-level-field" style="margin-top:0.5rem; margin-bottom:0.5rem; text-align:left;">
+                <label id="student-level-label" for="student-level-input" style="display:block; margin-bottom:0.25rem; font-size:0.85rem;"></label>
+                <input type="text" id="student-level-input" style="width:100%; padding:0.4rem; border:1px solid #ccc; border-radius:4px;" placeholder="">
+            </div>
+            <div id="chatbot-buttons" class="chatbot-buttons">
+                <!-- Botones generados con JS -->
+            </div>
+            <button id="chatbot-cancel" class="ods-button" style="margin-top:1rem;">Cancelar</button>
+        </div>
+    </div>
+
+</body>
+</html>

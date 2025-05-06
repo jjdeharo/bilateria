@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practica funciones exponenciales</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            position: relative;
+        }
+        .resultat {
+            background-color: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        button.action-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button.action-btn:hover {
+            background-color: #45a049;
+        }
+        .credits {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .hidden {
+            display: none;
+        }
+        .lang-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .lang-btn {
+            background-color: #f0f0f0;
+            color: #333;
+            padding: 5px 10px;
+            margin-left: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .lang-btn.active {
+            background-color: #4CAF50;
+            color: white;
+            border: 1px solid #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="lang-buttons">
+        <button id="btn-ca" class="lang-btn">CA</button>
+        <button id="btn-es" class="lang-btn">ES</button>
+    </div>
+
+    <h1 id="title">Practica la monotonía de funciones exponenciales</h1>
+    
+    <button id="btn-generate" class="action-btn" onclick="generaFuncio()">Genera nueva función</button>
+    <button id="btn-solution" class="action-btn" onclick="mostraSolucio()">Muestra solución</button>
+    
+    <div id="funcio" class="resultat"></div>
+    <div id="solucio" class="hidden">
+        <div id="derivada" class="resultat"></div>
+        <div id="intervals" class="resultat"></div>
+    </div>
+    
+    <div id="credits" class="credits">
+        <p>Aplicación hecha por <a href="https://bilateria.org">Juan José de Haro</a></p>
+        <p>Esta obra está bajo una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es">licencia Creative Commons BY-SA</a></p>
+    </div>
+
+    <script>
+        // Objeto de traducciones
+        const translations = {
+            'ca': {
+                'title': 'Practica la monotonia de funcions exponencials',
+                'generate': 'Genera nova funció',
+                'solution': 'Mostra solució',
+                'function': 'Funció',
+                'derivative': 'Derivada',
+                'intervals': 'Intervals de creixement i decreixement',
+                'growing': 'Creixent',
+                'decreasing': 'Decreixent',
+                'credits': 'Aplicació feta per',
+                'license': 'Aquesta obra està sota una',
+                'licenseText': 'llicència Creative Commons BY-SA',
+                'licenseUrl': 'https://creativecommons.org/licenses/by-sa/4.0/deed.ca'
+            },
+            'es': {
+                'title': 'Practica la monotonía de funciones exponenciales',
+                'generate': 'Genera nueva función',
+                'solution': 'Muestra solución',
+                'function': 'Función',
+                'derivative': 'Derivada',
+                'intervals': 'Intervalos de crecimiento y decrecimiento',
+                'growing': 'Creciente',
+                'decreasing': 'Decreciente',
+                'credits': 'Aplicación hecha por',
+                'license': 'Esta obra está bajo una',
+                'licenseText': 'licencia Creative Commons BY-SA',
+                'licenseUrl': 'https://creativecommons.org/licenses/by-sa/4.0/deed.es'
+            }
+        };
+
+        // Variable para almacenar el idioma actual
+        let currentLang = 'es'; // Por defecto español
+
+        // Función para detectar el idioma del navegador
+        function detectLanguage() {
+            const lang = navigator.language || navigator.userLanguage;
+            return lang.startsWith('ca') ? 'ca' : 'es';
+        }
+
+        // Función para cambiar el idioma
+        function changeLanguage(lang) {
+            currentLang = lang;
+            
+            // Actualizar textos de la página
+            document.getElementById('title').innerText = translations[lang]['title'];
+            document.getElementById('btn-generate').innerText = translations[lang]['generate'];
+            document.getElementById('btn-solution').innerText = translations[lang]['solution'];
+            
+            // Actualizar botones de idioma
+            document.getElementById('btn-ca').classList.toggle('active', lang === 'ca');
+            document.getElementById('btn-es').classList.toggle('active', lang === 'es');
+            
+            // Actualizar créditos
+            document.getElementById('credits').innerHTML = `
+                <p>${translations[lang]['credits']} <a href="https://bilateria.org">Juan José de Haro</a></p>
+                <p>${translations[lang]['license']} <a href="${translations[lang]['licenseUrl']}">${translations[lang]['licenseText']}</a></p>
+            `;
+            
+            // Regenerar la función para que se vean los cambios
+            if (document.getElementById('funcio').innerHTML !== '') {
+                generaFuncio();
+            }
+        }
+
+        function generaCoeficient() {
+            // Genera coeficientes entre -5 y 5, excluyendo 0
+            let coef = 0;
+            while (coef === 0) {
+                coef = Math.floor(Math.random() * 11) - 5;
+            }
+            return coef;
+        }
+
+        function generaBase() {
+            // Genera bases comunes para funciones exponenciales (2, 3, 1/2, 1/3, e)
+            const bases = [2, 3, 0.5, 1/3, Math.E];
+            return bases[Math.floor(Math.random() * bases.length)];
+        }
+
+        function generaLatexExponencial(a, b, c) {
+            let latex = '';
+            
+            // Coeficiente a
+            if (a !== 1) {
+                latex += a === -1 ? '-' : a;
+            }
+            
+            // Base b
+            if (b === Math.E) {
+                latex += 'e^x';
+            } else if (b < 1) {
+                latex += `\\left(\\frac{1}{${Math.round(1/b)}}\\right)^x`;
+            } else {
+                latex += `${b}^x`;
+            }
+            
+            // Término independiente c
+            if (c !== 0) {
+                latex += c > 0 ? `+${c}` : c;
+            }
+            
+            return latex;
+        }
+
+        function generaLatexDerivada(a, b) {
+            let latex = '';
+            
+            if (b === Math.E) {
+                latex = a !== 1 ? `${a}e^x` : 'e^x';
+            } else if (b < 1) {
+                const ln = Math.log(b);
+                latex = `${(a * ln).toFixed(2)} \\cdot \\left(\\frac{1}{${Math.round(1/b)}}\\right)^x`;
+            } else {
+                const ln = Math.log(b);
+                latex = `${(a * ln).toFixed(2)} \\cdot ${b}^x`;
+            }
+            
+            return latex;
+        }
+
+        function generaFuncio() {
+            const a = generaCoeficient();
+            const b = generaBase();
+            const c = generaCoeficient();
+
+            const funcioLatex = generaLatexExponencial(a, b, c);
+            const derivadaLatex = generaLatexDerivada(a, b);
+            
+            // Determina si la función es creciente o decreciente
+            // Depende del signo de a * ln(b)
+            const coefDer = a * Math.log(b);
+            const monotonia = coefDer > 0 
+                ? translations[currentLang]['growing'] 
+                : translations[currentLang]['decreasing'];
+
+            document.getElementById('funcio').innerHTML = `
+                <h2>${translations[currentLang]['function']}</h2>
+                <p>f(x) = \\(\\displaystyle ${funcioLatex}\\)</p>
+            `;
+
+            document.getElementById('derivada').innerHTML = `
+                <h2>${translations[currentLang]['derivative']}</h2>
+                <p>f'(x) = \\(\\displaystyle ${derivadaLatex}\\)</p>
+            `;
+
+            document.getElementById('intervals').innerHTML = `
+                <h2>${translations[currentLang]['intervals']}</h2>
+                <p>${monotonia} en (-∞,+∞)</p>
+            `;
+
+            document.getElementById('solucio').classList.add('hidden');
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+        }
+
+        function mostraSolucio() {
+            document.getElementById('solucio').classList.remove('hidden');
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+        }
+
+        // Inicialización al cargar la página
+        window.onload = function() {
+            // Detectar idioma del navegador
+            currentLang = detectLanguage();
+            
+            // Configurar eventos de botones de idioma
+            document.getElementById('btn-ca').addEventListener('click', function() { changeLanguage('ca'); });
+            document.getElementById('btn-es').addEventListener('click', function() { changeLanguage('es'); });
+            
+            // Aplicar idioma inicial
+            changeLanguage(currentLang);
+            
+            // Generar primera función
+            generaFuncio();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,477 @@
+{
+  "ods": [
+    {
+      "id": 1,
+      "color": "#e5243b",
+      "titles": {
+        "es": "Fin de la pobreza",
+        "ca": "Fi de la pobresa"
+      },
+      "descriptions": {
+        "es": "Poner fin a la pobreza en todas sus formas en todo el mundo. Busca garantizar que todas las personas, en particular los pobres y vulnerables, tengan los mismos derechos a los recursos económicos, acceso a los servicios básicos y protección social.",
+        "ca": "Posar fi a la pobresa en totes les seves formes a tot el món. Busca garantir que totes les persones, en particular els pobres i vulnerables, tinguin els mateixos drets als recursos econòmics, accés als serveis bàsics i protecció social."
+      },
+      "metas": {
+        "es": [
+          "Erradicar la pobreza extrema",
+          "Reducir a la mitad la proporción de personas que viven en pobreza",
+          "Implementar sistemas de protección social",
+          "Garantizar acceso a recursos económicos y servicios básicos"
+        ],
+        "ca": [
+          "Erradicar la pobresa extrema",
+          "Reduir a la meitat la proporció de persones que viuen en pobresa",
+          "Implementar sistemes de protecció social",
+          "Garantir accés a recursos econòmics i serveis bàsics"
+        ]
+      },
+      "iconUrl": "https://bilateria.org/app/ods/iconos/E-WEB-Goal-01.png"
+    },
+    {
+      "id": 2,
+      "color": "#DDA63A",
+      "titles": {
+        "es": "Hambre cero",
+        "ca": "Fam zero"
+      },
+      "descriptions": {
+        "es": "Poner fin al hambre, lograr la seguridad alimentaria y la mejora de la nutrición y promover la agricultura sostenible. Busca asegurar el acceso de todas las personas a una alimentación sana, nutritiva y suficiente.",
+        "ca": "Posar fi a la fam, aconseguir la seguretat alimentària i la millora de la nutrició i promoure l'agricultura sostenible. Busca assegurar l'accés de totes les persones a una alimentació sana, nutritiva i suficient."
+      },
+      "metas": {
+        "es": [
+          "Poner fin al hambre y asegurar acceso a alimentación nutritiva",
+          "Poner fin a todas las formas de malnutrición",
+          "Duplicar la productividad agrícola de pequeños productores",
+          "Promover sistemas sostenibles de producción de alimentos"
+        ],
+        "ca": [
+          "Posar fi a la fam i assegurar accés a alimentació nutritiva",
+          "Posar fi a totes les formes de malnutrició",
+          "Duplicar la productivitat agrícola de petits productors",
+          "Promoure sistemes sostenibles de producció d'aliments"
+        ]
+      },
+      "iconUrl": "https://bilateria.org/app/ods/iconos/E-WEB-Goal-02.png"
+    },
+    {
+      "id": 3,
+      "color": "#4C9F38",
+      "titles": {
+        "es": "Salud y bienestar",
+        "ca": "Salut i benestar"
+      },
+      "descriptions": {
+        "es": "Garantizar una vida sana y promover el bienestar para todos en todas las edades. Incluye metas relacionadas con la reducción de la mortalidad materna e infantil, el fin de las epidemias y el acceso universal a servicios de salud.",
+        "ca": "Garantir una vida sana i promoure el benestar per a tothom en totes les edats. Inclou metes relacionades amb la reducció de la mortalitat materna i infantil, la fi de les epidèmies i l'accés universal a serveis de salut."
+      },
+      "metas": {
+        "es": [
+          "Reducir la mortalidad materna",
+          "Poner fin a las muertes evitables de recién nacidos y niños",
+          "Poner fin a epidemias como el SIDA, tuberculosis y malaria",
+          "Garantizar acceso universal a servicios de salud sexual y reproductiva"
+        ],
+        "ca": [
+          "Reduir la mortalitat materna",
+          "Posar fi a les morts evitables de nounats i nens",
+          "Posar fi a epidèmies com la SIDA, tuberculosi i malària",
+          "Garantir accés universal a serveis de salut sexual i reproductiva"
+        ]
+      },
+      "iconUrl": "https://bilateria.org/app/ods/iconos/E-WEB-Goal-03.png"
+    },
+    {
+      "id": 4,
+      "color": "#C5192D",
+      "titles": {
+        "es": "Educación de calidad",
+        "ca": "Educació de qualitat"
+      },
+      "descriptions": {
+        "es": "Garantizar una educación inclusiva, equitativa y de calidad y promover oportunidades de aprendizaje durante toda la vida para todos. Busca asegurar que niños y adultos adquieran conocimientos y habilidades necesarias.",
+        "ca": "Garantir una educació inclusiva, equitativa i de qualitat i promoure oportunitats d'aprenentatge durant tota la vida per a tothom. Busca assegurar que nens i adults adquireixin coneixements i habilitats necessàries."
+      },
+      "metas": {
+        "es": [
+          "Asegurar educación primaria y secundaria gratuita, equitativa y de calidad",
+          "Garantizar acceso a educación preescolar de calidad",
+          "Asegurar acceso igualitario a formación técnica, profesional y superior",
+          "Aumentar el número de personas con competencias técnicas y profesionales"
+        ],
+        "ca": [
+          "Assegurar educació primària i secundària gratuïta, equitativa i de qualitat",
+          "Garantir accés a educació preescolar de qualitat",
+          "Assegurar accés igualitari a formació tècnica, professional i superior",
+          "Augmentar el nombre de persones amb competències tècniques i professionals"
+        ]
+      },
+      "iconUrl": "https://bilateria.org/app/ods/iconos/E-WEB-Goal-04.png"
+    },
+    {
+      "id": 5,
+      "color": "#FF3A21",
+      "titles": {
+        "es": "Igualdad de género",
+        "ca": "Igualtat de gènere"
+      },
+      "descriptions": {
+        "es": "Lograr la igualdad entre los géneros y empoderar a todas las mujeres y las niñas. Busca eliminar todas las formas de discriminación y violencia contra las mujeres y asegurar su participación plena y efectiva en todos los ámbitos.",
+        "ca": "Aconseguir la igualtat entre els gèneres i apoderar a totes les dones i les nenes. Busca eliminar totes les formes de discriminació i violència contra les dones i assegurar la seva participació plena i efectiva en tots els àmbits."
+      },
+      "metas": {
+        "es": [
+          "Poner fin a la discriminación contra mujeres y niñas",
+          "Eliminar todas las formas de violencia contra mujeres y niñas",
+          "Eliminar prácticas nocivas como el matrimonio infantil y la mutilación genital",
+          "Asegurar la participación plena y efectiva de las mujeres en todos los ámbitos"
+        ],
+        "ca": [
+          "Posar fi a la discriminació contra dones i nenes",
+          "Eliminar totes les formes de violència contra dones i nenes",
+          "Eliminar pràctiques nocives com el matrimoni infantil i la mutilació genital",
+          "Assegurar la participació plena i efectiva de les dones en tots els àmbits"
+        ]
+      },
+      "iconUrl": "https://bilateria.org/app/ods/iconos/E-WEB-Goal-05.png"
+    },
+    {
+      "id": 6,
+      "color": "#26BDE2",
+      "titles": {
+        "es": "Agua limpia y saneamiento",
+        "ca": "Aigua neta i sanejament"
+      },
+      "descriptions": {
+        "es": "Garantizar la disponibilidad de agua y su gestión sostenible y el saneamiento para todos. Busca el acceso universal y equitativo al agua potable y a instalaciones sanitarias adecuadas.",
+        "ca": "Garantir la disponibilitat d'aigua i la seva gestió sostenible i el sanejament per a tothom. Busca l'accés universal i equitatiu a l'aigua potable i a instal·lacions sanitàries adequades."
+      },
+      "metas": {
+        "es": [
+          "Lograr acceso universal y equitativo al agua potable",
+          "Lograr acceso a servicios de saneamiento e higiene adecuados",
+          "Mejorar la calidad del agua reduciendo la contaminación",
+          "Aumentar el uso eficiente de los recursos hídricos"
+        ],
+        "ca": [
+          "Aconseguir accés universal i equitatiu a l'aigua potable",
+          "Aconseguir accés a serveis de sanejament i higiene adequats",
+          "Millorar la qualitat de l'aigua reduint la contaminació",
+          "Augmentar l'ús eficient dels recursos hídrics"
+        ]
+      },
+      "iconUrl": "https://bilateria.org/app/ods/iconos/E-WEB-Goal-06.png"
+    },
+    {
+      "id": 7,
+      "color": "#FCC30B",
+      "titles": {
+        "es": "Energía asequible y no contaminante",
+        "ca": "Energia assequible i no contaminant"
+      },
+      "descriptions": {
+        "es": "Garantizar el acceso a una energía asequible, segura, sostenible y moderna para todos. Busca aumentar la proporción de energía renovable y duplicar la tasa mundial de mejora de la eficiencia energética.",
+        "ca": "Garantir l'accés a una energia assequible, segura, sostenible i moderna per a tothom. Busca augmentar la proporció d'energia renovable i duplicar la taxa mundial de millora de l'eficiència energètica."
+      },
+      "metas": {
+        "es": [
+          "Garantizar acceso universal a servicios energéticos asequibles",
+          "Aumentar sustancialmente la proporción de energía renovable",
+          "Duplicar la tasa mundial de mejora de la eficiencia energética",
+          "Promover la investigación en energías limpias"
+        ],
+        "ca": [
+          "Garantir accés universal a serveis energètics assequibles",
+          "Augmentar substancialment la proporció d'energia renovable",
+          "Duplicar la taxa mundial de millora de l'eficiència energètica",
+          "Promoure la investigació en energies netes"
+        ]
+      },
+      "iconUrl": "https://bilateria.org/app/ods/iconos/E-WEB-Goal-07.png"
+    },
+    {
+      "id": 8,
+      "color": "#A21942",
+      "titles": {
+        "es": "Trabajo decente y crecimiento económico",
+        "ca": "Treball decent i creixement econòmic"
+      },
+      "descriptions": {
+        "es": "Promover el crecimiento económico sostenido, inclusivo y sostenible, el empleo pleno y productivo y el trabajo decente para todos. Busca mejorar la productividad económica y eliminar el trabajo forzoso.",
+        "ca": "Promoure el creixement econòmic sostingut, inclusiu i sostenible, l'ocupació plena i productiva i el treball decent per a tothom. Busca millorar la productivitat econòmica i eliminar el treball forçós."
+      },
+      "metas": {
+        "es": [
+          "Mantener el crecimiento económico per cápita",
+          "Lograr niveles más elevados de productividad económica",
+          "Promover políticas de emprendimiento e innovación",
+          "Erradicar el trabajo forzoso y el trabajo infantil"
+        ],
+        "ca": [
+          "Mantenir el creixement econòmic per càpita",
+          "Aconseguir nivells més elevats de productivitat econòmica",
+          "Promoure polítiques d'emprenedoria i innovació",
+          "Erradicar el treball forçós i el treball infantil"
+        ]
+      },
+      "iconUrl": "https://bilateria.org/app/ods/iconos/E-WEB-Goal-08.png"
+    },
+    {
+      "id": 9,
+      "color": "#FD6925",
+      "titles": {
+        "es": "Industria, innovación e infraestructura",
+        "ca": "Indústria, innovació i infraestructura"
+      },
+      "descriptions": {
+        "es": "Construir infraestructuras resilientes, promover la industrialización inclusiva y sostenible y fomentar la innovación. Busca desarrollar tecnologías nacionales y aumentar el acceso a las TIC.",
+        "ca": "Construir infraestructures resilients, promoure la industrialització inclusiva i sostenible i fomentar la innovació. Busca desenvolupar tecnologies nacionals i augmentar l'accés a les TIC."
+      },
+      "metas": {
+        "es": [
+          "Desarrollar infraestructuras fiables, sostenibles y de calidad",
+          "Promover una industrialización inclusiva y sostenible",
+          "Aumentar el acceso de pequeñas industrias a servicios financieros",
+          "Aumentar la investigación científica y mejorar la capacidad tecnológica"
+        ],
+        "ca": [
+          "Desenvolupar infraestructures fiables, sostenibles i de qualitat",
+          "Promoure una industrialització inclusiva i sostenible",
+          "Augmentar l'accés de petites indústries a serveis financers",
+          "Augmentar la investigació científica i millorar la capacitat tecnològica"
+        ]
+      },
+      "iconUrl": "https://bilateria.org/app/ods/iconos/E-WEB-Goal-09.png"
+    },
+    {
+      "id": 10,
+      "color": "#DD1367",
+      "titles": {
+        "es": "Reducción de las desigualdades",
+        "ca": "Reducció de les desigualtats"
+      },
+      "descriptions": {
+        "es": "Reducir la desigualdad en y entre los países. Busca lograr y mantener el crecimiento de los ingresos del 40% más pobre de la población a una tasa superior a la media nacional.",
+        "ca": "Reduir la desigualtat en i entre els països. Busca aconseguir i mantenir el creixement dels ingressos del 40% més pobre de la població a una taxa superior a la mitjana nacional."
+      },
+      "metas": {
+        "es": [
+          "Lograr progresivamente el crecimiento de los ingresos del 40% más pobre",
+          "Potenciar la inclusión social, económica y política de todas las personas",
+          "Garantizar la igualdad de oportunidades",
+          "Adoptar políticas fiscales, salariales y de protección social"
+        ],
+        "ca": [
+          "Aconseguir progressivament el creixement dels ingressos del 40% més pobre",
+          "Potenciar la inclusió social, econòmica i política de totes les persones",
+          "Garantir la igualtat d'oportunitats",
+          "Adoptar polítiques fiscals, salarials i de protecció social"
+        ]
+      },
+      "iconUrl": "https://bilateria.org/app/ods/iconos/E-WEB-Goal-10.png"
+    },
+    {
+      "id": 11,
+      "color": "#FD9D24",
+      "titles": {
+        "es": "Ciudades y comunidades sostenibles",
+        "ca": "Ciutats i comunitats sostenibles"
+      },
+      "descriptions": {
+        "es": "Lograr que las ciudades y los asentamientos humanos sean inclusivos, seguros, resilientes y sostenibles. Busca proporcionar acceso a sistemas de transporte seguros y a zonas verdes y espacios públicos.",
+        "ca": "Aconseguir que les ciutats i els assentaments humans siguin inclusius, segurs, resilients i sostenibles. Busca proporcionar accés a sistemes de transport segurs i a zones verdes i espais públics."
+      },
+      "metas": {
+        "es": [
+          "Asegurar acceso a viviendas y servicios básicos adecuados",
+          "Proporcionar acceso a sistemas de transporte seguros",
+          "Aumentar la urbanización inclusiva y sostenible",
+          "Reducir el impacto ambiental negativo de las ciudades"
+        ],
+        "ca": [
+          "Assegurar accés a habitatges i serveis bàsics adequats",
+          "Proporcionar accés a sistemes de transport segurs",
+          "Augmentar la urbanització inclusiva i sostenible",
+          "Reduir l'impacte ambiental negatiu de les ciutats"
+        ]
+      },
+      "iconUrl": "https://bilateria.org/app/ods/iconos/E-WEB-Goal-11.png"
+    },
+    {
+      "id": 12,
+      "color": "#BF8B2E",
+      "titles": {
+        "es": "Producción y consumo responsables",
+        "ca": "Producció i consum responsables"
+      },
+      "descriptions": {
+        "es": "Garantizar modalidades de consumo y producción sostenibles. Busca lograr la gestión sostenible y el uso eficiente de los recursos naturales y reducir la generación de desechos.",
+        "ca": "Garantir modalitats de consum i producció sostenibles. Busca aconseguir la gestió sostenible i l'ús eficient dels recursos naturals i reduir la generació de residus."
+      },
+      "metas": {
+        "es": [
+          "Aplicar el Marco Decenal de Programas sobre Consumo y Producción Sostenibles",
+          "Lograr la gestión sostenible y uso eficiente de recursos naturales",
+          "Reducir a la mitad el desperdicio de alimentos",
+          "Reducir la generación de desechos mediante prevención, reducción, reciclaje y reutilización"
+        ],
+        "ca": [
+          "Aplicar el Marc Decennal de Programes sobre Consum i Producció Sostenibles",
+          "Aconseguir la gestió sostenible i ús eficient de recursos naturals",
+          "Reduir a la meitat el malbaratament d'aliments",
+          "Reduir la generació de residus mitjançant prevenció, reducció, reciclatge i reutilització"
+        ]
+      },
+      "iconUrl": "https://bilateria.org/app/ods/iconos/E-WEB-Goal-12.png"
+    },
+    {
+      "id": 13,
+      "color": "#3F7E44",
+      "titles": {
+        "es": "Acción por el clima",
+        "ca": "Acció pel clima"
+      },
+      "descriptions": {
+        "es": "Adoptar medidas urgentes para combatir el cambio climático y sus efectos. Busca fortalecer la resiliencia y la capacidad de adaptación a los desastres relacionados con el clima.",
+        "ca": "Adoptar mesures urgents per combatre el canvi climàtic i els seus efectes. Busca enfortir la resiliència i la capacitat d'adaptació als desastres relacionats amb el clima."
+      },
+      "metas": {
+        "es": [
+          "Fortalecer la resiliencia y capacidad de adaptación a desastres climáticos",
+          "Incorporar medidas relativas al cambio climático en políticas nacionales",
+          "Mejorar la educación y sensibilización sobre mitigación del cambio climático",
+          "Cumplir con el Fondo Verde para el Clima"
+        ],
+        "ca": [
+          "Enfortir la resiliència i capacitat d'adaptació a desastres climàtics",
+          "Incorporar mesures relatives al canvi climàtic en polítiques nacionals",
+          "Millorar l'educació i sensibilització sobre mitigació del canvi climàtic",
+          "Complir amb el Fons Verd per al Clima"
+        ]
+      },
+      "iconUrl": "https://bilateria.org/app/ods/iconos/E-WEB-Goal-13.png"
+    },
+    {
+      "id": 14,
+      "color": "#0A97D9",
+      "titles": {
+        "es": "Vida submarina",
+        "ca": "Vida submarina"
+      },
+      "descriptions": {
+        "es": "Conservar y utilizar en forma sostenible los océanos, los mares y los recursos marinos para el desarrollo sostenible. Busca prevenir la contaminación marina y gestionar de manera sostenible los ecosistemas marinos.",
+        "ca": "Conservar i utilitzar de forma sostenible els oceans, els mars i els recursos marins per al desenvolupament sostenible. Busca prevenir la contaminació marina i gestionar de manera sostenible els ecosistemes marins."
+      },
+      "metas": {
+        "es": [
+          "Prevenir y reducir la contaminación marina",
+          "Gestionar sosteniblemente los ecosistemas marinos y costeros",
+          "Minimizar y abordar los efectos de la acidificación de los océanos",
+          "Regular eficazmente la explotación pesquera"
+        ],
+        "ca": [
+          "Prevenir i reduir la contaminació marina",
+          "Gestionar sosteniblement els ecosistemes marins i costaners",
+          "Minimitzar i abordar els efectes de l'acidificació dels oceans",
+          "Regular eficaçment l'explotació pesquera"
+        ]
+      },
+      "iconUrl": "https://bilateria.org/app/ods/iconos/E-WEB-Goal-14.png"
+    },
+    {
+      "id": 15,
+      "color": "#56C02B",
+      "titles": {
+        "es": "Vida de ecosistemas terrestres",
+        "ca": "Vida d'ecosistemes terrestres"
+      },
+      "descriptions": {
+        "es": "Gestionar sosteniblemente los bosques, luchar contra la desertificación, detener e invertir la degradación de las tierras y detener la pérdida de biodiversidad. Busca asegurar la conservación de los ecosistemas montañosos.",
+        "ca": "Gestionar sosteniblement els boscos, lluitar contra la desertificació, aturar i invertir la degradació de les terres i aturar la pèrdua de biodiversitat. Busca assegurar la conservació dels ecosistemes muntanyosos."
+      },
+      "metas": {
+        "es": [
+          "Asegurar la conservación de ecosistemas terrestres y de agua dulce",
+          "Promover la gestión sostenible de todos los tipos de bosques",
+          "Luchar contra la desertificación y rehabilitar tierras degradadas",
+          "Adoptar medidas para reducir la degradación de hábitats naturales"
+        ],
+        "ca": [
+          "Assegurar la conservació d'ecosistemes terrestres i d'aigua dolça",
+          "Promoure la gestió sostenible de tots els tipus de boscos",
+          "Lluitar contra la desertificació i rehabilitar terres degradades",
+          "Adoptar mesures per reduir la degradació d'hàbitats naturals"
+        ]
+      },
+      "iconUrl": "https://bilateria.org/app/ods/iconos/E-WEB-Goal-15.png"
+    },
+    {
+      "id": 16,
+      "color": "#00689D",
+      "titles": {
+        "es": "Paz, justicia e instituciones sólidas",
+        "ca": "Pau, justícia i institucions sòlides"
+      },
+      "descriptions": {
+        "es": "Promover sociedades pacíficas e inclusivas para el desarrollo sostenible, facilitar el acceso a la justicia para todos y crear instituciones eficaces. Busca reducir todas las formas de violencia y corrupción.",
+        "ca": "Promoure societats pacífiques i inclusives per al desenvolupament sostenible, facilitar l'accés a la justícia per a tothom i crear institucions eficaces. Busca reduir totes les formes de violència i corrupció."
+      },
+      "metas": {
+        "es": [
+          "Reducir todas las formas de violencia",
+          "Poner fin al maltrato, explotación y trata de personas",
+          "Promover el estado de derecho y garantizar acceso a justicia",
+          "Reducir la corrupción y el soborno en todas sus formas"
+        ],
+        "ca": [
+          "Reduir totes les formes de violència",
+          "Posar fi al maltractament, explotació i tràfic de persones",
+          "Promoure l'estat de dret i garantir accés a justícia",
+          "Reduir la corrupció i el suborn en totes les seves formes"
+        ]
+      },
+      "iconUrl": "https://bilateria.org/app/ods/iconos/E-WEB-Goal-16.png"
+    },
+    {
+      "id": 17,
+      "color": "#19486A",
+      "titles": {
+        "es": "Alianzas para lograr los objetivos",
+        "ca": "Aliances per a assolir els objectius"
+      },
+      "descriptions": {
+        "es": "Fortalecer los medios de implementación y revitalizar la Alianza Mundial para el Desarrollo Sostenible. Busca mejorar la cooperación internacional y promover el desarrollo de tecnologías ecológicamente racionales.",
+        "ca": "Enfortir els mitjans d'implementació i revitalitzar l'Aliança Mundial per al Desenvolupament Sostenible. Busca millorar la cooperació internacional i promoure el desenvolupament de tecnologies ecològicament racionals."
+      },
+      "metas": {
+        "es": [
+          "Fortalecer la movilización de recursos internos",
+          "Velar por que los países desarrollados cumplan sus compromisos de asistencia",
+          "Mejorar la cooperación regional e internacional",
+          "Promover un sistema de comercio multilateral universal"
+        ],
+        "ca": [
+          "Enfortir la mobilització de recursos interns",
+          "Vetllar perquè els països desenvolupats compleixin els seus compromisos d'assistència",
+          "Millorar la cooperació regional i internacional",
+          "Promoure un sistema de comerç multilateral universal"
+        ]
+      },
+      "iconUrl": "https://bilateria.org/app/ods/iconos/E-WEB-Goal-17.png"
+    }
+  ],
+  "ui": {
+    "es": {
+      "showOdsInfo": "Ver descripción completa de ODS",
+      "closeModal": "Cerrar",
+      "learnMore": "Más información",
+      "odsDescModalTitle": "Información sobre ODS"
+    },
+    "ca": {
+      "showOdsInfo": "Veure descripció completa d'ODS",
+      "closeModal": "Tancar",
+      "learnMore": "Més informació",
+      "odsDescModalTitle": "Informació sobre ODS"
+    }
+  }
+}

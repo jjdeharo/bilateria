@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <title id="page-title">Signes de funcions logarítmiques</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    .ejercicio {
+      border: 1px solid #ccc;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 5px;
+    }
+    .solucion {
+      display: none;
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f9f9f9;
+      border-radius: 5px;
+    }
+    button {
+      margin: 10px 5px;
+      padding: 8px 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .active-lang {
+      background-color: #2a7;
+    }
+    h1, h2, h3 {
+      margin: 1em 0 0.5em;
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 0.9em;
+      text-align: center;
+    }
+    .paso {
+      margin: 10px 0;
+      padding: 5px;
+    }
+    .calculo {
+      margin-left: 20px;
+      margin-bottom: 10px;
+    }
+    #lang-switcher {
+      text-align: right;
+      margin-bottom: 10px;
+    }
+  </style>
+  <!-- Per a LaTeX amb MathJax -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+<body>
+  <div id="lang-switcher">
+    <button id="btn-ca" onclick="setLanguage('ca')">CA</button>
+    <button id="btn-es" onclick="setLanguage('es')">ES</button>
+  </div>
+
+  <h1 id="header-title">Practica els signes de funcions logarítmiques</h1>
+
+  <div class="ejercicio">
+    <div id="enunciado"></div>
+    <button id="btn-verify" onclick="mostrarSolucion()">Verifica</button>
+    <button id="btn-new" onclick="nuevoEjercicio()">Nova funció</button>
+    <div id="solucion" class="solucion">
+      <h3 id="sol-title">Solució:</h3>
+      <div id="pasos"></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p id="footer-line1">Aplicació feta per <a href="https://bilateria.org">Juan José de Haro</a></p>
+    <p id="footer-line2">Aquesta obra està sota una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ca">llicència Creative Commons BY-SA</a></p>
+  </div>
+
+  <script>
+    // Diccionari de traduccions
+    const translations = {
+      ca: {
+        pageTitle: "Signes de funcions logarítmiques",
+        headerTitle: "Practica els signes de funcions logarítmiques",
+        btnVerify: "Verifica",
+        btnNew: "Nova funció",
+        solTitle: "Solució:",
+        enunciado: "Determina els signes de la funció:",
+        step1: "1. Domini:",
+        emptyDomain: "Domini buit (el polinomi no és >0 enlloc)",
+        polyDomain: "Intervals on el polinomi > 0 (domini de f):",
+        step2: "2. Asímptotes verticals:",
+        noVertical: "No hi ha solucions reals per polinomi=0 (o no existeixen)",
+        possibleVertical: "Possibles asímptotes en x =",
+        verticalNote: "(Cal que la funció s'acosti a ±∞ prop d'aquests punts en el domini)",
+        step3: "3. Punts de tall amb l'eix X (argument = 1):",
+        noSolution: "No hi ha cap solució",
+        step4: "4. Signes finals de la funció:",
+        funcPositive: "La funció és positiva en l'interval",
+        funcNegative: "La funció és negativa en l'interval",
+        funcZero: "La funció val zero a x =",
+        noInterval: "No hi ha intervals on f(x) sigui positiva, negativa o zero (domini buit?)",
+        footerLine1: "Aplicació feta per",
+        footerLine2: "Aquesta obra està sota una llicència Creative Commons BY-SA"
+      },
+      es: {
+        pageTitle: "Signos de funciones logarítmicas",
+        headerTitle: "Practica los signos de funciones logarítmicas",
+        btnVerify: "Verifica",
+        btnNew: "Nueva función",
+        solTitle: "Solución:",
+        enunciado: "Determina los signos de la función:",
+        step1: "1. Dominio:",
+        emptyDomain: "Dominio vacío (el polinomio no es > 0 en ningún sitio)",
+        polyDomain: "Intervalos donde el polinomio > 0 (dominio de f):",
+        step2: "2. Asíntotas verticales:",
+        noVertical: "No hay soluciones reales para polinomio=0 (o no existen)",
+        possibleVertical: "Posibles asíntotas en x =",
+        verticalNote: "(Se requiere que la función se acerque a ±∞ cerca de estos puntos en el dominio)",
+        step3: "3. Puntos de corte con el eje X (argumento = 1):",
+        noSolution: "No hay solución",
+        step4: "4. Signos finales de la función:",
+        funcPositive: "La función es positiva en el intervalo",
+        funcNegative: "La función es negativa en el intervalo",
+        funcZero: "La función vale cero a x =",
+        noInterval: "No hay intervalos donde f(x) sea positiva, negativa o cero (dominio vacío?)",
+        footerLine1: "Aplicación hecha por",
+        footerLine2: "Esta obra está bajo una licencia Creative Commons BY-SA"
+      }
+    };
+
+    // Variable global per l'idioma
+    let currentLang = 'ca';
+
+    // Actualitza l'estil dels botons d'idioma
+    function updateLangButtons() {
+      document.getElementById('btn-ca').classList.toggle('active-lang', currentLang === 'ca');
+      document.getElementById('btn-es').classList.toggle('active-lang', currentLang === 'es');
+    }
+
+    // Actualitza els textos estàtics segons l'idioma actual
+    function updateStaticTexts() {
+      document.title = translations[currentLang].pageTitle;
+      document.getElementById('header-title').textContent = translations[currentLang].headerTitle;
+      document.getElementById('btn-verify').textContent = translations[currentLang].btnVerify;
+      document.getElementById('btn-new').textContent = translations[currentLang].btnNew;
+      document.getElementById('sol-title').textContent = translations[currentLang].solTitle;
+      // Actualitza els textos del peu de pàgina
+      document.getElementById('footer-line1').childNodes[0].textContent = translations[currentLang].footerLine1 + " ";
+      document.getElementById('footer-line2').textContent = translations[currentLang].footerLine2;
+      // Actualitza l'atribut lang de l'HTML
+      document.documentElement.lang = currentLang;
+    }
+
+    // Canvia l'idioma manualment
+    function setLanguage(lang) {
+      currentLang = lang;
+      updateLangButtons();
+      updateStaticTexts();
+      // Regenera l'exercici amb l'idioma nou
+      nuevoEjercicio();
+    }
+
+    // Detecta l'idioma del navegador al carregar
+    window.addEventListener("load", function() {
+      const navLang = navigator.language || navigator.userLanguage;
+      if (navLang && navLang.toLowerCase().startsWith("ca")) {
+        currentLang = "ca";
+      } else {
+        currentLang = "es";
+      }
+      updateLangButtons();
+      updateStaticTexts();
+      nuevoEjercicio();
+    });
+
+    // ---------------------------------------------------
+    // Funcions d’ajuda i càlcul (sense canvis en la lògica)
+    // ---------------------------------------------------
+    function formatearNumero(num) {
+      return Math.round(num * 10000) / 10000;
+    }
+    function eq(a, b) {
+      return Math.abs(a - b) < 1e-12;
+    }
+    function evalPolinomi(grado, m, n, p, q, x) {
+      return (grado === 1) ? (m*x + n) : (m*x*x + p*x + q);
+    }
+    function intervalsDomini(grado, m, n, p, q) {
+      let intervals = [];
+      if (grado === 1) {
+        const x0 = -n/m;
+        if (m > 0) intervals.push([x0, Infinity]);
+        else       intervals.push([-Infinity, x0]);
+      } else {
+        const A = m, B = p, C = q;
+        const disc = B*B - 4*A*C;
+        if (A === 0) {
+          if (B !== 0) {
+            const x0 = -C/B;
+            if (B>0) intervals.push([x0, Infinity]);
+            else     intervals.push([-Infinity, x0]);
+          } else {
+            if (C>0) intervals.push([-Infinity, Infinity]);
+          }
+        } else {
+          if (disc < 0) {
+            if (A>0) intervals.push([-Infinity, Infinity]);
+          } else if (eq(disc,0)) {
+            const x0 = -B/(2*A);
+            if (A>0) {
+              intervals.push([-Infinity,x0],[x0,Infinity]);
+            }
+          } else {
+            let x1 = (-B - Math.sqrt(disc)) / (2*A);
+            let x2 = (-B + Math.sqrt(disc)) / (2*A);
+            if (x2 < x1) [x1, x2] = [x2, x1];
+            if (A>0) {
+              intervals.push([-Infinity,x1],[x2,Infinity]);
+            } else {
+              intervals.push([x1,x2]);
+            }
+          }
+        }
+      }
+      return intervals;
+    }
+    function solucionsPolinomiIgual1(grado, m, n, p, q) {
+      let arr = [];
+      if (grado === 1) {
+        if (m!==0) arr.push((1-n)/m);
+      } else {
+        const A = m, B = p, C = q-1;
+        if (A===0) {
+          if (B!==0) arr.push(-C/B);
+        } else {
+          const disc = B*B - 4*A*C;
+          if (disc>0) {
+            let r1 = (-B - Math.sqrt(disc)) / (2*A);
+            let r2 = (-B + Math.sqrt(disc)) / (2*A);
+            arr.push(r1,r2);
+          } else if (eq(disc,0)) {
+            arr.push(-B/(2*A));
+          }
+        }
+      }
+      return arr;
+    }
+    function solucionsPolinomiZero(grado, m, n, p, q) {
+      let arr = [];
+      if (grado === 1) {
+        if (m!==0) arr.push(-n/m);
+      } else {
+        const A = m, B = p, C = q;
+        if (A===0) {
+          if (B!==0) arr.push(-C/B);
+        } else {
+          const disc = B*B - 4*A*C;
+          if (disc>0) {
+            let r1 = (-B - Math.sqrt(disc)) / (2*A);
+            let r2 = (-B + Math.sqrt(disc)) / (2*A);
+            arr.push(r1,r2);
+          } else if (eq(disc,0)) {
+            arr.push(-B/(2*A));
+          }
+        }
+      }
+      return arr;
+    }
+    function subintervalsEnDomini(domA, domB, eq1Points) {
+      let punts = [domA, domB];
+      for (let x of eq1Points) {
+        if (x>domA && x<domB) punts.push(x);
+      }
+      punts.sort((a,b)=> a-b);
+      let subints = [];
+      for (let i=0; i<punts.length-1; i++){
+        let A = punts[i], B = punts[i+1];
+        if (A<B) subints.push([A,B]);
+      }
+      return subints;
+    }
+    function anotarSignes(funcion) {
+      const {grado,a,m,n,p,q} = funcion;
+      const domIntervals = intervalsDomini(grado,m,n,p,q);
+      const eq1 = solucionsPolinomiIgual1(grado,m,n,p,q);
+      let intervalsPositius = [];
+      let intervalsNegatius = [];
+      let puntsZero = [];
+      for (let [domA, domB] of domIntervals) {
+        let subInts = subintervalsEnDomini(domA, domB, eq1);
+        for (let [A,B] of subInts) {
+          let mid = (A+B)/2;
+          let valPoly = evalPolinomi(grado,m,n,p,q, mid);
+          let signeLog = (valPoly>1)? 1 : (eq(valPoly,1)? 0 : -1);
+          let signeFx;
+          if (signeLog===0) signeFx = 0;
+          else if (a>0) signeFx = signeLog;
+          else           signeFx = -signeLog;
+          if (signeFx>0) intervalsPositius.push([A,B]);
+          else if (signeFx<0) intervalsNegatius.push([A,B]);
+        }
+        for (let xz of eq1) {
+          if (xz>domA && xz<domB) {
+            puntsZero.push(xz);
+          }
+        }
+      }
+      return {
+        positius: intervalsPositius,
+        negatius: intervalsNegatius,
+        zeros: puntsZero
+      };
+    }
+    function unirIntervalsEnUnaFrase(intervals, msgBase) {
+      if (!intervals.length) return '';
+      intervals.sort((a,b)=> a[0]-b[0]);
+      function iStr([xA,xB]) {
+        const sA = Number.isFinite(xA)? formatearNumero(xA) : '-∞';
+        const sB = Number.isFinite(xB)? formatearNumero(xB) : '+∞';
+        return `(${sA}, ${sB})`;
+      }
+      const intervalsTxt = intervals.map(i=>iStr(i)).join(' ∪ ');
+      return `<div class="calculo">${msgBase} ${intervalsTxt}</div>`;
+    }
+    function imprimirResultatSignes(result) {
+      let html = '';
+      const txtPos = unirIntervalsEnUnaFrase(result.positius, translations[currentLang].funcPositive);
+      if (txtPos) html += txtPos;
+      const txtNeg = unirIntervalsEnUnaFrase(result.negatius, translations[currentLang].funcNegative);
+      if (txtNeg) html += txtNeg;
+      if (result.zeros.length) {
+        html += `<div class="calculo">${translations[currentLang].funcZero} ${result.zeros.map(x=>formatearNumero(x)).join(', ')}</div>`;
+      }
+      if (!txtPos && !txtNeg && !result.zeros.length) {
+        html += `<div class="calculo">${translations[currentLang].noInterval}</div>`;
+      }
+      return html;
+    }
+    function generarFuncionLogaritmica() {
+      const bases = [2,3,'e'];
+      const factores = [-2,-1,1,2];
+      const grados = [1,2];
+      const a = factores[Math.floor(Math.random()*factores.length)];
+      const b = bases[Math.floor(Math.random()*bases.length)];
+      const m = factores[Math.floor(Math.random()*factores.length)];
+      const n = Math.floor(Math.random()*5) - 2;
+      const grado = grados[Math.floor(Math.random()*grados.length)];
+      let p = 0, q = 0;
+      if (grado===2) {
+        p = factores[Math.floor(Math.random()*factores.length)];
+        q = Math.floor(Math.random()*5) - 2;
+      }
+      const baseLatex = (b==='e')? '\\ln' : `\\log_{${b}}`;
+      let interior;
+      if (grado===1) {
+        if (m===1) {
+          interior = `x${n>=0?'+':''}${n}`;
+        } else if (m===-1) {
+          interior = `-x${n>=0?'+':''}${n}`;
+        } else {
+          interior = `${m}x${n>=0?'+':''}${n}`;
+        }
+      } else {
+        const sP = (p>=0)? `+${p}` : `${p}`;
+        const sQ = (q>=0)? `+${q}` : `${q}`;
+        if (m===1) {
+          interior = `x^2${sP}x${sQ}`;
+        } else if (m===-1) {
+          interior = `-x^2${sP}x${sQ}`;
+        } else {
+          interior = `${m}x^2${sP}x${sQ}`;
+        }
+      }
+      let latex;
+      if (a===1) {
+        latex = `${baseLatex}(${interior})`;
+      } else if (a===-1) {
+        latex = `-${baseLatex}(${interior})`;
+      } else {
+        latex = `${a}${baseLatex}(${interior})`;
+      }
+      return { a, b, grado, m, n, p, q, latex };
+    }
+    let funcionActual = null;
+    function nuevoEjercicio() {
+      funcionActual = generarFuncionLogaritmica();
+      const enun = `${translations[currentLang].enunciado} \\[f(x) = ${funcionActual.latex}\\]`;
+      document.getElementById('enunciado').innerHTML = enun;
+      document.getElementById('solucion').style.display = 'none';
+      document.getElementById('pasos').innerHTML = '';
+      if (window.MathJax && MathJax.Hub) {
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+      }
+    }
+    function mostrarSolucion() {
+      const pasos = document.getElementById('pasos');
+      const {grado, a, m, n, p, q} = funcionActual;
+      const dom = intervalsDomini(grado, m, n, p, q);
+      const eq1 = solucionsPolinomiIgual1(grado, m, n, p, q);
+      const av = solucionsPolinomiZero(grado, m, n, p, q);
+      const result = anotarSignes(funcionActual);
+      let html = '';
+      html += `<div class="paso">${translations[currentLang].step1}</div>`;
+      if (!dom.length) {
+        html += `<div class="calculo">${translations[currentLang].emptyDomain}</div>`;
+      } else {
+        html += `<div class="calculo">${translations[currentLang].polyDomain}</div>`;
+        dom.forEach(([A,B])=>{
+          const sA = Number.isFinite(A) ? formatearNumero(A) : '-∞';
+          const sB = Number.isFinite(B) ? formatearNumero(B) : '+∞';
+          html += `<div class="calculo">(${sA}, ${sB})</div>`;
+        });
+      }
+      html += `<div class="paso">${translations[currentLang].step2}</div>`;
+      if (!av.length) {
+        html += `<div class="calculo">${translations[currentLang].noVertical}</div>`;
+      } else {
+        html += `<div class="calculo">${translations[currentLang].possibleVertical} ${av.map(x=>formatearNumero(x)).join(', ')}</div>`;
+        html += `<div class="calculo">${translations[currentLang].verticalNote}</div>`;
+      }
+      html += `<div class="paso">${translations[currentLang].step3}</div>`;
+      if (!eq1.length) {
+        html += `<div class="calculo">${translations[currentLang].noSolution}</div>`;
+      } else {
+        html += `<div class="calculo">x = ${eq1.map(x=>formatearNumero(x)).join(', ')}</div>`;
+      }
+      html += `<div class="paso">${translations[currentLang].step4}</div>`;
+      html += imprimirResultatSignes(result);
+      pasos.innerHTML = html;
+      document.getElementById('solucion').style.display = 'block';
+      if (window.MathJax && MathJax.Hub) {
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+      }
+    }
+  </script>
+</body>
+</html>
+

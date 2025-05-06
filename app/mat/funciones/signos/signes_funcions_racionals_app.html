@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="page-title">Signes de funcions racionals</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    #lang-switcher {
+      text-align: right;
+      margin-bottom: 10px;
+    }
+    #lang-switcher button {
+      margin: 0 5px;
+      padding: 8px 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #lang-switcher button:hover {
+      background-color: #45a049;
+    }
+    .active-lang {
+      background-color: #2a7;
+    }
+    h1, h2, h3 {
+      margin: 1em 0 0.5em;
+    }
+    .ejercicio {
+      border: 1px solid #ccc;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 5px;
+    }
+    .solucion {
+      display: none;
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f9f9f9;
+      border-radius: 5px;
+    }
+    button {
+      margin: 10px 5px;
+      padding: 8px 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .paso {
+      margin: 10px 0;
+      padding: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div id="lang-switcher">
+    <button id="btn-ca" onclick="setLanguage('ca')">CA</button>
+    <button id="btn-es" onclick="setLanguage('es')">ES</button>
+  </div>
+
+  <h1 id="header-title"></h1>
+  
+  <div id="ejercicio" class="ejercicio">
+    <div id="enunciado"></div>
+    <button id="btn-verify" onclick="mostrarSolucion()"></button>
+    <button id="btn-new" onclick="nuevoEjercicio()"></button>
+    <div id="solucion" class="solucion">
+      <h3 id="sol-title"></h3>
+      <div id="pasos"></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p id="footer-line1"><a href="https://bilateria.org"></a></p>
+    <p id="footer-line2"></p>
+  </div>
+
+  <script>
+    // Diccionari de traduccions
+    const translations = {
+      ca: {
+        pageTitle: "Signes de funcions racionals",
+        headerTitle: "Practica els signes de funcions racionals",
+        btnVerify: "Verificar",
+        btnNew: "Nova funció",
+        solTitle: "Solució:",
+        enunciado: "Determina els signes de la funció:",
+        step1: "1. Domini:",
+        step2: "2. Punts de tall amb l'eix X:",
+        noXIntersections: "No hi ha punts de tall amb l'eix X",
+        step3: "3. Asímptotes:",
+        vertical: "• Vertical: x = ",
+        step4: "4. Signes en els intervals:",
+        positive: "Positiva en",
+        negative: "Negativa en",
+        footerLine1: "Aplicació feta per Juan José de Haro",
+        footerLine2: "Aquesta obra està sota una llicència Creative Commons BY-SA"
+      },
+      es: {
+        pageTitle: "Signos de funciones racionales",
+        headerTitle: "Practica los signos de funciones racionales",
+        btnVerify: "Verificar",
+        btnNew: "Nueva función",
+        solTitle: "Solución:",
+        enunciado: "Determina los signos de la función:",
+        step1: "1. Dominio:",
+        step2: "2. Puntos de corte con el eje X:",
+        noXIntersections: "No hay puntos de corte con el eje X",
+        step3: "3. Asíntotas:",
+        vertical: "• Vertical: x = ",
+        step4: "4. Signos en los intervalos:",
+        positive: "Positiva en",
+        negative: "Negativa en",
+        footerLine1: "Aplicación hecha por Juan José de Haro",
+        footerLine2: "Esta obra está bajo una licencia Creative Commons BY-SA"
+      }
+    };
+
+    let currentLang = 'ca';
+
+    function updateLangButtons() {
+      document.getElementById('btn-ca').classList.toggle('active-lang', currentLang === 'ca');
+      document.getElementById('btn-es').classList.toggle('active-lang', currentLang === 'es');
+    }
+
+    function updateStaticTexts() {
+      document.title = translations[currentLang].pageTitle;
+      document.getElementById('page-title').textContent = translations[currentLang].pageTitle;
+      document.getElementById('header-title').textContent = translations[currentLang].headerTitle;
+      document.getElementById('btn-verify').textContent = translations[currentLang].btnVerify;
+      document.getElementById('btn-new').textContent = translations[currentLang].btnNew;
+      document.getElementById('sol-title').textContent = translations[currentLang].solTitle;
+      document.getElementById('footer-line1').textContent = translations[currentLang].footerLine1;
+      document.getElementById('footer-line2').textContent = translations[currentLang].footerLine2;
+      document.documentElement.lang = currentLang;
+    }
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      updateLangButtons();
+      updateStaticTexts();
+      nuevoEjercicio();
+    }
+
+    window.addEventListener("load", function() {
+      const navLang = navigator.language || navigator.userLanguage;
+      if (navLang && navLang.toLowerCase().startsWith("ca")) {
+        currentLang = "ca";
+      } else {
+        currentLang = "es";
+      }
+      updateLangButtons();
+      updateStaticTexts();
+      nuevoEjercicio();
+    });
+
+    // Codi de l'aplicació de funcions racionals
+
+    let funcionActual;
+
+    function generarPolinomio(grado) {
+      let coeficientes = [];
+      let latex = '';
+      let raices = [];
+      
+      if (grado === 0) {
+        const a = Math.floor(Math.random() * 5) - 2;
+        coeficientes = [a];
+        latex = a.toString();
+        raices = [];
+      } else if (grado === 1) {
+        const a = Math.floor(Math.random() * 4) - 2;
+        const b = Math.floor(Math.random() * 4) - 2;
+        let coefA = a === 0 ? 1 : a;
+        coeficientes = [coefA, b];
+        latex = `${coefA === 1 ? '' : coefA === -1 ? '-' : coefA}x ${b >= 0 ? '+' + b : b}`;
+        raices = [-b/coefA];
+      } else if (grado === 2) {
+        const a = Math.floor(Math.random() * 2) + 1;
+        const r1 = Math.floor(Math.random() * 5) - 2;
+        const r2 = Math.floor(Math.random() * 5) - 2;
+        const b = -(r1 + r2) * a;
+        const c = r1 * r2 * a;
+        coeficientes = [a, b, c];
+        latex = `${a === 1 ? '' : a}x^2 ${b >= 0 ? '+' + b : b}x ${c >= 0 ? '+' + c : c}`;
+        raices = [r1, r2].sort((a, b) => a - b);
+      } else if (grado === 3) {
+        const a = Math.floor(Math.random() * 2) + 1;
+        const r1 = Math.floor(Math.random() * 5) - 2;
+        const r2 = Math.floor(Math.random() * 5) - 2;
+        const r3 = Math.floor(Math.random() * 5) - 2;
+        const b = -a * (r1 + r2 + r3);
+        const c = a * (r1*r2 + r2*r3 + r1*r3);
+        const d = -a * r1 * r2 * r3;
+        coeficientes = [a, b, c, d];
+        latex = `${a === 1 ? '' : a}x^3 ${b >= 0 ? '+' + b : b}x^2 ${c >= 0 ? '+' + c : c}x ${d >= 0 ? '+' + d : d}`;
+        raices = [r1, r2, r3].sort((a, b) => a - b);
+      }
+      
+      return {
+        coeficientes: coeficientes,
+        latex: latex,
+        raices: raices,
+        grado: grado
+      };
+    }
+
+    function generarFuncionRacional() {
+      const gradoNumerador = Math.floor(Math.random() * 3); // grau 0, 1 o 2
+      const gradoDenominador = Math.floor(Math.random() * 3) + 1; // grau 1, 2 o 3
+      const numerador = generarPolinomio(gradoNumerador);
+      const denominador = generarPolinomio(gradoDenominador);
+      
+      return {
+        latex: `\\frac{${numerador.latex}}{${denominador.latex}}`,
+        numeradorRaices: numerador.raices,
+        numeradorGrado: gradoNumerador,
+        denominadorRaices: denominador.raices,
+        denominadorGrado: gradoDenominador,
+        coeficienteNumerador: numerador.coeficientes[0],
+        coeficienteDenominador: denominador.coeficientes[0]
+      };
+    }
+
+    function calcularSignos(funcion) {
+      const puntosCorte = [...new Set([...funcion.numeradorRaices, ...funcion.denominadorRaices])].sort((a, b) => a - b);
+      let signos = [];
+      let signoInicial = Math.sign(funcion.coeficienteNumerador * funcion.coeficienteDenominador);
+      
+      for (let i = 0; i <= puntosCorte.length; i++) {
+        let signoActual = signoInicial;
+        for (let j = 0; j < i; j++) {
+          if (funcion.numeradorRaices.includes(puntosCorte[j])) {
+            signoActual *= -1;
+          }
+          if (funcion.denominadorRaices.includes(puntosCorte[j])) {
+            signoActual *= -1;
+          }
+        }
+        signos.push(signoActual);
+      }
+      
+      return {
+        puntos: puntosCorte,
+        signos: signos
+      };
+    }
+
+    function mostrarSolucion() {
+      const solucion = document.getElementById('solucion');
+      const pasos = document.getElementById('pasos');
+      const analisisSignos = calcularSignos(funcionActual);
+      
+      let pasosHTML = '';
+      // Pas 1: Dominio
+      pasosHTML += `<div class="paso">${translations[currentLang].step1} \\(\\mathbb{R} \\setminus \\{${funcionActual.denominadorRaices.join(', ')}\\}\\)</div>`;
+      
+      // Pas 2: Punts de tall amb l'eix X / Puntos de corte
+      if (funcionActual.numeradorRaices.length > 0) {
+        pasosHTML += `<div class="paso">${translations[currentLang].step2} ${translations[currentLang].xIntersections || "x = "}${funcionActual.numeradorRaices.join(', x = ')}</div>`;
+      } else {
+        pasosHTML += `<div class="paso">${translations[currentLang].step2} ${translations[currentLang].noXIntersections}</div>`;
+      }
+      
+      // Pas 3: Asímptotes / Asíntotas
+      pasosHTML += `<div class="paso">${translations[currentLang].step3}</div>`;
+      pasosHTML += `<div class="paso">${translations[currentLang].vertical}${funcionActual.denominadorRaices.join(', x = ')}</div>`;
+      
+      // Pas 4: Signes en els intervals / Signos en los intervalos
+      pasosHTML += `<div class="paso">${translations[currentLang].step4}</div>`;
+      
+      let intervalosPositivos = [];
+      let intervalosNegativos = [];
+      
+      for (let i = 0; i <= analisisSignos.puntos.length; i++) {
+        const limiteInf = i === 0 ? '-\\infty' : analisisSignos.puntos[i-1];
+        const limiteSup = i === analisisSignos.puntos.length ? '\\infty' : analisisSignos.puntos[i];
+        const intervalo = `(${limiteInf}, ${limiteSup})`;
+        
+        if (analisisSignos.signos[i] > 0) {
+          intervalosPositivos.push(intervalo);
+        } else {
+          intervalosNegativos.push(intervalo);
+        }
+      }
+      
+      if (intervalosPositivos.length > 0) {
+        pasosHTML += `<div class="paso">${translations[currentLang].positive} \\(${intervalosPositivos.join(' \\cup ')}\\)</div>`;
+      }
+      if (intervalosNegativos.length > 0) {
+        pasosHTML += `<div class="paso">${translations[currentLang].negative} \\(${intervalosNegativos.join(' \\cup ')}\\)</div>`;
+      }
+      
+      pasos.innerHTML = pasosHTML;
+      solucion.style.display = 'block';
+      
+      MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+    }
+
+    function nuevoEjercicio() {
+      funcionActual = generarFuncionRacional();
+      const enunciado = `${translations[currentLang].enunciado} \\[f(x) = ${funcionActual.latex}\\]`;
+      document.getElementById('enunciado').innerHTML = enunciado;
+      document.getElementById('solucion').style.display = 'none';
+      
+      MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+    }
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practica la monotonía de funciones racionales</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.12.0/math.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            position: relative;
+        }
+        .resultat {
+            background-color: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        button.action-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button.action-btn:hover {
+            background-color: #45a049;
+        }
+        .credits {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .hidden {
+            display: none;
+        }
+        .lang-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .lang-btn {
+            background-color: #f0f0f0;
+            color: #333;
+            padding: 5px 10px;
+            margin-left: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .lang-btn.active {
+            background-color: #4CAF50;
+            color: white;
+            border: 1px solid #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="lang-buttons">
+        <button id="btn-ca" class="lang-btn">CA</button>
+        <button id="btn-es" class="lang-btn">ES</button>
+    </div>
+
+    <h1 id="title">Practica la monotonía de funciones racionales</h1>
+    
+    <button id="btn-generate" class="action-btn" onclick="generaFuncio()">Genera nueva función</button>
+    <button id="btn-solution" class="action-btn" onclick="mostraSolucio()">Muestra solución</button>
+    
+    <div id="funcio" class="resultat"></div>
+    <div id="solucio" class="hidden">
+        <div id="asimptotes" class="resultat"></div>
+        <div id="derivada" class="resultat"></div>
+        <div id="intervals" class="resultat"></div>
+        <div id="extrems" class="resultat"></div>
+    </div>
+    
+    <div id="credits" class="credits">
+        <p>Aplicación hecha por <a href="https://bilateria.org">Juan José de Haro</a></p>
+        <p>Esta obra está bajo una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es">licencia Creative Commons BY-SA</a></p>
+    </div>
+
+    <script>
+        // Objeto de traducciones
+        const translations = {
+            'ca': {
+                'title': 'Practica la monotonia de funcions racionals',
+                'generate': 'Genera nova funció',
+                'solution': 'Mostra solució',
+                'function': 'Funció',
+                'derivative': 'Derivada',
+                'intervals': 'Intervals de creixement i decreixement',
+                'asymptotes': 'Asímptotes verticals',
+                'noAsymptotes': 'No hi ha asímptotes verticals',
+                'localExtremes': 'Extrems locals',
+                'noLocalExtremes': 'No hi ha extrems locals',
+                'minimum': 'Mínim',
+                'maximum': 'Màxim',
+                'growing': 'Creixent',
+                'decreasing': 'Decreixent',
+                'credits': 'Aplicació feta per',
+                'license': 'Aquesta obra està sota una',
+                'licenseText': 'llicència Creative Commons BY-SA',
+                'licenseUrl': 'https://creativecommons.org/licenses/by-sa/4.0/deed.ca'
+            },
+            'es': {
+                'title': 'Practica la monotonía de funciones racionales',
+                'generate': 'Genera nueva función',
+                'solution': 'Muestra solución',
+                'function': 'Función',
+                'derivative': 'Derivada',
+                'intervals': 'Intervalos de crecimiento y decrecimiento',
+                'asymptotes': 'Asíntotas verticales',
+                'noAsymptotes': 'No hay asíntotas verticales',
+                'localExtremes': 'Extremos locales',
+                'noLocalExtremes': 'No hay extremos locales',
+                'minimum': 'Mínimo',
+                'maximum': 'Máximo',
+                'growing': 'Creciente',
+                'decreasing': 'Decreciente',
+                'credits': 'Aplicación hecha por',
+                'license': 'Esta obra está bajo una',
+                'licenseText': 'licencia Creative Commons BY-SA',
+                'licenseUrl': 'https://creativecommons.org/licenses/by-sa/4.0/deed.es'
+            }
+        };
+
+        // Variable para almacenar el idioma actual
+        let currentLang = 'es'; // Por defecto español
+
+        // Función para detectar el idioma del navegador
+        function detectLanguage() {
+            const lang = navigator.language || navigator.userLanguage;
+            return lang.startsWith('ca') ? 'ca' : 'es';
+        }
+
+        // Función para cambiar el idioma
+        function changeLanguage(lang) {
+            currentLang = lang;
+            
+            // Actualizar textos de la página
+            document.getElementById('title').innerText = translations[lang]['title'];
+            document.getElementById('btn-generate').innerText = translations[lang]['generate'];
+            document.getElementById('btn-solution').innerText = translations[lang]['solution'];
+            
+            // Actualizar botones de idioma
+            document.getElementById('btn-ca').classList.toggle('active', lang === 'ca');
+            document.getElementById('btn-es').classList.toggle('active', lang === 'es');
+            
+            // Actualizar créditos
+            document.getElementById('credits').innerHTML = `
+                <p>${translations[lang]['credits']} <a href="https://bilateria.org">Juan José de Haro</a></p>
+                <p>${translations[lang]['license']} <a href="${translations[lang]['licenseUrl']}">${translations[lang]['licenseText']}</a></p>
+            `;
+            
+            // Regenerar la función para que se vean los cambios
+            if (document.getElementById('funcio').innerHTML !== '') {
+                generaFuncio();
+            }
+        }
+
+        function generaCoeficient() {
+            return Math.floor(Math.random() * 11) - 5;  // Coeficients més petits per simplificar
+        }
+
+        function generaGrau() {
+            return Math.floor(Math.random() * 2) + 1;  // Grau 1 o 2
+        }
+
+        function generaFuncioLatex(coeficients) {
+            let latex = '';
+            for (let i = coeficients.length - 1; i >= 0; i--) {
+                if (coeficients[i] !== 0) {
+                    if (latex !== '' && coeficients[i] > 0) latex += '+';
+                    if (coeficients[i] === -1 && i > 0) latex += '-';
+                    else if (coeficients[i] !== 1 || i === 0) latex += coeficients[i];
+                    if (i > 0) latex += 'x';
+                    if (i > 1) latex += `^${i}`;
+                }
+            }
+            return latex || '0';
+        }
+
+        function trobaArrels(coeficients) {
+            const grau = coeficients.length - 1;
+            if (grau === 1) {
+                return [-coeficients[0] / coeficients[1]];
+            } else if (grau === 2) {
+                const a = coeficients[2];
+                const b = coeficients[1];
+                const c = coeficients[0];
+                const discriminant = b * b - 4 * a * c;
+                if (discriminant > 0) {
+                    return [
+                        (-b + Math.sqrt(discriminant)) / (2 * a),
+                        (-b - Math.sqrt(discriminant)) / (2 * a)
+                    ].sort((a, b) => a - b);
+                } else if (discriminant === 0) {
+                    return [-b / (2 * a)];
+                }
+            }
+            return [];
+        }
+
+        function calculaDerivadaRacional(numCoef, denCoef) {
+            // Regla del quocient: (u'v - uv')/v^2
+            const u = numCoef;
+            const v = denCoef;
+            const uPrima = calculaDerivada(u);
+            const vPrima = calculaDerivada(v);
+            
+            // Multiplica u' * v
+            let uPrimaV = [];
+            for (let i = 0; i < uPrima.length + v.length - 1; i++) {
+                uPrimaV[i] = 0;
+                for (let j = Math.max(0, i - (v.length - 1)); j <= Math.min(uPrima.length - 1, i); j++) {
+                    uPrimaV[i] += (uPrima[j] || 0) * (v[i - j] || 0);
+                }
+            }
+            
+            // Multiplica u * v'
+            let uVPrima = [];
+            for (let i = 0; i < u.length + vPrima.length - 1; i++) {
+                uVPrima[i] = 0;
+                for (let j = Math.max(0, i - (vPrima.length - 1)); j <= Math.min(u.length - 1, i); j++) {
+                    uVPrima[i] += (u[j] || 0) * (vPrima[i - j] || 0);
+                }
+            }
+            
+            // Resta uPrimaV - uVPrima
+            let numerador = [];
+            const maxLength = Math.max(uPrimaV.length, uVPrima.length);
+            for (let i = 0; i < maxLength; i++) {
+                numerador[i] = (uPrimaV[i] || 0) - (uVPrima[i] || 0);
+            }
+            
+            // Calcula v^2
+            let denominador = [];
+            for (let i = 0; i < 2 * v.length - 1; i++) {
+                denominador[i] = 0;
+                for (let j = Math.max(0, i - (v.length - 1)); j <= Math.min(v.length - 1, i); j++) {
+                    denominador[i] += (v[j] || 0) * (v[i - j] || 0);
+                }
+            }
+            
+            return { numerador, denominador };
+        }
+
+        function calculaDerivada(coeficients) {
+            let derivada = [];
+            for (let i = 1; i < coeficients.length; i++) {
+                derivada.push(coeficients[i] * i);
+            }
+            return derivada;
+        }
+
+        function avaluaFuncio(x, numCoef, denCoef) {
+            let num = 0;
+            let den = 0;
+            for (let i = 0; i < numCoef.length; i++) {
+                num += numCoef[i] * Math.pow(x, i);
+            }
+            for (let i = 0; i < denCoef.length; i++) {
+                den += denCoef[i] * Math.pow(x, i);
+            }
+            if (Math.abs(den) < 1e-10) return undefined;
+            return num/den;
+        }
+
+        function avaluaDerivadaRacional(x, numCoef, denCoef) {
+            const derivada = calculaDerivadaRacional(numCoef, denCoef);
+            return avaluaFuncio(x, derivada.numerador, derivada.denominador);
+        }
+
+        function calculaIntervals(numCoef, denCoef) {
+            // Troba les asímptotes verticals (arrels del denominador)
+            const asimptotes = trobaArrels(denCoef).map(x => Number(x.toFixed(2)));
+            
+            // Ordena les asímptotes i afegeix ±∞
+            const punts = [-Infinity, ...asimptotes, Infinity];
+            
+            let intervals = [];
+            
+            // Avalua el signe de la derivada en cada interval
+            for (let i = 0; i < punts.length - 1; i++) {
+                const x = asimptotes[i] || 0;
+                const xMig = asimptotes[i] ? x + 0.1 : 0;
+                
+                const derivada = avaluaDerivadaRacional(xMig, numCoef, denCoef);
+                const creix = derivada > 0;
+                
+                intervals.push({
+                    interval: `(${punts[i] === -Infinity ? '-∞' : punts[i]},${punts[i+1] === Infinity ? '+∞' : punts[i+1]})`,
+                    tipus: creix ? 
+                        translations[currentLang]['growing'] : 
+                        translations[currentLang]['decreasing']
+                });
+            }
+            
+            return { intervals, asimptotes };
+        }
+
+        function agrupaIntervals(intervals) {
+            let creixents = [];
+            let decreixents = [];
+            
+            intervals.forEach(int => {
+                if (int.tipus === translations[currentLang]['growing']) {
+                    creixents.push(int.interval);
+                } else {
+                    decreixents.push(int.interval);
+                }
+            });
+            
+            let resultat = [];
+            if (creixents.length > 0) {
+                resultat.push(`${translations[currentLang]['growing']} en ${creixents.join(' U ')}`);
+            }
+            if (decreixents.length > 0) {
+                resultat.push(`${translations[currentLang]['decreasing']} en ${decreixents.join(' U ')}`);
+            }
+            
+            return resultat;
+        }
+
+        function generaFuncio() {
+            const grauNum = generaGrau();
+            const grauDen = generaGrau();
+            
+            let numCoef = Array(grauNum + 1).fill(0).map(generaCoeficient);
+            let denCoef = Array(grauDen + 1).fill(0).map(generaCoeficient);
+            
+            // Assegura que el coeficient principal no sigui zero
+            while (numCoef[grauNum] === 0) numCoef[grauNum] = generaCoeficient();
+            while (denCoef[grauDen] === 0) denCoef[grauDen] = generaCoeficient();
+
+            const latexNum = generaFuncioLatex(numCoef);
+            const latexDen = generaFuncioLatex(denCoef);
+            
+            const { intervals, asimptotes } = calculaIntervals(numCoef, denCoef);
+            const intervalsAgrupats = agrupaIntervals(intervals);
+
+            // Calcula la derivada
+            const derivada = calculaDerivadaRacional(numCoef, denCoef);
+            const latexDerNum = generaFuncioLatex(derivada.numerador);
+            const latexDerDen = generaFuncioLatex(derivada.denominador);
+
+            // Calcula els extrems locals (arrels del numerador de la derivada)
+            const extrems = trobaArrels(derivada.numerador).filter(x => {
+                const denValor = derivada.denominador.reduce((sum, coef, i) => sum + coef * Math.pow(x, i), 0);
+                return Math.abs(denValor) > 1e-10;  // Comprova que no sigui també arrel del denominador
+            });
+
+            document.getElementById('funcio').innerHTML = `
+                <h2>${translations[currentLang]['function']}</h2>
+                <p>f(x) = \\(\\displaystyle\\frac{${latexNum}}{${latexDen}}\\)</p>
+            `;
+
+            document.getElementById('derivada').innerHTML = `
+                <h2>${translations[currentLang]['derivative']}</h2>
+                <p>f'(x) = \\(\\displaystyle\\frac{${latexDerNum}}{${latexDerDen}}\\)</p>
+            `;
+
+            document.getElementById('extrems').innerHTML = `
+                <h2>${translations[currentLang]['localExtremes']}</h2>
+                ${extrems.length ? 
+                    extrems.map(x => {
+                        const y = avaluaFuncio(x, numCoef, denCoef);
+                        // Si y es infinito o NaN, no es un extremo válido
+                        if (y === undefined || !isFinite(y)) {
+                            return '';
+                        }
+                        const tipus = avaluaDerivadaRacional(x + 0.0001, numCoef, denCoef) > 0 ? 
+                            translations[currentLang]['minimum'] : 
+                            translations[currentLang]['maximum'];
+                        return `<p>${tipus} en (${x.toFixed(2)}, ${y.toFixed(2)})</p>`;
+                    }).filter(x => x !== '').join('') || `<p>${translations[currentLang]['noLocalExtremes']}</p>` :
+                    `<p>${translations[currentLang]['noLocalExtremes']}</p>`}
+            `;
+
+            document.getElementById('asimptotes').innerHTML = `
+                <h2>${translations[currentLang]['asymptotes']}</h2>
+                ${asimptotes.length ? 
+                    asimptotes.map(a => `<p>x = ${a}</p>`).join('') :
+                    `<p>${translations[currentLang]['noAsymptotes']}</p>`}
+            `;
+
+            document.getElementById('intervals').innerHTML = `
+                <h2>${translations[currentLang]['intervals']}</h2>
+                ${intervalsAgrupats.map(int => `<p>${int}</p>`).join('')}
+            `;
+
+            document.getElementById('solucio').classList.add('hidden');
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+        }
+
+        function mostraSolucio() {
+            document.getElementById('solucio').classList.remove('hidden');
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+        }
+
+        // Inicialización al cargar la página
+        window.onload = function() {
+            // Detectar idioma del navegador
+            currentLang = detectLanguage();
+            
+            // Configurar eventos de botones de idioma
+            document.getElementById('btn-ca').addEventListener('click', function() { changeLanguage('ca'); });
+            document.getElementById('btn-es').addEventListener('click', function() { changeLanguage('es'); });
+            
+            // Aplicar idioma inicial
+            changeLanguage(currentLang);
+            
+            // Generar primera función
+            generaFuncio();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practica los sistemas de ecuaciones compatibles determinados</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        select {
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        input {
+            width: 200px;
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .input-error {
+            border-color: #ef4444;
+            background-color: #fee2e2;
+        }
+
+        button {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-right: 8px;
+            border: 1px solid #ddd;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        button.primary {
+            background: #3b82f6;
+            color: white;
+            border: none;
+        }
+
+        button.language {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+
+        button.language.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .input-group {
+            margin: 8px 0;
+        }
+
+        #sistema {
+            margin: 20px 0;
+            font-size: 1.2em;
+        }
+
+        .solutions span {
+            display: none;
+            margin: 0 8px;
+            color: #3b82f6;
+        }
+
+        .solutions.visible span {
+            display: inline;
+        }
+
+        #resultado {
+            margin-top: 16px;
+            padding: 8px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .resultado-correcto {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .resultado-incorrecto {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .language-buttons {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="language-buttons">
+            <button id="lang-ca" class="language">CA</button>
+            <button id="lang-es" class="language">ES</button>
+        </div>
+
+        <h1 id="main-title">Practica los sistemas de ecuaciones</h1>
+        
+        <select id="numEcuaciones">
+            <option value="2">2 ecuaciones</option>
+            <option value="3">3 ecuaciones</option>
+            <option value="4">4 ecuaciones</option>
+        </select>
+
+        <div id="sistema"></div>
+        <div id="inputs"></div>
+
+        <div>
+            <button id="verificar" class="primary">Verificar</button>
+            <button id="showSolutions">Ver soluciones</button>
+            <button id="nuevo">Nuevo sistema</button>
+        </div>
+
+        <div class="solutions"></div>
+        <div id="resultado" style="display: none;"></div>
+
+        <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 14px; color: #666; text-align: center;">
+            <div>
+                <a href="https://bilateria.org" target="_blank" rel="noopener" style="color: #3b82f6; text-decoration: none;">Juan José de Haro</a>
+            </div>
+            <div style="margin-top: 10px;">
+                <span id="licencia-text">
+                    Esta obra está bajo una licencia
+                    <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" style="color: #3b82f6; text-decoration: none;">
+                        CC BY-SA 4.0
+                    </a>
+                </span>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Traducciones
+        const traducciones = {
+            ca: {
+                titulo: "Practica els sistemes d'equacions compatibles determinats",
+                numEcuaciones: {
+                    "2": "2 equacions",
+                    "3": "3 equacions",
+                    "4": "4 equacions"
+                },
+                verificar: "Verifica",
+                showSolutions: "Veure solucions",
+                nuevo: "Nou sistema",
+                resuelve: "Resol el següent sistema:",
+                completa: "Si us plau, completa totes les respostes amb nombres enters",
+                correcto: "Correcte! Has trobat la solució.",
+                incorrecto: "Incorrecte.",
+                solucionNo: "La solució de {0} no és correcta.",
+                solucionesNo: "Les solucions de {0} i {1} no són correctes.",
+                licencia: "Aquesta obra està sota una llicència"
+            },
+            es: {
+                titulo: "Practica los sistemas de ecuaciones compatibles determinados",
+                numEcuaciones: {
+                    "2": "2 ecuaciones",
+                    "3": "3 ecuaciones",
+                    "4": "4 ecuaciones"
+                },
+                verificar: "Verificar",
+                showSolutions: "Ver soluciones",
+                nuevo: "Nuevo sistema",
+                resuelve: "Resuelve el siguiente sistema:",
+                completa: "Por favor, completa todas las respuestas con números enteros",
+                correcto: "¡Correcto! Has encontrado la solución.",
+                incorrecto: "Incorrecto.",
+                solucionNo: "La solución de {0} no es correcta.",
+                solucionesNo: "Las soluciones de {0} e {1} no son correctas.",
+                licencia: "Esta obra está bajo una licencia"
+            }
+        };
+
+        let sistemaActual = null;
+        let idiomaActual = 'es'; // Por defecto español
+
+        // Detectar el idioma del navegador
+        function detectarIdioma() {
+            const navegadorIdioma = navigator.language || navigator.userLanguage;
+            if (navegadorIdioma.startsWith('ca')) {
+                return 'ca';
+            }
+            return 'es'; // Valor por defecto
+        }
+
+        // Cambiar el idioma de la interfaz
+        function cambiarIdioma(idioma) {
+            idiomaActual = idioma;
+            
+            // Actualizar clase de botones de idioma
+            document.getElementById('lang-ca').classList.toggle('active', idioma === 'ca');
+            document.getElementById('lang-es').classList.toggle('active', idioma === 'es');
+            
+            // Actualizar título
+            document.getElementById('main-title').textContent = traducciones[idioma].titulo;
+            document.title = traducciones[idioma].titulo;
+            
+            // Actualizar opciones del selector
+            const select = document.getElementById('numEcuaciones');
+            Array.from(select.options).forEach((option, index) => {
+                option.textContent = traducciones[idioma].numEcuaciones[option.value];
+            });
+            
+            // Actualizar botones
+            document.getElementById('verificar').textContent = traducciones[idioma].verificar;
+            document.getElementById('showSolutions').textContent = traducciones[idioma].showSolutions;
+            document.getElementById('nuevo').textContent = traducciones[idioma].nuevo;
+            
+            // Actualizar sistema si existe
+            if (sistemaActual) {
+                document.getElementById('sistema').innerHTML = `${traducciones[idioma].resuelve}<br>$$${sistemaToLatex(sistemaActual)}$$`;
+                if (window.MathJax) {
+                    window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, document.getElementById('sistema')]);
+                }
+            }
+            
+            // Actualizar texto de la licencia
+            document.getElementById('licencia-text').innerHTML = `
+                ${traducciones[idioma].licencia}
+                <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" style="color: #3b82f6; text-decoration: none;">
+                    CC BY-SA 4.0
+                </a>
+            `;
+            
+            // Configurar atributo lang del HTML
+            document.documentElement.lang = idioma;
+        }
+
+        function generarCoeficiente() {
+            return Math.floor(Math.random() * 11) - 5;
+        }
+
+        function generarSistema(numEcuaciones) {
+            const soluciones = Array(numEcuaciones).fill(0).map(() => 
+                Math.floor(Math.random() * 13) - 6
+            );
+            
+            const ecuaciones = [];
+            for (let i = 0; i < numEcuaciones; i++) {
+                const coeficientes = Array(numEcuaciones).fill(0).map(() => generarCoeficiente());
+                let resultado = 0;
+                for (let j = 0; j < numEcuaciones; j++) {
+                    resultado += coeficientes[j] * soluciones[j];
+                }
+                ecuaciones.push({ coeficientes, resultado });
+            }
+            
+            return { ecuaciones, soluciones };
+        }
+
+        function sistemaToLatex(sistema) {
+            const variables = ['x', 'y', 'z', 'w'];
+            let latex = '\\begin{cases}';
+            
+            sistema.ecuaciones.forEach((ecuacion, idx) => {
+                let hasTerms = false;
+                let firstTerm = true;
+                ecuacion.coeficientes.forEach((coef, i) => {
+                    if (coef !== 0) {
+                        hasTerms = true;
+                        if (firstTerm) {
+                            latex += coef === 1 ? '' : coef === -1 ? '-' : `${coef}`;
+                            firstTerm = false;
+                        } else {
+                            latex += coef > 0 ? '+' : '';
+                            latex += coef === 1 ? '' : coef === -1 ? '-' : `${coef}`;
+                        }
+                        latex += variables[i];
+                    }
+                });
+                if (!hasTerms) {
+                    latex += '0';
+                }
+                latex += `=${ecuacion.resultado}`;
+                if (idx < sistema.ecuaciones.length - 1) {
+                    latex += '\\\\';
+                }
+            });
+            latex += '\\end{cases}';
+            return latex;
+        }
+
+        function actualizarInputs(numEcuaciones) {
+            const inputsDiv = document.getElementById('inputs');
+            inputsDiv.innerHTML = '';
+            const variables = ['x', 'y', 'z', 'w'];
+            
+            for (let i = 0; i < numEcuaciones; i++) {
+                const div = document.createElement('div');
+                div.className = 'input-group';
+                div.innerHTML = `
+                    <span>${variables[i]} = </span>
+                    <input type="text" pattern="-?[0-9]*" inputmode="numeric" placeholder="?"/>
+                `;
+                inputsDiv.appendChild(div);
+            }
+        }
+
+        function actualizarSoluciones(sistema) {
+            const solucionesDiv = document.querySelector('.solutions');
+            solucionesDiv.innerHTML = '';
+            const variables = ['x', 'y', 'z', 'w'];
+            
+            sistema.soluciones.forEach((solucion, idx) => {
+                const span = document.createElement('span');
+                span.textContent = `${variables[idx]} = ${solucion}`;
+                solucionesDiv.appendChild(span);
+            });
+        }
+
+        function mostrarSistema() {
+            const numEcuaciones = parseInt(document.getElementById('numEcuaciones').value);
+            sistemaActual = generarSistema(numEcuaciones);
+            
+            const sistemaDiv = document.getElementById('sistema');
+            sistemaDiv.innerHTML = `${traducciones[idiomaActual].resuelve}<br>$$${sistemaToLatex(sistemaActual)}$$`;
+            
+            if (window.MathJax) {
+                window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, sistemaDiv]);
+            }
+            
+            actualizarInputs(numEcuaciones);
+            actualizarSoluciones(sistemaActual);
+            document.querySelector('.solutions').classList.remove('visible');
+            document.getElementById('resultado').style.display = 'none';
+        }
+
+        function verificarRespuestas() {
+            const inputs = document.querySelectorAll('#inputs input');
+            const respuestas = Array.from(inputs).map(input => parseInt(input.value));
+            const variables = ['x', 'y', 'z', 'w'];
+            
+            if (respuestas.some(isNaN)) {
+                alert(traducciones[idiomaActual].completa);
+                return;
+            }
+
+            let incorrectas = [];
+            let todasCorrectas = true;
+
+            inputs.forEach(input => {
+                input.classList.remove('input-error');
+            });
+
+            respuestas.forEach((resp, idx) => {
+                if (resp !== sistemaActual.soluciones[idx]) {
+                    todasCorrectas = false;
+                    incorrectas.push(variables[idx]);
+                    inputs[idx].classList.add('input-error');
+                }
+            });
+            
+            const resultadoDiv = document.getElementById('resultado');
+            resultadoDiv.style.display = 'block';
+            
+            if (todasCorrectas) {
+                resultadoDiv.className = 'resultado-correcto';
+                resultadoDiv.textContent = traducciones[idiomaActual].correcto;
+            } else {
+                resultadoDiv.className = 'resultado-incorrecto';
+                let mensaje = traducciones[idiomaActual].incorrecto + ' ';
+                if (incorrectas.length === 1) {
+                    mensaje += traducciones[idiomaActual].solucionNo.replace('{0}', incorrectas[0]);
+                } else {
+                    // Copiar el array para no modificar el original al hacer pop
+                    const incorrectasCopia = [...incorrectas];
+                    const ultimaIncorrecta = incorrectasCopia.pop();
+                    
+                    mensaje += traducciones[idiomaActual].solucionesNo
+                        .replace('{0}', incorrectasCopia.join(', '))
+                        .replace('{1}', ultimaIncorrecta);
+                }
+                resultadoDiv.textContent = mensaje;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Detectar y configurar el idioma inicial
+            idiomaActual = detectarIdioma();
+            cambiarIdioma(idiomaActual);
+            
+            // Configurar botones de idioma
+            document.getElementById('lang-ca').addEventListener('click', () => cambiarIdioma('ca'));
+            document.getElementById('lang-es').addEventListener('click', () => cambiarIdioma('es'));
+            
+            // Configurar eventos de la aplicación
+            document.getElementById('numEcuaciones').addEventListener('change', mostrarSistema);
+            document.getElementById('verificar').addEventListener('click', verificarRespuestas);
+            document.getElementById('nuevo').addEventListener('click', mostrarSistema);
+
+            const showSolutionsBtn = document.getElementById('showSolutions');
+            
+            ['mousedown', 'touchstart'].forEach(evt => 
+                showSolutionsBtn.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                    document.querySelector('.solutions').classList.add('visible');
+                })
+            );
+            
+            ['mouseup', 'mouseleave', 'touchend', 'touchcancel'].forEach(evt => 
+                showSolutionsBtn.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                    document.querySelector('.solutions').classList.remove('visible');
+                })
+            );
+
+            if (window.MathJax) {
+                window.MathJax.Hub.Config({
+                    tex2jax: {
+                        inlineMath: [['$','$']],
+                        displayMath: [['$$','$$']]
+                    }
+                });
+            }
+
+            mostrarSistema();
+        });
+    </script>
+</body>
+</html>

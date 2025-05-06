@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Práctica de derivadas compuestas</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+            background-color: white;
+        }
+        .problem-container {
+            margin: 20px auto;
+            padding: 30px;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+            max-width: 600px;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px auto;
+            max-width: 700px;
+        }
+        .option-button {
+            padding: 20px;
+            font-size: 16px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background-color: white;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .option-button:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-2px);
+        }
+        .option-button:active {
+            transform: translateY(0);
+        }
+        #message {
+            margin: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.1em;
+        }
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+        }
+        .formula {
+            font-size: 1.3em;
+            margin: 20px 0;
+        }
+        .next-button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin: 10px;
+        }
+        .next-button:hover {
+            background-color: #0056b3;
+        }
+        .footer {
+            margin-top: 40px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .language-selector {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .language-btn {
+            padding: 5px 10px;
+            margin: 0 5px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background: white;
+        }
+        .language-btn.active {
+            background: #007bff;
+            color: white;
+        }
+        @media (max-width: 600px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-selector">
+        <button id="lang-es" class="language-btn">ES</button>
+        <button id="lang-ca" class="language-btn">CA</button>
+    </div>
+    
+    <h1 id="title">Práctica de derivadas compuestas</h1>
+    <div id="score"></div>
+    <div class="problem-container">
+        <h2 id="question"></h2>
+        <div id="function" class="formula"></div>
+        <div class="controls">
+            <button id="next-button" class="next-button"></button>
+        </div>
+    </div>
+    <div class="options-grid" id="options"></div>
+    <div id="message"></div>
+    <div class="footer">
+        <span id="footer-text"></span>
+    </div>
+
+    <script>
+        MathJax.Hub.Config({
+            tex2jax: {
+                inlineMath: [['$','$']],
+                displayMath: [['$$','$$']],
+                processEscapes: true
+            }
+        });
+
+        // Traducciones
+        const translations = {
+            'es': {
+                'title': 'Práctica de derivadas compuestas',
+                'score': 'Puntuación: ',
+                'question': '¿Cuál es la derivada de esta función?',
+                'next': 'Siguiente problema ⟶',
+                'correct': 'Correcto! 🎉',
+                'incorrect': 'Incorrecto. La respuesta correcta era:',
+                'footer': 'Aplicación hecha por <a href="https://bilateria.org">Juan José de Haro</a> | <a href="https://creativecommons.org/licenses/by-sa/4.0/">Esta obra está bajo una licencia Creative Commons BY-SA</a>'
+            },
+            'ca': {
+                'title': 'Pràctica de derivades compostes',
+                'score': 'Puntuació: ',
+                'question': 'Quina és la derivada d\'aquesta funció?',
+                'next': 'Següent problema ⟶',
+                'correct': 'Correcte! 🎉',
+                'incorrect': 'Incorrecte. La resposta correcta era:',
+                'footer': 'Aplicació feta per <a href="https://bilateria.org">Juan José de Haro</a> | <a href="https://creativecommons.org/licenses/by-sa/4.0/">Aquesta obra està sota una llicència Creative Commons BY-SA</a>'
+            }
+        };
+
+        let currentFunction;
+        let score = 0;
+        let total = 0;
+        let currentLang = 'es'; // Idioma por defecto
+
+        // Detectar idioma del navegador
+        function detectBrowserLanguage() {
+            const lang = navigator.language || navigator.userLanguage;
+            return lang.startsWith('ca') ? 'ca' : 'es';
+        }
+
+        // Cambiar idioma
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('title').textContent = translations[lang].title;
+            document.getElementById('score').textContent = translations[lang].score + score + '/' + total;
+            document.getElementById('question').textContent = translations[lang].question;
+            document.getElementById('next-button').textContent = translations[lang].next;
+            document.getElementById('footer-text').innerHTML = translations[lang].footer;
+            
+            // Actualizar botones de idioma
+            document.getElementById('lang-es').classList.toggle('active', lang === 'es');
+            document.getElementById('lang-ca').classList.toggle('active', lang === 'ca');
+            
+            // Si hay un mensaje, actualizarlo también
+            const messageDiv = document.getElementById('message');
+            if (messageDiv.className === 'correct') {
+                messageDiv.innerHTML = translations[lang].correct;
+            } else if (messageDiv.className === 'incorrect') {
+                messageDiv.innerHTML = `
+                    <div>${translations[lang].incorrect}</div>
+                    <div class="formula">$$${currentFunction.derivative}$$</div>
+                `;
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub, messageDiv]);
+            }
+        }
+
+        const functionTypes = {
+            power(n) { 
+                return {
+                    func: `x^${n}`, 
+                    deriv: `${n}x^${n-1}` 
+                };
+            },
+            nthRoot(n) {
+                return {
+                    func: `\\sqrt[${n}]{x}`,
+                    deriv: `\\frac{1}{${n}\\sqrt[${n}]{x^{${n-1}}}}` 
+                };
+            },
+            generalExp(a) {
+                return {
+                    func: `${a}^x`,
+                    deriv: `${a}^x\\ln(${a})`
+                };
+            },
+            generalLog(a) {
+                return {
+                    func: `\\log_{${a}}(x)`,
+                    deriv: `\\frac{1}{x\\ln(${a})}`
+                };
+            },
+            sin: { 
+                func: '\\sin(x)', 
+                deriv: '\\cos(x)'
+            },
+            cos: { 
+                func: '\\cos(x)', 
+                deriv: '-\\sin(x)'
+            },
+            tan: { 
+                func: '\\tan(x)', 
+                deriv: '\\sec^2(x)'
+            },
+            exp: { 
+                func: 'e^x', 
+                deriv: 'e^x'
+            },
+            ln: { 
+                func: '\\ln(x)', 
+                deriv: '\\frac{1}{x}'
+            },
+            sqrt: { 
+                func: '\\sqrt{x}', 
+                deriv: '\\frac{1}{2\\sqrt{x}}'
+            }
+        };
+
+        function getRandomFunction() {
+            const types = ['power', 'nthRoot', 'generalExp', 'generalLog', 'sin', 'cos', 'tan', 'exp', 'ln', 'sqrt'];
+            const selectedType = types[Math.floor(Math.random() * types.length)];
+            
+            switch(selectedType) {
+                case 'power':
+                    return functionTypes.power(Math.floor(Math.random() * 5) + 2); // Del 2 al 6
+                case 'nthRoot':
+                    return functionTypes.nthRoot(Math.floor(Math.random() * 4) + 3); // Del 3 al 6
+                case 'generalExp':
+                    return functionTypes.generalExp(Math.floor(Math.random() * 5) + 2); // Del 2 al 6
+                case 'generalLog':
+                    return functionTypes.generalLog(Math.floor(Math.random() * 9) + 2); // Del 2 al 10
+                default:
+                    return functionTypes[selectedType];
+            }
+        }
+
+        function composeFunction(outer, inner) {
+            let derivative;
+            const innerFunc = inner.func;
+            const innerDeriv = inner.deriv;
+
+            if (outer.func.includes('ln')) {
+                derivative = `\\frac{${innerDeriv}}{${innerFunc}}`;
+                return {
+                    original: `\\ln(${innerFunc})`,
+                    derivative: derivative
+                };
+            } 
+            
+            if (outer.func.includes('e^')) {
+                derivative = `e^{${innerFunc}} \\cdot (${innerDeriv})`;
+                return {
+                    original: `e^{${innerFunc}}`,
+                    derivative: derivative
+                };
+            }
+            
+            if (outer.func.includes('sqrt')) {
+                derivative = `\\frac{${innerDeriv}}{2\\sqrt{${innerFunc}}}`;
+                return {
+                    original: `\\sqrt{${innerFunc}}`,
+                    derivative: derivative
+                };
+            }
+            
+            const outerFunc = outer.func.replace('(x)', '');
+            const outerDeriv = outer.deriv.replace('(x)', '');
+            
+            derivative = `${outerDeriv.replace('x', `(${innerFunc})`)} \\cdot (${innerDeriv})`;
+            return {
+                original: `${outerFunc}(${innerFunc})`,
+                derivative: derivative
+            };
+        }
+
+        function generateComposedFunction() {
+            const outer = getRandomFunction();
+            const inner = getRandomFunction();
+            const composed = composeFunction(outer, inner);
+            
+            return {
+                original: composed.original,
+                derivative: composed.derivative,
+                isComposed: true
+            };
+        }
+
+        function generateRandomFunction() {
+            const isComposed = Math.random() < 0.5;
+            
+            if (isComposed) {
+                return generateComposedFunction();
+            } else {
+                const f = getRandomFunction();
+                const g = getRandomFunction();
+                
+                if (g.func.includes('sin') || g.func.includes('cos')) {
+                    return generateComposedFunction();
+                }
+                
+                return {
+                    original: `\\frac{${f.func}}{${g.func}}`,
+                    derivative: `\\frac{${f.deriv} \\cdot ${g.func} - ${f.func} \\cdot ${g.deriv}}{(${g.func})^2}`,
+                    isComposed: false
+                };
+            }
+        }
+
+        function generateWrongOptions(correct, isComposed) {
+            const wrongOptions = [];
+            const f = getRandomFunction();
+            const g = getRandomFunction();
+            
+            if (isComposed) {
+                wrongOptions.push(`${f.deriv.replace('x', `(${g.func})`)} \\cdot ${g.func}`);
+                wrongOptions.push(`${f.func.replace('x', `(${g.deriv})`)} \\cdot ${g.deriv}`);
+                wrongOptions.push(`${f.deriv.replace('x', `(${g.deriv})`)} \\cdot ${g.deriv}`);
+            } else {
+                wrongOptions.push(`\\frac{${f.deriv}}{${g.deriv}}`);
+                wrongOptions.push(`\\frac{${f.deriv} \\cdot ${g.func}}{(${g.func})^2}`);
+                wrongOptions.push(`\\frac{${f.func} \\cdot ${g.deriv}}{${g.func}^2}`);
+            }
+            
+            return wrongOptions;
+        }
+
+        function checkAnswer(selected) {
+            total++;
+            document.getElementById('score').textContent = translations[currentLang].score + score + '/' + total;
+            const messageDiv = document.getElementById('message');
+            
+            if (selected === currentFunction.derivative) {
+                score++;
+                messageDiv.innerHTML = translations[currentLang].correct;
+                messageDiv.className = 'correct';
+            } else {
+                messageDiv.innerHTML = `
+                    <div>${translations[currentLang].incorrect}</div>
+                    <div class="formula">$$${currentFunction.derivative}$$</div>
+                `;
+                messageDiv.className = 'incorrect';
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub, messageDiv]);
+            }
+            
+            setTimeout(generateProblem, 3000);
+        }
+
+        function generateProblem() {
+            currentFunction = generateRandomFunction();
+            const wrongOptions = generateWrongOptions(currentFunction.derivative, currentFunction.isComposed);
+            
+            const allOptions = [...wrongOptions, currentFunction.derivative]
+                .sort(() => Math.random() - 0.5);
+
+            document.getElementById('function').innerHTML = `$$f(x) = ${currentFunction.original}$$`;
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            allOptions.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option-button';
+                button.innerHTML = `$$f'(x) = ${option}$$`;
+                button.onclick = () => checkAnswer(option);
+                optionsContainer.appendChild(button);
+            });
+
+            document.getElementById('message').textContent = '';
+            
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar el idioma inicial basado en el navegador
+            currentLang = detectBrowserLanguage();
+            changeLanguage(currentLang);
+            
+            // Configurar eventos de cambio de idioma
+            document.getElementById('lang-es').addEventListener('click', () => changeLanguage('es'));
+            document.getElementById('lang-ca').addEventListener('click', () => changeLanguage('ca'));
+            
+            // Configurar evento del botón siguiente
+            document.getElementById('next-button').addEventListener('click', generateProblem);
+            
+            // Generar el primer problema
+            generateProblem();
+        });
+    </script>
+</body>
+</html>

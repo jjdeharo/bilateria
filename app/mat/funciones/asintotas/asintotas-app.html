@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="page-title">Practica les asímptotes verticals i horitzontals</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    #lang-switcher {
+      text-align: right;
+      margin-bottom: 10px;
+    }
+    #lang-switcher button {
+      margin: 0 5px;
+      padding: 8px 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #lang-switcher button:hover {
+      background-color: #45a049;
+    }
+    .active-lang {
+      background-color: #2a7;
+    }
+    .container {
+      background-color: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 10px 0;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .opciones {
+      margin: 20px 0;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .opcion {
+      margin: 10px 0;
+    }
+    .feedback {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 4px;
+      white-space: pre-line;
+    }
+    .correcto {
+      background-color: #dff0d8;
+      color: #3c763d;
+    }
+    .incorrecto {
+      background-color: #f2dede;
+      color: #a94442;
+    }
+    .parcial {
+      background-color: #fcf8e3;
+      color: #8a6d3b;
+    }
+    .estadisticas {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e9ecef;
+      border-radius: 4px;
+    }
+    footer {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #ddd;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <div id="lang-switcher">
+    <button id="btn-ca" onclick="setLanguage('ca')">CA</button>
+    <button id="btn-es" onclick="setLanguage('es')">ES</button>
+  </div>
+
+  <h1 id="header-title">Practica les asímptotes verticals i horitzontals</h1>
+  
+  <div class="container">
+    <div id="funcion"></div>
+    
+    <div class="opciones">
+      <h3 id="titulo-horizontal">Asímptota horitzontal</h3>
+      <div id="opcionesH"></div>
+    </div>
+
+    <div class="opciones">
+      <h3 id="titulo-vertical">Asímptota vertical</h3>
+      <div id="opcionesV"></div>
+    </div>
+
+    <button id="btn-verificar" onclick="verificarRespuestas()">Comprova les respostes</button>
+    <div id="feedback" class="feedback"></div>
+    <button id="btn-nueva" onclick="nuevaFuncion()">Nova funció</button>
+
+    <div class="estadisticas">
+      <h3 id="titulo-estadistiques">Estadístiques</h3>
+      <p id="correctas-text">Respostes correctes: <span id="correctas">0</span></p>
+      <p id="incorrectas-text">Respostes incorrectes: <span id="incorrectas">0</span></p>
+      <p id="porcentaje-text">Percentatge d'encert: <span id="porcentaje">0</span>%</p>
+    </div>
+  </div>
+
+  <footer>
+    <p id="footer-line1">Aplicació feta per <a href="https://bilateria.org">Juan José de Haro</a></p>
+    <p id="footer-line2">Aquesta obra està sota una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ca">llicència Creative Commons BY-SA</a></p>
+  </footer>
+
+  <script>
+    // Diccionari de traduccions
+    const translations = {
+      ca: {
+        pageTitle: "Practica les asímptotes verticals i horitzontals",
+        headerTitle: "Practica les asímptotes verticals i horitzontals",
+        tituloHorizontal: "Asímptota horitzontal",
+        tituloVertical: "Asímptota vertical",
+        btnVerificar: "Comprova les respostes",
+        btnNueva: "Nova funció",
+        tituloEstadistiques: "Estadístiques",
+        correctasText: "Respostes correctes:",
+        incorrectasText: "Respostes incorrectes:",
+        porcentajeText: "Percentatge d'encert:",
+        funcionLabel: "Funció",
+        noTiene: "No en té"
+      },
+      es: {
+        pageTitle: "Practica las asíntotas verticales y horizontales",
+        headerTitle: "Practica las asíntotas verticales y horizontales",
+        tituloHorizontal: "Asíntota horizontal",
+        tituloVertical: "Asíntota vertical",
+        btnVerificar: "Verifica las respuestas",
+        btnNueva: "Nueva función",
+        tituloEstadistiques: "Estadísticas",
+        correctasText: "Respuestas correctas:",
+        incorrectasText: "Respuestas incorrectas:",
+        porcentajeText: "Porcentaje de acierto:",
+        funcionLabel: "Función",
+        noTiene: "No tiene"
+      }
+    };
+
+    let currentLang = 'ca';
+
+    function updateLangButtons() {
+      document.getElementById('btn-ca').classList.toggle('active-lang', currentLang === 'ca');
+      document.getElementById('btn-es').classList.toggle('active-lang', currentLang === 'es');
+    }
+
+    function updateStaticTexts() {
+      document.title = translations[currentLang].pageTitle;
+      document.getElementById('page-title').textContent = translations[currentLang].pageTitle;
+      document.getElementById('header-title').textContent = translations[currentLang].headerTitle;
+      document.getElementById('titulo-horizontal').textContent = translations[currentLang].tituloHorizontal;
+      document.getElementById('titulo-vertical').textContent = translations[currentLang].tituloVertical;
+      document.getElementById('btn-verificar').textContent = translations[currentLang].btnVerificar;
+      document.getElementById('btn-nueva').textContent = translations[currentLang].btnNueva;
+      document.getElementById('titulo-estadistiques').textContent = translations[currentLang].tituloEstadistiques;
+      document.getElementById('correctas-text').innerHTML = translations[currentLang].correctasText + ' <span id="correctas">0</span>';
+      document.getElementById('incorrectas-text').innerHTML = translations[currentLang].incorrectasText + ' <span id="incorrectas">0</span>';
+      document.getElementById('porcentaje-text').innerHTML = translations[currentLang].porcentajeText + ' <span id="porcentaje">0</span>%';
+      // Footer: podem mantenir-lo fix, o traduir-lo si es desitja.
+      if (currentLang === 'es') {
+        document.getElementById('footer-line1').textContent = "Aplicación hecha por Juan José de Haro";
+        document.getElementById('footer-line2').textContent = "Esta obra está bajo una licencia Creative Commons BY-SA";
+      } else {
+        document.getElementById('footer-line1').textContent = "Aplicació feta per Juan José de Haro";
+        document.getElementById('footer-line2').textContent = "Aquesta obra està sota una llicència Creative Commons BY-SA";
+      }
+      document.documentElement.lang = currentLang;
+    }
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      updateLangButtons();
+      updateStaticTexts();
+      nuevaFuncion();
+    }
+
+    window.addEventListener("load", function() {
+      const navLang = navigator.language || navigator.userLanguage;
+      if (navLang && navLang.toLowerCase().startsWith("ca")) {
+        currentLang = "ca";
+      } else {
+        currentLang = "es";
+      }
+      updateLangButtons();
+      updateStaticTexts();
+      nuevaFuncion();
+    });
+
+    // Codi de l'aplicació d'asímptotes
+
+    let respuestaHCorrecta = '';
+    let respuestaVCorrecta = '';
+    let estadisticas = {
+      correctas: 0,
+      incorrectas: 0,
+      intentos: 0
+    };
+
+    function actualizarEstadisticas(correctas) {
+      if (correctas === 2) {
+        estadisticas.correctas++;
+      } else {
+        estadisticas.incorrectas++;
+      }
+      estadisticas.intentos++;
+      
+      document.getElementById('correctas').textContent = estadisticas.correctas;
+      document.getElementById('incorrectas').textContent = estadisticas.incorrectas;
+      document.getElementById('porcentaje').textContent = 
+        Math.round((estadisticas.correctas / estadisticas.intentos) * 100);
+    }
+
+    function numeroAleatorio(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function coeficienteAleatorio() {
+      let num = numeroAleatorio(-5, 5);
+      return num === 0 ? 1 : num;
+    }
+
+    function generarOpcionesIncorrectas(correcta, tipo) {
+      let opciones = [correcta];
+      for(let i = 0; i < 3; i++) {
+        let opcion;
+        if(tipo === 'horizontal') {
+          opcion = correcta === translations[currentLang].noTiene ? numeroAleatorio(-5, 5) : 
+                   correcta + numeroAleatorio(-3, 3);
+        } else {
+          opcion = correcta === translations[currentLang].noTiene ? numeroAleatorio(-5, 5) : 
+                   correcta + numeroAleatorio(-2, 2);
+        }
+        if(!opciones.includes(opcion)) {
+          opciones.push(opcion);
+        } else {
+          i--;
+        }
+      }
+      return opciones.sort(() => Math.random() - 0.5);
+    }
+
+    function generarOpciones(correcta, tipo) {
+      const opciones = generarOpcionesIncorrectas(correcta, tipo);
+      const contenedor = document.getElementById(tipo === 'horizontal' ? 'opcionesH' : 'opcionesV');
+      contenedor.innerHTML = '';
+      
+      opciones.forEach((opcion, index) => {
+        const div = document.createElement('div');
+        div.className = 'opcion';
+        const label = tipo === 'horizontal' ? 'y = ' : 'x = ';
+        div.innerHTML = `
+          <input type="radio" name="asintota${tipo === 'horizontal' ? 'H' : 'V'}" 
+                 value="${opcion}" id="${tipo}${index}">
+          <label for="${tipo}${index}">${label}${opcion}</label>
+        `;
+        contenedor.appendChild(div);
+      });
+    }
+
+    function generarFuncionRacional() {
+      const grado = numeroAleatorio(1, 2);
+      let numerador = '';
+      let denominador = '';
+      
+      if (grado === 1) {
+        const a = coeficienteAleatorio();
+        const b = coeficienteAleatorio();
+        numerador = `${a}x + ${b}`;
+        const c = coeficienteAleatorio();
+        denominador = `x + ${c}`;
+        respuestaHCorrecta = a;
+        respuestaVCorrecta = -c;
+        funcionActual = `\\frac{${numerador}}{${denominador}}`;
+      } else {
+        const a = coeficienteAleatorio();
+        const b = coeficienteAleatorio();
+        const c = coeficienteAleatorio();
+        numerador = `${a}x^2 + ${b}x + ${c}`;
+        const d = coeficienteAleatorio();
+        denominador = `x + ${d}`;
+        respuestaHCorrecta = translations[currentLang].noTiene;
+        respuestaVCorrecta = -d;
+        funcionActual = `\\frac{${numerador}}{${denominador}}`;
+      }
+      return funcionActual;
+    }
+
+    function generarFuncionLogaritmica() {
+      const a = coeficienteAleatorio();
+      const b = coeficienteAleatorio();
+      respuestaHCorrecta = translations[currentLang].noTiene;
+      respuestaVCorrecta = -b/a;
+      funcionActual = `\\ln(${a}x + ${b})`;
+      return funcionActual;
+    }
+
+    function generarFuncionExponencial() {
+      const a = coeficienteAleatorio();
+      const b = coeficienteAleatorio();
+      respuestaHCorrecta = b;
+      respuestaVCorrecta = translations[currentLang].noTiene;
+      funcionActual = `${a}^x + ${b}`;
+      return funcionActual;
+    }
+
+    function nuevaFuncion() {
+      const tipo = numeroAleatorio(1, 3);
+      let funcionLatex = '';
+      
+      switch(tipo) {
+        case 1:
+          funcionLatex = generarFuncionRacional();
+          break;
+        case 2:
+          funcionLatex = generarFuncionLogaritmica();
+          break;
+        case 3:
+          funcionLatex = generarFuncionExponencial();
+          break;
+      }
+      document.getElementById('funcion').innerHTML = `\\[y = ${funcionLatex}\\]`;
+      document.getElementById('feedback').innerHTML = '';
+      document.getElementById('feedback').className = 'feedback';
+      generarOpciones(respuestaHCorrecta, 'horizontal');
+      generarOpciones(respuestaVCorrecta, 'vertical');
+      MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+    }
+
+    function verificarRespuestas() {
+      const respuestaH = document.querySelector('input[name="asintotaH"]:checked')?.value;
+      const respuestaV = document.querySelector('input[name="asintotaV"]:checked')?.value;
+      
+      if (!respuestaH || !respuestaV) {
+        document.getElementById('feedback').innerHTML = currentLang === 'es' ?
+          'Por favor, selecciona una opción para cada tipo de asíntota.' :
+          'Si us plau, selecciona una opció per a cada tipus d\'asímptota.';
+        document.getElementById('feedback').className = 'feedback incorrecto';
+        return;
+      }
+  
+      const correctaH = respuestaH == respuestaHCorrecta;
+      const correctaV = respuestaV == respuestaVCorrecta;
+      let correctas = 0;
+  
+      if (correctaH) correctas++;
+      if (correctaV) correctas++;
+  
+      let mensaje = '';
+      let clase = '';
+  
+      if (correctaH && correctaV) {
+        mensaje = currentLang === 'es' ?
+          '¡Correcto! Las dos asíntotas son correctas.' :
+          'Correcte! Les dues asímptotes són correctes.';
+        clase = 'correcto';
+      } else if (!correctaH && !correctaV) {
+        mensaje = currentLang === 'es' ?
+          `Incorrecto. Ninguna de las asíntotas es correcta.\nLa asíntota horizontal correcta es: y = ${respuestaHCorrecta}\nLa asíntota vertical correcta es: x = ${respuestaVCorrecta}` :
+          `Incorrecte. Cap de les asímptotes és correcta.\nL'asímptota horitzontal correcta és: y = ${respuestaHCorrecta}\nL'asímptota vertical correcta és: x = ${respuestaVCorrecta}`;
+        clase = 'incorrecto';
+      } else {
+        mensaje = correctaH ?
+          (currentLang === 'es' ?
+           `Parcialmente correcto. La asíntota horizontal es correcta.\nLa asíntota vertical correcta es: x = ${respuestaVCorrecta}` :
+           `Parcialment correcte. L'asímptota horitzontal és correcta.\nL'asímptota vertical correcta és: x = ${respuestaVCorrecta}`) :
+          (currentLang === 'es' ?
+           `Parcialmente correcto. La asíntota vertical es correcta.\nLa asíntota horizontal correcta es: y = ${respuestaHCorrecta}` :
+           `Parcialment correcte. L'asímptota vertical és correcta.\nL'asímptota horitzontal correcta és: y = ${respuestaHCorrecta}`);
+        clase = 'parcial';
+      }
+  
+      document.getElementById('feedback').innerHTML = mensaje;
+      document.getElementById('feedback').className = `feedback ${clase}`;
+      actualizarEstadisticas(correctas);
+    }
+
+    window.onload = nuevaFuncion;
+  </script>
+</body>
+</html>
+

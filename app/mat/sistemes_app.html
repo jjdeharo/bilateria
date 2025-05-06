@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title data-i18n="title">System of Equations Solver</title>
+
+    <!-- Carga de math.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.js"></script>
+
+    <!-- Configuración de MathJax (versión 2) para reconocer $...$ y $$...$$ -->
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        displayMath: [['$$','$$'], ['\\[','\\]']]
+      },
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    });
+    </script>
+    <!-- Carga de MathJax (versión 2) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --background: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 30px;
+            background: var(--background);
+            position: relative;
+        }
+
+        .language-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang-btn {
+            padding: 5px 10px;
+            border-radius: 15px;
+            border: 2px solid var(--primary-color);
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .lang-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .lang-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-top: 40px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 1.1em;
+        }
+
+        .config-group {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .config-group > button {
+            line-height: 1.5;
+            vertical-align: middle;
+        }
+
+        .input-group {
+            margin: 15px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        input[type="number"] {
+            width: 70px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+
+        select, button {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        button {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+        }
+
+        button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .result-box {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .matrix-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .matrix-box {
+            padding: 15px;
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 8px;
+        }
+
+        .explicacio {
+            margin: 15px 0;
+            padding: 10px;
+            background: #f0f8ff;
+            border-radius: 8px;
+        }
+
+        footer {
+            margin-top: 40px;
+            font-size: 0.9em;
+            text-align: center;
+            color: #666;
+        }
+
+        .error {
+            color: red;
+        }
+        .compatible {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher">
+        <button class="lang-btn" onclick="switchLanguage('ca')">CA</button>
+        <button class="lang-btn" onclick="switchLanguage('es')">ES</button>
+        <button class="lang-btn" onclick="switchLanguage('en')">EN</button>
+    </div>
+
+    <div class="container">
+        <h1 data-i18n="title">📐 Resolució de Sistemes d'Equacions</h1>
+        <p class="subtitle" data-i18n="subtitle">Completa els coeficients i termes independents o genera un sistema aleatori del tipus desitjat</p>
+        
+        <div class="config-group">
+            <div class="input-group">
+                <label data-i18n="sizeLabel">Mida:</label>
+                <select id="numEquacions" onchange="generarInputs()">
+                    <option value="2">2x2</option>
+                    <option value="3">3x3</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <label data-i18n="typeLabel">Tipus:</label>
+                <select id="tipusSistema">
+                    <option value="determinat" data-i18n="determined">Determinat</option>
+                    <option value="indeterminat" data-i18n="indetermined">Indeterminat</option>
+                    <option value="incompatible" data-i18n="incompatible">Incompatible</option>
+                </select>
+            </div>
+            
+            <button onclick="generarSistemaAleatori()" data-i18n="generateRandom">🎲 Generar Aleatori</button>
+            <button onclick="restaurarTodo()" data-i18n="resetAll">🔄 Restaurar</button>
+        </div>
+
+        <div id="inputsContainer"></div>
+        
+        <button onclick="resoldre()" data-i18n="solve">⚡ Resoldre</button>
+        
+        <div id="sistemaMostrat" class="result-box"></div>
+        <div id="resultat"></div>
+
+        <footer>
+            <p data-i18n="developedBy">Aplicació desenvolupada per <a href="https://bilateria.org">JJ De Haro</a></p>
+            <p data-i18n="license">Llicència <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ca">CC BY-SA 4.0</a></p>
+        </footer>
+    </div>
+
+    <script>
+        /* ==== TRADUCCIONS ==== */
+        const translations = {
+            ca: {
+                title: "📐 Resolució de Sistemes d'Equacions",
+                subtitle: "Completa els coeficients i termes independents o genera un sistema aleatori del tipus desitjat",
+                sizeLabel: "Mida:",
+                typeLabel: "Tipus:",
+                determined: "Determinat",
+                indetermined: "Indeterminat",
+                incompatible: "Incompatible",
+                generateRandom: "🎲 Generar Aleatori",
+                solve: "⚡ Resoldre",
+                developedBy: "Aplicació desenvolupada per <a href='https://bilateria.org'>JJ de Haro</a>",
+                license: "Llicència <a href='https://creativecommons.org/licenses/by-sa/4.0/deed.ca'>CC BY-SA 4.0</a>",
+                systemShown: "Sistema Introduït:",
+                results: "Resultats",
+                systemMatrix: "Matriu del Sistema",
+                augmentedMatrix: "Matriu Ampliada",
+                rank: "Rang:",
+                discussion: "Discussió:",
+                incompatibleSystem: "✖️ SISTEMA INCOMPATIBLE",
+                reason: "Raó:",
+                noSolution: "No existeix solució: les equacions són contradictòries.",
+                determinedSystem: "✔️ SISTEMA COMPATIBLE DETERMINAT",
+                uniqueSolution: "Solució única:",
+                indeterminedSystem: "🔘 SISTEMA COMPATIBLE INDETERMINAT",
+                infiniteSolutions: "Infinites solucions amb",
+                parameters: "paràmetre",
+                freeParams: "lliures:",
+                paramsDeclaration: "Paràmetres",
+                errorCoefficients: "❗ Completa tots els coeficients",
+                errorTerms: "❗ Completa tots els termes independents",
+                resetAll: "🔄 Restaurar"
+            },
+            es: {
+                title: "📐 Resolución de Sistemas de Ecuaciones",
+                subtitle: "Completa los coeficientes y términos independientes o genera un sistema aleatorio del tipo deseado",
+                sizeLabel: "Tamaño:",
+                typeLabel: "Tipo:",
+                determined: "Determinado",
+                indetermined: "Indeterminado",
+                incompatible: "Incompatible",
+                generateRandom: "🎲 Generar Aleatorio",
+                solve: "⚡ Resolver",
+                developedBy: "Aplicación desarrollada por <a href='https://bilateria.org'>JJ de Haro</a>",
+                license: "Licencia <a href='https://creativecommons.org/licenses/by-sa/4.0/deed.es'>CC BY-SA 4.0</a>",
+                systemShown: "Sistema Introducido:",
+                results: "Resultados",
+                systemMatrix: "Matriz del Sistema",
+                augmentedMatrix: "Matriz Ampliada",
+                rank: "Rango:",
+                discussion: "Discusión:",
+                incompatibleSystem: "✖️ SISTEMA INCOMPATIBLE",
+                reason: "Razón:",
+                noSolution: "No existe solución: las ecuaciones son contradictorias.",
+                determinedSystem: "✔️ SISTEMA COMPATIBLE DETERMINADO",
+                uniqueSolution: "Solución única:",
+                indeterminedSystem: "🔘 SISTEMA COMPATIBLE INDETERMINADO",
+                infiniteSolutions: "Infinitas soluciones con",
+                parameters: "parámetro",
+                freeParams: "libres:",
+                paramsDeclaration: "Parámetros",
+                errorCoefficients: "❗ Completa todos los coeficientes",
+                errorTerms: "❗ Completa todos los términos independientes",
+                resetAll: "🔄 Restaurar"
+            },
+            en: {
+                title: "📐 System of Equations Solver",
+                subtitle: "Fill in the coefficients and constants or generate a random system of the desired type",
+                sizeLabel: "Size:",
+                typeLabel: "Type:",
+                determined: "Determined",
+                indetermined: "Undetermined",
+                incompatible: "Inconsistent",
+                generateRandom: "🎲 Random Generate",
+                solve: "⚡ Solve",
+                developedBy: "Application developed by <a href='https://bilateria.org'>JJ de Haro</a>",
+                license: "License <a href='https://creativecommons.org/licenses/by-sa/4.0/deed.en'>CC BY-SA 4.0</a>",
+                systemShown: "Entered System:",
+                results: "Results",
+                systemMatrix: "System Matrix",
+                augmentedMatrix: "Augmented Matrix",
+                rank: "Rank:",
+                discussion: "Analysis:",
+                incompatibleSystem: "✖️ INCONSISTENT SYSTEM",
+                reason: "Reason:",
+                noSolution: "No solution exists: equations are contradictory.",
+                determinedSystem: "✔️ CONSISTENT DETERMINED SYSTEM",
+                uniqueSolution: "Unique solution:",
+                indeterminedSystem: "🔘 CONSISTENT UNDETERMINED SYSTEM",
+                infiniteSolutions: "Infinite solutions with",
+                parameters: "parameter",
+                freeParams: "free:",
+                paramsDeclaration: "Parameters",
+                errorCoefficients: "❗ Fill in all coefficients",
+                errorTerms: "❗ Fill in all constant terms",
+                resetAll: "🔄 Reset"
+            }
+        };
+
+        /* ==== LANGUAGE CONFIGURATION ==== */
+        let lang = localStorage.getItem('userLang') || (
+            [navigator.language, ...(navigator.languages || [])]
+                .find(l => l.startsWith('ca') || l.startsWith('es')) 
+                ? (navigator.language.startsWith('ca') ? 'ca' : 'es')
+                : 'en'
+        );
+        let variables = [];
+
+        function applyLanguage(lang) {
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    element.innerHTML = translations[lang][key];
+                }
+            });
+            document.documentElement.lang = lang;
+        }
+
+        function switchLanguage(newLang) {
+            lang = newLang;
+            localStorage.setItem('userLang', lang);
+            applyLanguage(lang);
+            updateLanguageButtons();
+            // Volvemos a mostrar el sistema por si ha habido cambios de idioma en los títulos
+            mostrarSistema();
+            // Si ya hay algo en resultados (se había resuelto antes) recalculamos con el nuevo idioma
+            if (document.getElementById('resultat').innerHTML.trim() !== '') {
+                resoldre();
+            }
+        }
+
+        function updateLanguageButtons() {
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent === lang.toUpperCase()) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        /* ==== RANDOM SYSTEM GENERATION ==== */
+        function generarSistemaAleatori() {
+            document.getElementById('resultat').innerHTML = '';
+            const n = parseInt(document.getElementById('numEquacions').value);
+            const tipus = document.getElementById('tipusSistema').value;
+            
+            let A = [], b = [];
+            
+            switch(tipus) {
+                case 'determinat': {
+                    // Genera solución al azar
+                    const soluciones = Array.from({length: n}, () => Math.floor(Math.random()*11) -5);
+                    // Genera matriz A con determinante != 0
+                    do {
+                        A = Array.from({length: n}, () => 
+                            Array.from({length: n}, () => Math.floor(Math.random()*11) -5)
+                        );
+                    } while(math.det(A) === 0);
+
+                    // Calcula b = A * soluciones
+                    b = A.map(row => [row.reduce((sum, coef, i) => sum + coef*soluciones[i], 0)]);
+                    break;
+                }
+                case 'indeterminat': {
+                    if(n === 3) {
+                        function sonProporcionales(f1, f2) {
+                            let ratio = null;
+                            for (let i = 0; i < f1.length; i++) {
+                                if (f1[i] !== 0) {
+                                    const actual = f2[i]/f1[i];
+                                    if(ratio===null) ratio=actual;
+                                    else if(Math.abs(actual - ratio)>1e-10) return false;
+                                } else {
+                                    if(f2[i]!==0) return false;
+                                }
+                            }
+                            return ratio!==null;
+                        }
+                        let fila1, fila2;
+                        do {
+                            fila1 = Array.from({length:3}, ()=>Math.floor(Math.random()*11)-5);
+                            fila2 = Array.from({length:3}, ()=>Math.floor(Math.random()*11)-5);
+                        } while(sonProporcionales(fila1,fila2));
+
+                        const alfa = Math.floor(Math.random()*5)+1;
+                        const fila3 = fila1.map((val,i) => alfa*val + fila2[i]);
+
+                        A = [fila1, fila2, fila3];
+
+                        let b1 = Math.floor(Math.random()*11)-5;
+                        let b2 = Math.floor(Math.random()*11)-5;
+                        let b3 = alfa*b1 + b2;
+                        b = [[b1],[b2],[b3]];
+                    } else {
+                        const base = Array.from({length: n}, () => Math.floor(Math.random()*5+1));
+                        const k = Math.floor(Math.random()*3 +2);
+                        A = Array.from({length: n}, (_, i) =>
+                            i===0 ? base : base.map(val=>val*(i+1))
+                        );
+                        b = A.map(row=>[row.reduce((acc,val,j)=>acc + val*(j+1),0)*k]);
+                    }
+                    break;
+                }
+                case 'incompatible': {
+                    A = Array.from({length: n}, () => 
+                        Array.from({length: n}, () => Math.floor(Math.random()*10)-5)
+                    );
+                    if(n===2) {
+                        // Hacemos una fila doble de la otra para forzar incompatibilidad
+                        A[1] = A[0].map(x=>x*2);
+                        b = [
+                            [A[0].reduce((acc,v)=>acc+v,0)],
+                            [A[1].reduce((acc,v)=>acc+v,0)+1]
+                        ];
+                    } else {
+                        // Caso 3x3
+                        A[2] = A[0].map((x,i)=>x + A[1][i]);
+                        b = [
+                            [A[0].reduce((acc,v)=>acc+v,0)],
+                            [A[1].reduce((acc,v)=>acc+v,0)],
+                            [A[2].reduce((acc,v)=>acc+v,0)+1]
+                        ];
+                    }
+                    break;
+                }
+            }
+
+            for(let i=0;i<n;i++){
+                for(let j=0;j<n;j++){
+                    document.getElementById(`a${i}${j}`).value = A[i][j];
+                }
+                document.getElementById(`b${i}`).value = b[i][0];
+            }
+            mostrarSistema();
+        }
+
+        /* ==== INPUT GENERATION ==== */
+        function generarInputs() {
+            const n = parseInt(document.getElementById('numEquacions').value);
+            variables = ['x','y','z'].slice(0,n);
+            let html='';
+            for(let i=0;i<n;i++){
+                html+='<div class="input-group">';
+                for(let j=0;j<n;j++){
+                    html+=`<input type="number" id="a${i}${j}" step="any">`;
+                    html+=`<span>${variables[j]}</span>`;
+                    if(j<n-1) html+=' + ';
+                }
+                html+=`= <input type="number" id="b${i}" step="any"></div>`;
+            }
+            document.getElementById('inputsContainer').innerHTML=html;
+        }
+
+        /* ==== SHOW SYSTEM IN LATEX ==== */
+        function mostrarSistema() {
+            const n = variables.length;
+            if(n===0) return;
+
+            let latex = '\\begin{cases}';
+            for(let i=0;i<n;i++){
+                let eq='';
+                let firstTerm=true;
+                for(let j=0;j<n;j++){
+                    const coef = parseFloat(document.getElementById(`a${i}${j}`).value);
+                    if(!coef) continue;
+                    const absC = Math.abs(coef);
+                    const signo = coef<0 ? '-' : (firstTerm?'':'+');
+                    let termino = '';
+                    if(absC===1){
+                        termino=`${signo} ${variables[j]}`.trim();
+                    } else {
+                        termino=`${signo} ${absC}${variables[j]}`;
+                    }
+                    eq += firstTerm ? termino.replace(/^\+/,'') : ` ${termino}`;
+                    firstTerm=false;
+                }
+                const indep = document.getElementById(`b${i}`).value || '0';
+                eq += ` = ${indep}`;
+                latex += eq + (i<n-1 ? '\\\\' : '');
+            }
+            latex+='\\end{cases}';
+
+            document.getElementById('sistemaMostrat').innerHTML=`
+                <h2>${translations[lang].systemShown}</h2>
+                <div>$$${latex}$$</div>
+            `;
+            // Forzar renderizado de MathJax (sólo la parte del sistemaMostrat)
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub, "sistemaMostrat"]);
+        }
+
+        /* ==== RANK CALCULATION ==== */
+        function calcularRang(A) {
+            const M = A.map(row => [...row]);
+            let rang=0;
+            for(let col=0; col<M[0].length; col++){
+                let pivotRow=-1;
+                for(let row=rang; row<M.length; row++){
+                    if(Math.abs(M[row][col])>1e-10){
+                        pivotRow=row; 
+                        break;
+                    }
+                }
+                if(pivotRow===-1) continue;
+                [M[rang],M[pivotRow]]=[M[pivotRow],M[rang]];
+                for(let row=rang+1; row<M.length; row++){
+                    if(Math.abs(M[row][col])>1e-10){
+                        const factor=M[row][col]/M[rang][col];
+                        for(let c=col; c<M[0].length; c++){
+                            M[row][c]-= factor*M[rang][c];
+                        }
+                    }
+                }
+                rang++;
+            }
+            return rang;
+        }
+
+        /* ==== RREF CONVERSION ==== */
+        function rref(A) {
+            let lead=0;
+            let rowCount=A.length;
+            let colCount=A[0].length;
+            for(let r=0; r<rowCount; r++){
+                if(lead>=colCount) return A;
+                let i=r;
+                while(i<rowCount && Math.abs(A[i][lead])<1e-10){
+                    i++;
+                }
+                if(i===rowCount){
+                    lead++;
+                    r--;
+                    continue;
+                }
+                [A[r], A[i]]=[A[i], A[r]];
+
+                let val=A[r][lead];
+                for(let c=0;c<colCount;c++){
+                    A[r][c]/=val;
+                }
+
+                for(let r2=0; r2<rowCount; r2++){
+                    if(r2!==r){
+                        let factor=A[r2][lead];
+                        for(let c=0;c<colCount;c++){
+                            A[r2][c]-= factor*A[r][c];
+                        }
+                    }
+                }
+                lead++;
+            }
+            return A;
+        }
+
+        /* ==== SOLVE USING RREF ==== */
+        function resolverRREF(A,b){
+            const n=A.length;
+            let AB = A.map((row,i)=>[...row,b[i][0]]);
+            AB = rref(AB);
+
+            let pivots=[];
+            for(let i=0; i<n; i++){
+                let colPivot = AB[i].slice(0,n).findIndex(x=>Math.abs(x-1)<1e-10);
+                if(colPivot>=0) {
+                    pivots.push(colPivot);
+                }
+            }
+
+            let libres = [];
+            for(let c=0;c<n;c++){
+                if(!pivots.includes(c)) libres.push(c);
+            }
+
+            let sol = Array(n).fill("0");
+            libres.forEach((col,i)=>{
+                sol[col] = `\\lambda_{${i+1}}`;
+            });
+
+            for(let i=0; i<n; i++){
+                let colPivot = AB[i].slice(0,n).findIndex(x=>Math.abs(x-1)<1e-10);
+                if(colPivot===-1) continue;
+                let valor = AB[i][n];
+                let expr = valor.toFixed(2);
+
+                for(let c=0;c<n;c++){
+                    if(c!==colPivot && Math.abs(AB[i][c])>1e-10){
+                        let coef = AB[i][c];
+                        let idxLibre=libres.indexOf(c);
+                        if(idxLibre>=0){
+                            if(coef>0){
+                                expr += ` - ${coef.toFixed(2)}\\lambda_{${idxLibre+1}}`;
+                            } else {
+                                expr += ` + ${Math.abs(coef).toFixed(2)}\\lambda_{${idxLibre+1}}`;
+                            }
+                        }
+                    }
+                }
+                sol[colPivot] = expr;
+            }
+
+            return {sol, libres};
+        }
+
+        /* ==== MAIN SOLVE FUNCTION ==== */
+        function resoldre() {
+            const n = variables.length;
+            // Comprobaciones de inputs
+            for(let i=0;i<n;i++){
+                for(let j=0;j<n;j++){
+                    if(!document.getElementById(`a${i}${j}`).value){
+                        document.getElementById('resultat').innerHTML = `<div class="result-box error">${translations[lang].errorCoefficients}</div>`;
+                        return;
+                    }
+                }
+                if(!document.getElementById(`b${i}`).value){
+                    document.getElementById('resultat').innerHTML = `<div class="result-box error">${translations[lang].errorTerms}</div>`;
+                    return;
+                }
+            }
+
+            let A=[], b=[];
+            for(let i=0;i<n;i++){
+                A[i]=[];
+                for(let j=0;j<n;j++){
+                    A[i][j]= parseFloat(document.getElementById(`a${i}${j}`).value);
+                }
+                b[i]=[parseFloat(document.getElementById(`b${i}`).value)];
+            }
+            mostrarSistema();
+
+            try {
+                // Rangos
+                const rangA = calcularRang(A);
+                const AB = A.map((row,i)=>[...row,b[i][0]]);
+                const rangAB = calcularRang(AB);
+
+                let html = `<div class="result-box">
+                    <h2>${translations[lang].results}</h2>
+                    <div class="matrix-info">
+                        <div class="matrix-box">
+                            <h3>${translations[lang].systemMatrix}</h3>
+                            <p>${translations[lang].rank} ${rangA}</p>
+                        </div>
+                        <div class="matrix-box">
+                            <h3>${translations[lang].augmentedMatrix}</h3>
+                            <p>${translations[lang].rank} ${rangAB}</p>
+                        </div>
+                    </div>
+                    <h3>${translations[lang].discussion}</h3>
+                    <div class="explicacio">
+                `;
+
+                // Discusión de casos
+                if(rangA!==rangAB){
+                    // Incompatible
+                    html+=`
+                        <p class="error">${translations[lang].incompatibleSystem}</p>
+                        <p><strong>${translations[lang].reason}</strong> ${translations[lang].rank} = ${rangA} ≠ ${translations[lang].rank} = ${rangAB}</p>
+                        <p>${translations[lang].noSolution}</p>
+                    `;
+                } else {
+                    if(rangA===n){
+                        // Determinado
+                        const sol = math.lusolve(A,b); 
+                        html+=`
+                            <p class="compatible">${translations[lang].determinedSystem}</p>
+                            <p><strong>${translations[lang].reason}</strong> ${translations[lang].rank} = ${rangA} = ${n}</p>
+                            <p>${translations[lang].uniqueSolution}</p>
+                            <div class="solucio">
+                        `;
+                        sol.forEach((val,i)=>{
+                            html+=`<p>${variables[i]} = ${math.round(val[0],4)}</p>`;
+                        });
+                        html+='</div>';
+                    } else {
+                        // Indeterminado
+                        const {sol, libres} = resolverRREF(A,b);
+                        const numLibres = libres.length;
+                        html+=`
+                            <p class="compatible">${translations[lang].indeterminedSystem}</p>
+                            <p><strong>${translations[lang].reason}</strong> ${translations[lang].rank} = ${rangA} < ${n}</p>
+                            <p>${translations[lang].infiniteSolutions} ${numLibres} ${translations[lang].parameters}${numLibres>1?'s':''} ${translations[lang].freeParams}</p>
+                        `;
+
+                        let latex = '\\begin{cases} ';
+                        for(let i=0;i<n;i++){
+                            latex += `${variables[i]} = ${sol[i]}`;
+                            if(i<n-1) latex+='\\\\ ';
+                        }
+                        latex+='\\end{cases}';
+
+                        html+=`
+                            <div class="solucio">
+                                <div>$$${latex}$$</div>
+                                <p>${translations[lang].paramsDeclaration}$: 
+                                ${libres.map((_, i) => `\\lambda_{${i + 1}}`).join(', ')}$ 
+                                \\(\\in \\mathbb{R}\\)</p>
+                            </div>
+                        `;
+                    }
+                }
+                html+='</div></div>';
+                document.getElementById('resultat').innerHTML= html;
+
+                // Forzar renderizado de MathJax sólo en la parte de 'resultat'
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub, "resultat"]);
+
+            } catch(err){
+                document.getElementById('resultat').innerHTML = `
+                    <div class="result-box error">
+                        ❗ Error: ${err.message}
+                    </div>
+                `;
+            }
+        }
+
+        /* ==== RESTORE ALL FUNCTION ==== */
+        function restaurarTodo() {
+            // Restaura los selectores a valores por defecto
+            document.getElementById('numEquacions').value = '2';
+            document.getElementById('tipusSistema').value = 'determinat';
+
+            // Vuelve a generar los campos
+            generarInputs();
+
+            // Deja en blanco los inputs generados
+            const n = parseInt(document.getElementById('numEquacions').value);
+            for (let i = 0; i < n; i++) {
+                for (let j = 0; j < n; j++) {
+                    document.getElementById(`a${i}${j}`).value = '';
+                }
+                document.getElementById(`b${i}`).value = '';
+            }
+
+            // Limpia las secciones de resultados y del sistema mostrado
+            document.getElementById('resultat').innerHTML = '';
+            document.getElementById('sistemaMostrat').innerHTML = '';
+        }
+
+        // Inicialización
+        applyLanguage(lang);
+        updateLanguageButtons();
+        generarInputs();
+    </script>
+</body>
+</html>
+

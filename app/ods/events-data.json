@@ -1,0 +1,1628 @@
+{
+  "events": [
+    {
+      "day": 24,
+      "month": 1,
+      "title": {
+        "es": "Día internacional de la educación",
+        "ca": "Dia internacional de l'educació"
+      },
+      "description": {
+        "es": "Subraya el papel de la educación de calidad para lograr sociedades inclusivas.",
+        "ca": "Subratlla el paper de l'educació de qualitat per aconseguir societats inclusives."
+      },
+      "relatedODS": [
+        4
+      ],
+      "activities": {
+        "es": [
+          "Realizar una encuesta sobre métodos de aprendizaje preferidos en la clase",
+          "Debatir el impacto de la educación en la igualdad de oportunidades",
+          "Diseñar infografías sobre el ODS 4 y su avance en distintos países",
+          "Organizar tutorías entre iguales para reforzar contenidos",
+          "Crear un mural sobre personas que cambiaron el mundo gracias a la educación",
+          "Elaborar un podcast sobre la historia del acceso a la educación"
+        ],
+        "ca": [
+          "Realitzar una enquesta sobre mètodes d'aprenentatge preferits a la classe",
+          "Debatre l'impacte de l'educació en la igualtat d'oportunitats",
+          "Dissenyar infografies sobre l'ODS 4 i el seu progrés a diferents països",
+          "Organitzar tutories entre iguals per reforçar continguts",
+          "Crear un mural sobre persones que van canviar el món gràcies a l'educació",
+          "Elaborar un pòdcast sobre la història de l'accés a l'educació"
+        ]
+      }
+    },
+    {
+      "day": 26,
+      "month": 1,
+      "title": {
+        "es": "Día internacional de la energía limpia",
+        "ca": "Dia internacional de l'energia neta"
+      },
+      "description": {
+        "es": "Promueve la transición a energías asequibles, fiables y sostenibles para todos.",
+        "ca": "Promou la transició a energies assequibles, fiables i sostenibles per a tothom."
+      },
+      "relatedODS": [
+        7,
+        13,
+        9
+      ],
+      "activities": {
+        "es": [
+          "Calcular la factura energética del centro y proponer mejoras de eficiencia",
+          "Diseñar maquetas de viviendas autosuficientes con energías renovables",
+          "Invitar a profesionales del sector para charlas sobre empleo verde",
+          "Construir mini aerogeneradores con material reciclado",
+          "Comparar consumos de bombillas LED vs incandescentes en un experimento",
+          "Realizar una feria de proyectos de energía renovable"
+        ],
+        "ca": [
+          "Calcular la factura energètica del centre i proposar millores d'eficiència",
+          "Dissenyar maquetes d'habitatges autosuficients amb energies renovables",
+          "Convidar professionals del sector per a xerrades sobre ocupació verda",
+          "Construir mini aerogeneradors amb material reciclat",
+          "Comparar consums de bombetes LED vs incandescents en un experiment",
+          "Fer una fira de projectes d'energia renovable"
+        ]
+      }
+    },
+    {
+      "day": 2,
+      "month": 2,
+      "title": {
+        "es": "Día Mundial de los Humedales",
+        "ca": "Dia Mundial de les Zones Humides"
+      },
+      "description": {
+        "es": "Destaca la importancia de estos ecosistemas para la biodiversidad y como reservas de agua dulce.",
+        "ca": "Destaca la importància d'aquests ecosistemes per a la biodiversitat i com a reserves d'aigua dolça."
+      },
+      "relatedODS": [
+        6,
+        13,
+        14,
+        15
+      ],
+      "activities": {
+        "es": [
+          "Realizar una maqueta sobre el ciclo del agua resaltando el papel de los humedales",
+          "Organizar una salida de campo a un humedal cercano",
+          "Investigar sobre especies en peligro que dependen de estos ecosistemas",
+          "Diseñar un póster digital sobre la función de los humedales en la mitigación del cambio climático",
+          "Crear un inventario fotográfico de especies observadas durante la salida",
+          "Simular un debate sobre políticas de protección de humedales"
+        ],
+        "ca": [
+          "Realitzar una maqueta sobre el cicle de l'aigua ressaltant el paper de les zones humides",
+          "Organitzar una sortida de camp a una zona humida propera",
+          "Investigar sobre espècies en perill que depenen d'aquests ecosistemes",
+          "Dissenyar un pòster digital sobre la funció de les zones humides en la mitigació del canvi climàtic",
+          "Crear un inventari fotogràfic d'espècies observades durant la sortida",
+          "Simular un debat sobre polítiques de protecció de zones humides"
+        ]
+      }
+    },
+    {
+      "day": 10,
+      "month": 2,
+      "title": {
+        "es": "Día mundial de las legumbres",
+        "ca": "Dia mundial dels llegums"
+      },
+      "description": {
+        "es": "Promueve el consumo de legumbres como fuente sostenible de proteína.",
+        "ca": "Promou el consum de llegums com a font sostenible de proteïna."
+      },
+      "relatedODS": [
+        2,
+        12
+      ],
+      "activities": {
+        "es": [
+          "Preparar recetas saludables con legumbres en clase de cocina",
+          "Calcular la huella ecológica de diferentes fuentes de proteína",
+          "Germinar garbanzos en algodón para observar la germinación",
+          "Diseñar una campaña de promoción del consumo de legumbres locales",
+          "Crear infografías comparando el valor nutricional de legumbres y carne",
+          "Investigar variedades tradicionales de legumbres de la región"
+        ],
+        "ca": [
+          "Preparar receptes saludables amb llegums a la classe de cuina",
+          "Calcular la petjada ecològica de diferents fonts de proteïna",
+          "Germinar cigrons en cotó per observar la germinació",
+          "Dissenyar una campanya de promoció del consum de llegums locals",
+          "Crear infografies comparant el valor nutricional de llegums i carn",
+          "Investigar varietats tradicionals de llegums de la regió"
+        ]
+      }
+    },
+    {
+      "day": 11,
+      "month": 2,
+      "title": {
+        "es": "Día Internacional de la Mujer y la Niña en la Ciencia",
+        "ca": "Dia Internacional de la Dona i la Nena a la Ciència"
+      },
+      "description": {
+        "es": "Promueve la plena y equitativa participación de mujeres y niñas en las disciplinas científicas.",
+        "ca": "Promou la participació plena i equitativa de dones i nenes en les disciplines científiques."
+      },
+      "relatedODS": [
+        5,
+        4,
+        9
+      ],
+      "activities": {
+        "es": [
+          "Investigar el porcentaje de mujeres en distintas carreras STEM y representarlo en gráficos",
+          "Organizar un panel con científicas locales para hablar de sus trayectorias",
+          "Crear biografías ilustradas de pioneras de la ciencia",
+          "Diseñar experimentos sencillos liderados por alumnas para presentarlos a cursos inferiores",
+          "Analizar estereotipos de género en juguetes científicos y proponer mejoras",
+          "Crear campañas en redes para animar a las niñas a estudiar ciencia"
+        ],
+        "ca": [
+          "Investigar el percentatge de dones a diverses carreres STEM i representar‑lo en gràfics",
+          "Organitzar una taula rodona amb científiques locals per parlar de les seves trajectòries",
+          "Crear biografies il·lustrades de pioneres de la ciència",
+          "Dissenyar experiments senzills liderats per alumnes per presentar‑los a cursos inferiors",
+          "Analitzar estereotips de gènere en joguines científiques i proposar millores",
+          "Crear campanyes a xarxes per animar les nenes a estudiar ciència"
+        ]
+      }
+    },
+    {
+      "day": 20,
+      "month": 2,
+      "title": {
+        "es": "Día Mundial de la Justicia Social",
+        "ca": "Dia Mundial de la Justícia Social"
+      },
+      "description": {
+        "es": "Fomenta la conciencia sobre la importancia de reducir la desigualdad y promover la inclusión.",
+        "ca": "Fomenta la consciència sobre la importància de reduir la desigualtat i promoure la inclusió."
+      },
+      "relatedODS": [
+        10,
+        16
+      ],
+      "activities": {
+        "es": [
+          "Analizar diferencias de ingresos en distintos países y discutir causas",
+          "Simular un presupuesto familiar con salarios mínimos y proponer medidas de apoyo",
+          "Investigar logros históricos del movimiento por los derechos civiles",
+          "Debatir sobre sistemas fiscales progresivos y justicia redistributiva",
+          "Crear un mural sobre líderes que lucharon por la justicia social",
+          "Organizar una recogida de donaciones para un comedor social local"
+        ],
+        "ca": [
+          "Analitzar diferències d’ingressos a diversos països i discutir-ne les causes",
+          "Simular un pressupost familiar amb salaris mínims i proposar mesures de suport",
+          "Investigar fites històriques del moviment pels drets civils",
+          "Debatre sobre sistemes fiscals progressius i justícia redistributiva",
+          "Crear un mural sobre líders que van lluitar per la justícia social",
+          "Organitzar una recollida de donacions per a un menjador social local"
+        ]
+      }
+    },
+    {
+      "day": 21,
+      "month": 2,
+      "title": {
+        "es": "Día Internacional de la Lengua Materna",
+        "ca": "Dia Internacional de la Llengua Materna"
+      },
+      "description": {
+        "es": "Destaca la importancia de la diversidad lingüística y cultural para sociedades sostenibles.",
+        "ca": "Destaca la importància de la diversitat lingüística i cultural per a societats sostenibles."
+      },
+      "relatedODS": [
+        4,
+        10
+      ],
+      "activities": {
+        "es": [
+          "Crear un glosario de palabras del mundo presentes en el aula",
+          "Invitar a familias a contar cuentos breves en sus lenguas maternas",
+          "Diseñar un mapa interactivo con las lenguas habladas en la comunidad",
+          "Analizar cómo la pérdida de lenguas afecta la identidad cultural",
+          "Organizar un concurso de poemas en distintas lenguas",
+          "Preparar carteles bilingües o plurilingües para señalizar espacios del centro"
+        ],
+        "ca": [
+          "Crear un glossari de paraules del món presents a l’aula",
+          "Convidar famílies a explicar contes breus en les seves llengües maternes",
+          "Dissenyar un mapa interactiu amb les llengües parlades a la comunitat",
+          "Analitzar com la pèrdua de llengües afecta la identitat cultural",
+          "Organitzar un concurs de poemes en diferents llengües",
+          "Preparar cartells bilingües o plurilingües per senyalitzar espais del centre"
+        ]
+      }
+    },
+    {
+      "day": 3,
+      "month": 3,
+      "title": {
+        "es": "Día mundial de la vida silvestre",
+        "ca": "Dia mundial de la vida silvestre"
+      },
+      "description": {
+        "es": "Llama la atención sobre la conservación de la fauna y flora silvestres.",
+        "ca": "Crida l'atenció sobre la conservació de la fauna i la flora silvestres."
+      },
+      "relatedODS": [
+        14,
+        15
+      ],
+      "activities": {
+        "es": [
+          "Identificar especies locales en peligro y crear fichas informativas",
+          "Analizar causas de la pérdida de hábitat en la comunidad",
+          "Diseñar carteles para proteger fauna urbana",
+          "Registrar observaciones de aves con aplicaciones de ciencia ciudadana",
+          "Preparar una exposición fotográfica sobre biodiversidad del barrio",
+          "Simular un debate sobre comercio ilegal de especies"
+        ],
+        "ca": [
+          "Identificar espècies locals en perill i crear fitxes informatives",
+          "Analitzar causes de la pèrdua d'hàbitat a la comunitat",
+          "Dissenyar cartells per protegir fauna urbana",
+          "Registrar observacions d'ocells amb aplicacions de ciència ciutadana",
+          "Preparar una exposició fotogràfica sobre biodiversitat del barri",
+          "Simular un debat sobre comerç il·legal d'espècies"
+        ]
+      }
+    },
+    {
+      "day": 4,
+      "month": 3,
+      "title": {
+        "es": "Día mundial de la ingeniería para el desarrollo sostenible",
+        "ca": "Dia mundial de l'enginyeria per al desenvolupament sostenible"
+      },
+      "description": {
+        "es": "Visibiliza la ingeniería como motor de soluciones innovadoras para alcanzar los ODS.",
+        "ca": "Visibilitza l'enginyeria com a motor de solucions innovadores per assolir els ODS."
+      },
+      "relatedODS": [
+        9,
+        4,
+        13
+      ],
+      "activities": {
+        "es": [
+          "Investigar inventos de bajo coste que mejoran la calidad de vida en países en desarrollo",
+          "Diseñar un prototipo simple (maqueta o digital) que resuelva un problema real del entorno",
+          "Analizar el ciclo de vida de un producto tecnológico y su impacto ambiental",
+          "Visitar una empresa de ingeniería sostenible",
+          "Desafío de puentes de palitos de helado optimizados por software de simulación",
+          "Investigar mujeres ingenieras referentes y crear pósters biográficos"
+        ],
+        "ca": [
+          "Investigar invents de baix cost que milloren la qualitat de vida en països en desenvolupament",
+          "Dissenyar un prototip simple (maqueta o digital) que resolgui un problema real de l'entorn",
+          "Analitzar el cicle de vida d'un producte tecnològic i el seu impacte ambiental",
+          "Visitar una empresa d'enginyeria sostenible",
+          "Repte de ponts de palets de gelat optimitzats amb programari de simulació",
+          "Investigar dones enginyeres referents i crear pòsters biogràfics"
+        ]
+      }
+    },
+    {
+      "day": 8,
+      "month": 3,
+      "title": {
+        "es": "Día Internacional de la Mujer",
+        "ca": "Dia Internacional de la Dona"
+      },
+      "description": {
+        "es": "Conmemora la lucha de las mujeres por la igualdad, el reconocimiento y ejercicio efectivo de sus derechos.",
+        "ca": "Commemora la lluita de les dones per la igualtat, el reconeixement i exercici efectiu dels seus drets."
+      },
+      "relatedODS": [
+        5,
+        10
+      ],
+      "activities": {
+        "es": [
+          "Analizar datos sobre la brecha de género en diferentes ámbitos",
+          "Crear perfiles biográficos de mujeres científicas poco conocidas",
+          "Debatir sobre los roles de género en los medios de comunicación",
+          "Organizar un panel con mujeres profesionales de distintos campos",
+          "Crear una campaña en redes sociales contra micromachismos cotidianos",
+          "Representar escenas teatrales históricas sobre la conquista de derechos"
+        ],
+        "ca": [
+          "Analitzar dades sobre la bretxa de gènere en diferents àmbits",
+          "Crear perfils biogràfics de dones científiques poc conegudes",
+          "Debatre sobre els rols de gènere als mitjans de comunicació",
+          "Organitzar una taula rodona amb dones professionals de diferents àmbits",
+          "Crear una campanya a xarxes socials contra micromasclismes quotidians",
+          "Representar escenes teatrals històriques sobre la conquesta de drets"
+        ]
+      }
+    },
+    {
+      "day": 21,
+      "month": 3,
+      "title": {
+        "es": "Día internacional de los bosques",
+        "ca": "Dia internacional dels boscos"
+      },
+      "description": {
+        "es": "Destaca la importancia de los bosques para la vida en la Tierra.",
+        "ca": "Destaca la importància dels boscos per a la vida a la Terra."
+      },
+      "relatedODS": [
+        15
+      ],
+      "activities": {
+        "es": [
+          "Calcular la cobertura arbórea del patio usando imágenes satelitales gratuitas",
+          "Plantar árboles nativos en colaboración con el ayuntamiento",
+          "Analizar servicios ecosistémicos que ofrecen los bosques",
+          "Crear maquetas 3D de estructuras forestales en clase",
+          "Planificar una ruta interpretativa por un bosque cercano",
+          "Crear un cómic sobre la deforestación y sus efectos"
+        ],
+        "ca": [
+          "Calcular la cobertura arbòria del pati amb imatges satel·litals gratuïtes",
+          "Plantar arbres autòctons en col·laboració amb l'ajuntament",
+          "Analitzar els serveis ecosistèmics que ofereixen els boscos",
+          "Crear maquetes 3D d'estructures forestals a classe",
+          "Planificar una ruta interpretativa per un bosc proper",
+          "Crear un còmic sobre la desforestació i els seus efectes"
+        ]
+      }
+    },
+    {
+      "day": 22,
+      "month": 3,
+      "title": {
+        "es": "Día Mundial del Agua",
+        "ca": "Dia Mundial de l'Aigua"
+      },
+      "description": {
+        "es": "Enfatiza la importancia del agua dulce y la gestión sostenible de los recursos hídricos.",
+        "ca": "Emfatitza la importància de l'aigua dolça i la gestió sostenible dels recursos hídrics."
+      },
+      "relatedODS": [
+        6,
+        3,
+        1,
+        11,
+        13
+      ],
+      "activities": {
+        "es": [
+          "Calcular la huella hídrica personal y familiar",
+          "Experimentar con métodos caseros de filtración de agua",
+          "Diseñar campañas de concienciación sobre el ahorro de agua",
+          "Diseñar prototipos de captación de agua de niebla",
+          "Comparar calidad del agua de distintas fuentes con pruebas de laboratorio escolares",
+          "Elaborar un mural interactivo sobre la distribución del agua en el planeta"
+        ],
+        "ca": [
+          "Calcular la petjada hídrica personal i familiar",
+          "Experimentar amb mètodes casolans de filtració d'aigua",
+          "Dissenyar campanyes de conscienciació sobre l'estalvi d'aigua",
+          "Dissenyar prototips de captació d'aigua de boira",
+          "Comparar la qualitat de l'aigua de diverses fonts amb proves de laboratori escolars",
+          "Elaborar un mural interactiu sobre la distribució de l'aigua al planeta"
+        ]
+      }
+    },
+    {
+      "day": 23,
+      "month": 3,
+      "title": {
+        "es": "Día Meteorológico Mundial",
+        "ca": "Dia Meteorològic Mundial"
+      },
+      "description": {
+        "es": "Subraya la importancia de la meteorología y el clima en la vida diaria y en la adaptación al cambio climático.",
+        "ca": "Subratlla la importància de la meteorologia i el clima en la vida diària i en l’adaptació al canvi climàtic."
+      },
+      "relatedODS": [
+        13
+      ],
+      "activities": {
+        "es": [
+          "Construir un pluviómetro casero y registrar lluvias durante un mes",
+          "Analizar datos históricos de temperaturas locales y detectar tendencias",
+          "Simular cómo funcionan los modelos climáticos simples",
+          "Invitar a un meteorólogo para explicar la elaboración del pronóstico del tiempo",
+          "Crear una campaña sobre alertas tempranas ante eventos extremos",
+          "Debatir cómo el cambio climático afecta a los fenómenos meteorológicos"
+        ],
+        "ca": [
+          "Construir un pluviòmetre casolà i registrar pluges durant un mes",
+          "Analitzar dades històriques de temperatures locals i detectar tendències",
+          "Simular com funcionen els models climàtics simples",
+          "Convidar un meteoròleg per explicar l’elaboració del pronòstic del temps",
+          "Crear una campanya sobre alertes primerenques davant esdeveniments extrems",
+          "Debatre com el canvi climàtic afecta els fenòmens meteorològics"
+        ]
+      }
+    },
+    {
+      "day": 2,
+      "month": 4,
+      "title": {
+        "es": "Día Mundial de Concienciación sobre el Autismo",
+        "ca": "Dia Mundial de Conscienciació sobre l'Autisme"
+      },
+      "description": {
+        "es": "Promueve la inclusión y concienciación sobre las personas con trastorno del espectro autista.",
+        "ca": "Promou la inclusió i conscienciació sobre les persones amb trastorn de l’espectre autista."
+      },
+      "relatedODS": [
+        3,
+        10
+      ],
+      "activities": {
+        "es": [
+          "Invitar a un experto para hablar sobre autismo y mitos comunes",
+          "Analizar personajes con autismo en películas o series y discutir su representación",
+          "Diseñar pictogramas accesibles para señalizar aulas y espacios",
+          "Realizar un taller de empatía con simulaciones sensoriales",
+          "Crear un cuento ilustrado que enseñe la diversidad neurocognitiva",
+          "Organizar una campaña para promover entornos escolares inclusivos"
+        ],
+        "ca": [
+          "Convidar un expert per parlar sobre autisme i mites comuns",
+          "Analitzar personatges amb autisme en pel·lícules o sèries i discutir-ne la representació",
+          "Dissenyar pictogrames accessibles per senyalitzar aules i espais",
+          "Fer un taller d’empatia amb simulacions sensorials",
+          "Crear un conte il·lustrat que ensenyi la diversitat neurocognitiva",
+          "Organitzar una campanya per promoure entorns escolars inclusius"
+        ]
+      }
+    },
+    {
+      "day": 6,
+      "month": 4,
+      "title": {
+        "es": "Día internacional del deporte para el desarrollo y la paz",
+        "ca": "Dia internacional de l'esport per al desenvolupament i la pau"
+      },
+      "description": {
+        "es": "Reconoce el valor del deporte como promotor de salud, inclusión y paz.",
+        "ca": "Reconeix el valor de l'esport com a promotor de salut, inclusió i pau."
+      },
+      "relatedODS": [
+        3,
+        16
+      ],
+      "activities": {
+        "es": [
+          "Organizar un torneo inclusivo donde los equipos ganen puntos por juego limpio",
+          "Investigar historias de atletas que promueven la paz",
+          "Crear rutinas de actividad física para mejorar la salud mental",
+          "Diseñar infografías sobre la relación entre deporte y ODS",
+          "Simular la creación de reglas para garantizar igualdad de género en el deporte",
+          "Elaborar un videoblog sobre deportes tradicionales del mundo"
+        ],
+        "ca": [
+          "Organitzar un torneig inclusiu on els equips guanyin punts per joc net",
+          "Investigar històries d'esportistes que promouen la pau",
+          "Crear rutines d'activitat física per millorar la salut mental",
+          "Dissenyar infografies sobre la relació entre esport i ODS",
+          "Simular la creació de regles per garantir igualtat de gènere a l'esport",
+          "Elaborar un videobloc sobre esports tradicionals del món"
+        ]
+      }
+    },
+    {
+      "day": 7,
+      "month": 4,
+      "title": {
+        "es": "Día mundial de la salud",
+        "ca": "Dia mundial de la salut"
+      },
+      "description": {
+        "es": "Subraya la relevancia de la salud para el bienestar y el desarrollo.",
+        "ca": "Subratlla la rellevància de la salut per al benestar i el desenvolupament."
+      },
+      "relatedODS": [
+        3
+      ],
+      "activities": {
+        "es": [
+          "Medir signos vitales y discutir factores de riesgo",
+          "Diseñar un menú escolar equilibrado",
+          "Investigar epidemias históricas y cómo se gestionaron",
+          "Organizar una caminata de 5 km para promover el ejercicio",
+          "Crear un prototipo de app que recuerde hábitos saludables",
+          "Analizar publicidad de productos alimenticios y su impacto"
+        ],
+        "ca": [
+          "Mesurar signes vitals i discutir factors de risc",
+          "Dissenyar un menú escolar equilibrat",
+          "Investigar epidèmies històriques i com es van gestionar",
+          "Organitzar una caminada de 5 km per promoure l'exercici",
+          "Crear un prototip d'app que recordi hàbits saludables",
+          "Analitzar publicitat de productes alimentaris i el seu impacte"
+        ]
+      }
+    },
+    {
+      "day": 22,
+      "month": 4,
+      "title": {
+        "es": "Día de la Tierra",
+        "ca": "Dia de la Terra"
+      },
+      "description": {
+        "es": "Promueve la conciencia ambiental y la protección de nuestro planeta.",
+        "ca": "Promou la consciència ambiental i la protecció del nostre planeta."
+      },
+      "relatedODS": [
+        13,
+        11,
+        12,
+        15
+      ],
+      "activities": {
+        "es": [
+          "Organizar una limpieza comunitaria en un espacio natural cercano",
+          "Crear un huerto escolar con especies autóctonas",
+          "Diseñar proyectos de upcycling con materiales reciclados",
+          "Calcular emisiones de CO₂ del centro y proponer plan de reducción",
+          "Realizar un bio‑blitz para catalogar flora y fauna local",
+          "Crear podcasts sobre historias de resiliencia ambiental"
+        ],
+        "ca": [
+          "Organitzar una neteja comunitària en un espai natural proper",
+          "Crear un hort escolar amb espècies autòctones",
+          "Dissenyar projectes d'upcycling amb materials reciclats",
+          "Calcular emissions de CO₂ del centre i proposar un pla de reducció",
+          "Fer un bio‑blitz per catalogar flora i fauna local",
+          "Crear podcasts sobre històries de resiliència ambiental"
+        ]
+      }
+    },
+    {
+      "day": 24,
+      "month": 4,
+      "title": {
+        "es": "Día Internacional del Multilateralismo y la Diplomacia para la Paz",
+        "ca": "Dia Internacional del Multilateralisme i la Diplomàcia per a la Pau"
+      },
+      "description": {
+        "es": "Destaca la importancia de la cooperación internacional para encontrar soluciones pacíficas a los problemas globales.",
+        "ca": "Destaca la importància de la cooperació internacional per trobar solucions pacífiques als problemes globals."
+      },
+      "relatedODS": [
+        10,
+        16,
+        17
+      ],
+      "activities": {
+        "es": [
+          "Simular una asamblea de la ONU debatiendo temas de actualidad",
+          "Analizar el impacto de acuerdos internacionales en la reducción de desigualdades",
+          "Crear una exposición sobre organizaciones multilaterales y su papel global",
+          "Investigar casos de éxito de misiones de paz de la ONU",
+          "Diseñar un mapa interactivo de tratados internacionales vigentes",
+          "Simular negociaciones climáticas entre países"
+        ],
+        "ca": [
+          "Simular una assemblea de l'ONU debatent temes d'actualitat",
+          "Analitzar l'impacte d'acords internacionals en la reducció de desigualtats",
+          "Crear una exposició sobre organitzacions multilaterals i el seu paper global",
+          "Investigar casos d'èxit de missions de pau de l'ONU",
+          "Dissenyar un mapa interactiu de tractats internacionals vigents",
+          "Simular negociacions climàtiques entre països"
+        ]
+      }
+    },
+    {
+      "day": 3,
+      "month": 5,
+      "title": {
+        "es": "Día Mundial de la Libertad de Prensa",
+        "ca": "Dia Mundial de la Llibertat de Premsa"
+      },
+      "description": {
+        "es": "Defiende la libertad de expresión y de prensa como derecho fundamental.",
+        "ca": "Defensa la llibertat d'expressió i de premsa com a dret fonamental."
+      },
+      "relatedODS": [
+        16,
+        4,
+        10
+      ],
+      "activities": {
+        "es": [
+          "Analizar la cobertura de una misma noticia en diferentes medios de comunicación",
+          "Crear un periódico escolar con enfoque en temas de desarrollo sostenible",
+          "Debatir sobre el papel del periodismo en la promoción de sociedades justas",
+          "Entrevistar a periodistas locales sobre desafíos en su trabajo",
+          "Mapear la clasificación mundial de libertad de prensa y analizar tendencias",
+          "Crear un fact‑checking de noticias virales"
+        ],
+        "ca": [
+          "Analitzar la cobertura d'una mateixa notícia en diferents mitjans de comunicació",
+          "Crear un diari escolar amb enfocament en temes de desenvolupament sostenible",
+          "Debatre sobre el paper del periodisme en la promoció de societats justes",
+          "Entrevistar periodistes locals sobre els reptes de la professió",
+          "Mapar la classificació mundial de llibertat de premsa i analitzar tendències",
+          "Crear un fact‑checking de notícies virals"
+        ]
+      }
+    },
+    {
+      "day": 17,
+      "month": 5,
+      "title": {
+        "es": "Día Mundial de Internet",
+        "ca": "Dia Mundial d'Internet"
+      },
+      "description": {
+        "es": "Promueve la importancia de Internet como herramienta para el desarrollo social y económico.",
+        "ca": "Promou la importància d'Internet com a eina per al desenvolupament social i econòmic."
+      },
+      "relatedODS": [
+        9,
+        4,
+        8,
+        10
+      ],
+      "activities": {
+        "es": [
+          "Identificar la brecha digital en diferentes contextos sociales",
+          "Crear un proyecto colaborativo online con otra clase o escuela",
+          "Diseñar una campaña sobre ciberseguridad y uso responsable de la red",
+          "Realizar un taller de creación de páginas web accesibles",
+          "Analizar algoritmos de recomendación y su impacto social",
+          "Organizar un hackatón para resolver un problema comunitario usando IoT"
+        ],
+        "ca": [
+          "Identificar la bretxa digital en diferents contextos socials",
+          "Crear un projecte col·laboratiu en línia amb una altra classe o escola",
+          "Dissenyar una campanya sobre ciberseguretat i ús responsable de la xarxa",
+          "Fer un taller de creació de pàgines web accessibles",
+          "Analitzar algoritmes de recomanació i el seu impacte social",
+          "Organitzar un hackató per resoldre un problema comunitari amb IoT"
+        ]
+      }
+    },
+    {
+      "day": 20,
+      "month": 5,
+      "title": {
+        "es": "Día mundial de las abejas",
+        "ca": "Dia mundial de les abelles"
+      },
+      "description": {
+        "es": "Destaca el papel de los polinizadores en la seguridad alimentaria y la biodiversidad.",
+        "ca": "Destaca el paper dels pol·linitzadors en la seguretat alimentària i la biodiversitat."
+      },
+      "relatedODS": [
+        2,
+        15
+      ],
+      "activities": {
+        "es": [
+          "Construir hoteles para insectos y colocarlos en el huerto escolar",
+          "Observar distintas flores y registrar la visita de polinizadores locales",
+          "Crear una campaña contra el uso indiscriminado de pesticidas",
+          "Analizar diferentes tipos de miel y su origen botánico",
+          "Cartografiar floraciones locales útiles para abejas mediante GIS simple",
+          "Organizar una campaña para instalar colmenas urbanas controladas"
+        ],
+        "ca": [
+          "Construir hotels per a insectes i col·locar-los a l'hort escolar",
+          "Observar diferents flors i registrar la visita de pol·linitzadors locals",
+          "Crear una campanya contra l'ús indiscriminat de pesticides",
+          "Analitzar diferents tipus de mel i el seu origen botànic",
+          "Cartografiar floracions locals útils per a abelles amb GIS simple",
+          "Organitzar una campanya per instal·lar ruscos urbans controlats"
+        ]
+      }
+    },
+    {
+      "day": 22,
+      "month": 5,
+      "title": {
+        "es": "Día internacional de la biodiversidad",
+        "ca": "Dia internacional de la biodiversitat"
+      },
+      "description": {
+        "es": "Celebra la variedad de la vida y la necesidad de protegerla.",
+        "ca": "Celebra la varietat de la vida i la necessitat de protegir-la."
+      },
+      "relatedODS": [
+        15
+      ],
+      "activities": {
+        "es": [
+          "Elaborar un inventario de especies en el huerto escolar",
+          "Crear un jardín de mariposas con plantas nativas",
+          "Simular roles de actores en la gestión de un parque natural",
+          "Experimentar sobre efectos de pesticidas en germinación de semillas",
+          "Diseñar una campaña en redes para reducir especies invasoras",
+          "Dibujar un mapa de corredores ecológicos locales"
+        ],
+        "ca": [
+          "Elaborar un inventari d'espècies a l'hort escolar",
+          "Crear un jardí de papallones amb plantes autòctones",
+          "Simular rols d'actors en la gestió d'un parc natural",
+          "Fer un experiment sobre efectes de pesticides en germinació de llavors",
+          "Dissenyar una campanya a xarxes per reduir espècies invasores",
+          "Dibuixar un mapa de corredors ecològics locals"
+        ]
+      }
+    },
+    {
+      "day": 5,
+      "month": 6,
+      "title": {
+        "es": "Día Mundial del Medio Ambiente",
+        "ca": "Dia Mundial del Medi Ambient"
+      },
+      "description": {
+        "es": "Promueve la conciencia ambiental y la acción por el planeta.",
+        "ca": "Promou la consciència ambiental i l'acció pel planeta."
+      },
+      "relatedODS": [
+        13,
+        14,
+        15,
+        12,
+        11
+      ],
+      "activities": {
+        "es": [
+          "Calcular la huella de carbono personal y diseñar plan de reducción",
+          "Organizar un debate sobre políticas ambientales locales",
+          "Crear arte con materiales reciclados sobre problemas ambientales",
+          "Realizar una auditoría de residuos del centro y proponer plan cero plásticos",
+          "Sembrar un jardín de plantas nativas polinizadoras",
+          "Crear vídeos cortos sobre ecogestos diarios"
+        ],
+        "ca": [
+          "Calcular la petjada de carboni personal i dissenyar pla de reducció",
+          "Organitzar un debat sobre polítiques ambientals locals",
+          "Crear art amb materials reciclats sobre problemes ambientals",
+          "Fer una auditoria de residus del centre i proposar un pla zero plàstics",
+          "Sembrar un jardí de plantes autòctones pol·linitzadores",
+          "Crear vídeos curts sobre eco‑gestos diaris"
+        ]
+      }
+    },
+    {
+      "day": 7,
+      "month": 6,
+      "title": {
+        "es": "Día mundial de la seguridad alimentaria",
+        "ca": "Dia mundial de la seguretat alimentària"
+      },
+      "description": {
+        "es": "Resalta la importancia de alimentos inocuos para la salud y el comercio.",
+        "ca": "Ressalta la importància d'aliments innocus per a la salut i el comerç."
+      },
+      "relatedODS": [
+        2,
+        12
+      ],
+      "activities": {
+        "es": [
+          "Comparar métodos tradicionales y modernos de conservación de alimentos",
+          "Analizar etiquetas para detectar alérgenos comunes",
+          "Visitar una planta local de procesamiento de alimentos",
+          "Diseñar pósters sobre higiene alimentaria en casa",
+          "Experimentar con crecimiento bacteriano en distintos alimentos",
+          "Elaborar un menú semanal cumpliendo normas de inocuidad"
+        ],
+        "ca": [
+          "Comparar mètodes tradicionals i moderns de conservació d'aliments",
+          "Analitzar etiquetes per detectar al·lèrgens comuns",
+          "Visitar una planta local de processament d'aliments",
+          "Dissenyar pòsters sobre higiene alimentària a casa",
+          "Experimentar amb creixement bacterià en diferents aliments",
+          "Elaborar un menú setmanal complint les normes d'innocuïtat"
+        ]
+      }
+    },
+    {
+      "day": 8,
+      "month": 6,
+      "title": {
+        "es": "Día Mundial de los Océanos",
+        "ca": "Dia Mundial dels Oceans"
+      },
+      "description": {
+        "es": "Resalta la importancia de los océanos para el planeta y los efectos de la contaminación marina.",
+        "ca": "Ressalta la importància dels oceans per al planeta i els efectes de la contaminació marina."
+      },
+      "relatedODS": [
+        14,
+        13,
+        12,
+        6
+      ],
+      "activities": {
+        "es": [
+          "Investigar sobre plásticos en los océanos y sus consecuencias",
+          "Organizar una campaña escolar de reducción de plásticos de un solo uso",
+          "Crear modelos de ecosistemas marinos y sus amenazas",
+          "Diseñar experimentos sobre acidificación oceánica",
+          "Crear arte con desechos marinos recolectados simbólicamente",
+          "Organizar un concurso de relatos sobre vida marina"
+        ],
+        "ca": [
+          "Investigar sobre plàstics als oceans i les seves conseqüències",
+          "Organitzar una campanya escolar de reducció de plàstics d'un sol ús",
+          "Crear models d'ecosistemes marins i les seves amenaces",
+          "Dissenyar experiments sobre acidificació oceànica",
+          "Crear art amb deixalles marines recollides simbòlicament",
+          "Organitzar un concurs de relats sobre vida marina"
+        ]
+      }
+    },
+    {
+      "day": 12,
+      "month": 6,
+      "title": {
+        "es": "Día Mundial contra el Trabajo Infantil",
+        "ca": "Dia Mundial contra el Treball Infantil"
+      },
+      "description": {
+        "es": "Reivindica la eliminación del trabajo infantil en todas sus formas y la protección de los derechos de los niños.",
+        "ca": "Reivindica l’eliminació del treball infantil en totes les seves formes i la protecció dels drets dels infants."
+      },
+      "relatedODS": [
+        8,
+        16,
+        4
+      ],
+      "activities": {
+        "es": [
+          "Investigar la cadena de suministro de un producto y detectar riesgos de trabajo infantil",
+          "Debatir cómo el trabajo infantil afecta la educación y la salud",
+          "Crear una campaña gráfica para concienciar sobre el consumo responsable",
+          "Simular negociaciones de una empresa que se compromete a certificaciones libres de trabajo infantil",
+          "Analizar estadísticas de la OIT sobre trabajo infantil por regiones",
+          "Organizar una recolecta de firmas para apoyar programas de erradicación"
+        ],
+        "ca": [
+          "Investigar la cadena de subministrament d’un producte i detectar riscos de treball infantil",
+          "Debatre com el treball infantil afecta l’educació i la salut",
+          "Crear una campanya gràfica per conscienciar sobre el consum responsable",
+          "Simular negociacions d’una empresa que es compromet a certificacions lliures de treball infantil",
+          "Analitzar estadístiques de l’OIT sobre treball infantil per regions",
+          "Organitzar una recollida de firmes per donar suport a programes d’eradicació"
+        ]
+      }
+    },
+    {
+      "day": 15,
+      "month": 6,
+      "title": {
+        "es": "Día Mundial de Toma de Conciencia del Abuso y Maltrato en la Vejez",
+        "ca": "Dia Mundial de Presa de Consciència de l'Abús i Maltractament a la Vellesa"
+      },
+      "description": {
+        "es": "Visibiliza el maltrato a las personas mayores y promueve políticas para su protección.",
+        "ca": "Visibilitza el maltractament a les persones grans i promou polítiques per a la seva protecció."
+      },
+      "relatedODS": [
+        3,
+        10,
+        16
+      ],
+      "activities": {
+        "es": [
+          "Organizar intercambios intergeneracionales de conocimientos y experiencias",
+          "Investigar sobre políticas públicas para personas mayores",
+          "Reflexionar sobre estereotipos asociados a la edad",
+          "Grabar testimonios de personas mayores sobre su vida y compartirlos en clase",
+          "Diseñar un plan de campaña contra el edadismo en redes",
+          "Realizar un role‑play de situaciones de abuso y cómo actuar"
+        ],
+        "ca": [
+          "Organitzar intercanvis intergeneracionals de coneixements i experiències",
+          "Investigar sobre polítiques públiques per a persones grans",
+          "Reflexionar sobre estereotips associats a l'edat",
+          "Gravar testimonis de persones grans sobre la seva vida i compartir-los a classe",
+          "Dissenyar una campanya contra l'edatisme a les xarxes",
+          "Fer un role‑play de situacions d'abús i com actuar"
+        ]
+      }
+    },
+    {
+      "day": 20,
+      "month": 6,
+      "title": {
+        "es": "Día mundial de los refugiados",
+        "ca": "Dia mundial dels refugiats"
+      },
+      "description": {
+        "es": "Rinde homenaje a la resiliencia de las personas desplazadas por la fuerza.",
+        "ca": "Ret homenatge a la resiliència de les persones desplaçades per la força."
+      },
+      "relatedODS": [
+        10,
+        16
+      ],
+      "activities": {
+        "es": [
+          "Simular el proceso de solicitud de asilo para comprender trámites",
+          "Investigar historias de refugiados locales y presentarlas",
+          "Crear exposición \"Mi mochila esencial\" con objetos indispensables",
+          "Debatir impacto de los conflictos en los desplazamientos humanos",
+          "Diseñar campaña de recogida de material escolar para niños refugiados",
+          "Analizar cobertura mediática y sesgos sobre crisis de refugiados"
+        ],
+        "ca": [
+          "Simular el procés de sol·licitud d'asil per comprendre tràmits",
+          "Investigar històries de refugiats locals i presentar-les",
+          "Crear exposició \"La meva motxilla essencial\" amb objectes indispensables",
+          "Debatre l'impacte dels conflictes en els desplaçaments humans",
+          "Dissenyar campanya de recollida de material escolar per a infants refugiats",
+          "Analitzar cobertura mediàtica i biaixos sobre la crisi de refugiats"
+        ]
+      }
+    },
+    {
+      "day": 18,
+      "month": 7,
+      "title": {
+        "es": "Día Internacional de Nelson Mandela",
+        "ca": "Dia Internacional de Nelson Mandela"
+      },
+      "description": {
+        "es": "Reconoce la contribución de Mandela a la cultura de paz y libertad a nivel mundial.",
+        "ca": "Reconeix la contribució de Mandela a la cultura de pau i llibertat a nivell mundial."
+      },
+      "relatedODS": [
+        10,
+        16,
+        4
+      ],
+      "activities": {
+        "es": [
+          "Analizar discursos clave de Mandela e identificar valores",
+          "Investigar sobre el apartheid y otros sistemas de discriminación",
+          "Crear proyectos sobre líderes que promueven cambios sociales positivos",
+          "Organizar una jornada de voluntariado comunitario",
+          "Analizar películas sobre Mandela y discutir el liderazgo ético",
+          "Crear murales con citas inspiradoras de líderes pacifistas"
+        ],
+        "ca": [
+          "Analitzar discursos clau de Mandela i identificar valors",
+          "Investigar sobre l'apartheid i altres sistemes de discriminació",
+          "Crear projectes sobre líders que promouen canvis socials positius",
+          "Organitzar una jornada de voluntariat comunitari",
+          "Analitzar pel·lícules sobre Mandela i discutir el lideratge ètic",
+          "Crear murals amb cites inspiradores de líders pacifistes"
+        ]
+      }
+    },
+    {
+      "day": 12,
+      "month": 8,
+      "title": {
+        "es": "Día Internacional de la Juventud",
+        "ca": "Dia Internacional de la Joventut"
+      },
+      "description": {
+        "es": "Promueve la participación de los jóvenes en procesos de cambio social, económico y político.",
+        "ca": "Promou la participació dels joves en processos de canvi social, econòmic i polític."
+      },
+      "relatedODS": [
+        4,
+        8,
+        10,
+        16
+      ],
+      "activities": {
+        "es": [
+          "Desarrollar proyectos liderados por estudiantes para mejorar su comunidad",
+          "Debatir sobre problemas que afectan a la juventud local y globalmente",
+          "Crear una simulación de parlamento juvenil para proponer políticas",
+          "Planificar un foro juvenil sobre retos locales (vivienda, empleo)",
+          "Desarrollar una app para fomentar voluntariado juvenil",
+          "Producir un documental breve de jóvenes agentes de cambio"
+        ],
+        "ca": [
+          "Desenvolupar projectes liderats per estudiants per millorar la seva comunitat",
+          "Debatre sobre problemes que afecten a la joventut local i globalment",
+          "Crear una simulació de parlament juvenil per proposar polítiques",
+          "Planificar un fòrum juvenil sobre reptes locals (habitatge, ocupació)",
+          "Desenvolupar una app per fomentar el voluntariat juvenil",
+          "Produir un documental breu de joves agents de canvi"
+        ]
+      }
+    },
+    {
+      "day": 16,
+      "month": 9,
+      "title": {
+        "es": "Día Internacional de la Preservación de la Capa de Ozono",
+        "ca": "Dia Internacional per a la Preservació de la Capa d'Ozó"
+      },
+      "description": {
+        "es": "Destaca los esfuerzos internacionales para proteger la capa de ozono y mitigar el cambio climático.",
+        "ca": "Destaca els esforços internacionals per protegir la capa d’ozó i mitigar el canvi climàtic."
+      },
+      "relatedODS": [
+        13
+      ],
+      "activities": {
+        "es": [
+          "Investigar sustancias que agotan la capa de ozono y alternativas disponibles",
+          "Crear un experimento que muestre el efecto de radiación UV sobre materiales orgánicos",
+          "Diseñar infografías sobre el Protocolo de Montreal y sus logros",
+          "Debatir cómo las políticas ambientales afectan a la industria y al consumo",
+          "Calcular la huella climática de diferentes aerosoles domésticos",
+          "Organizar un reto para reducir el uso de productos con gases HFC en casa"
+        ],
+        "ca": [
+          "Investigar substàncies que esgoten la capa d’ozó i alternatives disponibles",
+          "Crear un experiment que mostri l’efecte de la radiació UV sobre materials orgànics",
+          "Dissenyar infografies sobre el Protocol de Mont-real i els seus èxits",
+          "Debatre com les polítiques ambientals afecten la indústria i el consum",
+          "Calcular la petjada climàtica de diferents aerosols domèstics",
+          "Organitzar un repte per reduir l’ús de productes amb gasos HFC a casa"
+        ]
+      }
+    },
+    {
+      "day": 21,
+      "month": 9,
+      "title": {
+        "es": "Día Internacional de la Paz",
+        "ca": "Dia Internacional de la Pau"
+      },
+      "description": {
+        "es": "Promueve los ideales de paz entre todas las naciones y pueblos.",
+        "ca": "Promou els ideals de pau entre totes les nacions i pobles."
+      },
+      "relatedODS": [
+        16,
+        10,
+        4
+      ],
+      "activities": {
+        "es": [
+          "Crear un jardín o mural de la paz en el centro educativo",
+          "Estudiar conflictos actuales y proponer soluciones pacíficas",
+          "Organizar un debate sobre el papel de la educación en la construcción de paz",
+          "Componer canciones o poemas sobre la paz y presentarlos públicamente",
+          "Realizar talleres de mediación y resolución de conflictos",
+          "Crear un 'diario de gratitud' colectivo en el aula"
+        ],
+        "ca": [
+          "Crear un jardí o mural de la pau al centre educatiu",
+          "Estudiar conflictes actuals i proposar solucions pacífiques",
+          "Organitzar un debat sobre el paper de l'educació en la construcció de pau",
+          "Compondre cançons o poemes sobre la pau i presentar‑los públicament",
+          "Fer tallers de mediació i resolució de conflictes",
+          "Crear un 'diari de gratitud' col·lectiu a l'aula"
+        ]
+      }
+    },
+    {
+      "day": 27,
+      "month": 9,
+      "title": {
+        "es": "Día mundial del turismo",
+        "ca": "Dia mundial del turisme"
+      },
+      "description": {
+        "es": "Promueve un turismo inclusivo y sostenible.",
+        "ca": "Promou un turisme inclusiu i sostenible."
+      },
+      "relatedODS": [
+        8,
+        12,
+        14
+      ],
+      "activities": {
+        "es": [
+          "Calcular huella de carbono de un viaje típico y proponer alternativas",
+          "Diseñar un itinerario turístico responsable en la región",
+          "Analizar impacto socioeconómico del turismo en comunidades locales",
+          "Crear un podcast entrevistando a un guía sobre conservación patrimonial",
+          "Proponer códigos de conducta para visitantes de espacios naturales",
+          "Comparar turismo rural y costero mediante datos de visitantes"
+        ],
+        "ca": [
+          "Calcular la petjada de carboni d'un viatge típic i proposar alternatives",
+          "Dissenyar un itinerari turístic responsable a la regió",
+          "Analitzar l'impacte socioeconòmic del turisme en comunitats locals",
+          "Crear un pòdcast entrevistant un guia sobre conservació patrimonial",
+          "Proposar codis de conducta per a visitants d'espais naturals",
+          "Comparar turisme rural i costaner mitjançant dades de visitants"
+        ]
+      }
+    },
+    {
+      "day": 5,
+      "month": 10,
+      "title": {
+        "es": "Día Mundial de los Docentes",
+        "ca": "Dia Mundial dels Docents"
+      },
+      "description": {
+        "es": "Conmemora la firma de la Recomendación OIT/UNESCO sobre la situación de los docentes.",
+        "ca": "Commemora la signatura de la Recomanació OIT/UNESCO sobre la situació dels docents."
+      },
+      "relatedODS": [
+        4,
+        8,
+        10
+      ],
+      "activities": {
+        "es": [
+          "Reflexionar sobre el papel transformador de la educación en la sociedad",
+          "Investigar sobre modelos educativos innovadores en diferentes países",
+          "Diseñar proyectos para mejorar la calidad educativa en contextos desfavorecidos",
+          "Entrevistar a docentes veteranos sobre la evolución de la enseñanza",
+          "Diseñar materiales educativos inclusivos para estudiantes con necesidades diversas",
+          "Organizar un reconocimiento público a profesores inspiradores"
+        ],
+        "ca": [
+          "Reflexionar sobre el paper transformador de l'educació en la societat",
+          "Investigar sobre models educatius innovadors en diferents països",
+          "Dissenyar projectes per millorar la qualitat educativa en contextos desfavorits",
+          "Entrevistar docents veterans sobre l'evolució de l'ensenyament",
+          "Dissenyar materials educatius inclusius per a alumnat amb necessitats diverses",
+          "Organitzar un reconeixement públic a professors inspiradors"
+        ]
+      }
+    },
+    {
+      "day": 10,
+      "month": 10,
+      "title": {
+        "es": "Día mundial de la salud mental",
+        "ca": "Dia mundial de la salut mental"
+      },
+      "description": {
+        "es": "Sensibiliza sobre los trastornos mentales y el acceso a cuidados.",
+        "ca": "Sensibilitza sobre els trastorns mentals i l'accés a cures."
+      },
+      "relatedODS": [
+        3
+      ],
+      "activities": {
+        "es": [
+          "Practicar técnicas de respiración y mindfulness en clase",
+          "Diseñar campaña para eliminar estigmas sobre depresión",
+          "Analizar datos de salud mental en adolescentes",
+          "Crear buzón anónimo de apoyo entre compañeros",
+          "Invitar a un psicólogo para charla sobre autocuidado",
+          "Producir cortometraje sobre gestión de emociones"
+        ],
+        "ca": [
+          "Practicar tècniques de respiració i mindfulness a classe",
+          "Dissenyar campanya per eliminar estigmes sobre depressió",
+          "Analitzar dades de salut mental en adolescents",
+          "Crear bústia anònima de suport entre companys",
+          "Convidar un psicòleg per a una xerrada sobre autocura",
+          "Produir curtmetratge sobre gestió d'emocions"
+        ]
+      }
+    },
+    {
+      "day": 11,
+      "month": 10,
+      "title": {
+        "es": "Día Internacional de la Niña",
+        "ca": "Dia Internacional de la Nena"
+      },
+      "description": {
+        "es": "Defiende los derechos de las niñas y resalta los desafíos específicos que enfrentan globalmente.",
+        "ca": "Defensa els drets de les nenes i destaca els reptes específics que afronten globalment."
+      },
+      "relatedODS": [
+        5,
+        10,
+        4
+      ],
+      "activities": {
+        "es": [
+          "Analizar cifras de matrimonio infantil y propuestas de solución",
+          "Crear un mural sobre niñas líderes que inspiran cambios sociales",
+          "Debatir impacto de la desigualdad de género en el acceso a la educación",
+          "Producir un cortometraje sobre la importancia de empoderar a las niñas",
+          "Organizar talleres de autodefensa y confianza para alumnas",
+          "Diseñar campañas para promover la igualdad de trato en deportes escolares"
+        ],
+        "ca": [
+          "Analitzar xifres de matrimoni infantil i propostes de solució",
+          "Crear un mural sobre nenes líders que inspiren canvis socials",
+          "Debatre l’impacte de la desigualtat de gènere en l’accés a l’educació",
+          "Produir un curtmetratge sobre la importància d’empoderar les nenes",
+          "Organitzar tallers d’autodefensa i confiança per a alumnes",
+          "Dissenyar campanyes per promoure la igualtat de tracte en esports escolars"
+        ]
+      }
+    },
+    {
+      "day": 16,
+      "month": 10,
+      "title": {
+        "es": "Día mundial de la alimentación",
+        "ca": "Dia mundial de l'alimentació"
+      },
+      "description": {
+        "es": "Fomenta sistemas alimentarios sostenibles para erradicar el hambre.",
+        "ca": "Fomenta sistemes alimentaris sostenibles per erradicar la fam."
+      },
+      "relatedODS": [
+        2
+      ],
+      "activities": {
+        "es": [
+          "Organizar feria de productos locales y de comercio justo",
+          "Analizar menú del comedor escolar bajo la perspectiva del ODS 2",
+          "Cultivar hortalizas de ciclo corto en el aula",
+          "Estudiar desperdicio alimentario del centro y diseñar plan de reducción",
+          "Comparar dietas del mundo y su impacto ambiental",
+          "Crear infografía sobre micronutrientes esenciales"
+        ],
+        "ca": [
+          "Organitzar fira de productes locals i de comerç just",
+          "Analitzar el menú del menjador escolar sota la perspectiva de l'ODS 2",
+          "Conrear hortalisses de cicle curt a l'aula",
+          "Estudiar el malbaratament alimentari del centre i dissenyar un pla de reducció",
+          "Comparar dietes del món i el seu impacte ambiental",
+          "Crear infografia sobre micronutrients essencials"
+        ]
+      }
+    },
+    {
+      "day": 17,
+      "month": 10,
+      "title": {
+        "es": "Día Internacional para la Erradicación de la Pobreza",
+        "ca": "Dia Internacional per a l'Erradicació de la Pobresa"
+      },
+      "description": {
+        "es": "Promueve la conciencia sobre la necesidad de erradicar la pobreza en todo el mundo.",
+        "ca": "Promou la consciència sobre la necessitat d'erradicar la pobresa a tot el món."
+      },
+      "relatedODS": [
+        1,
+        2,
+        10,
+        8
+      ],
+      "activities": {
+        "es": [
+          "Analizar datos sobre pobreza local y global con gráficos y mapas",
+          "Investigar sobre programas efectivos de reducción de pobreza",
+          "Organizar una campaña de recaudación para proyectos específicos",
+          "Simular un presupuesto familiar con recursos limitados",
+          "Crear campañas de microfinanzas escolares para proyectos solidarios",
+          "Elaborar un reportaje fotográfico sobre desigualdad en la ciudad"
+        ],
+        "ca": [
+          "Analitzar dades sobre pobresa local i global amb gràfics i mapes",
+          "Investigar sobre programes efectius de reducció de pobresa",
+          "Organitzar una campanya de recaptació per a projectes específics",
+          "Simular un pressupost familiar amb recursos limitats",
+          "Crear campanyes de microfinances escolars per a projectes solidaris",
+          "Elaborar un reportatge fotogràfic sobre desigualtat a la ciutat"
+        ]
+      }
+    },
+    {
+      "day": 24,
+      "month": 10,
+      "title": {
+        "es": "Día mundial de la información sobre el desarrollo",
+        "ca": "Dia mundial de la informació sobre el desenvolupament"
+      },
+      "description": {
+        "es": "Subraya la importancia de difundir información y buenas prácticas para avanzar en desarrollo sostenible.",
+        "ca": "Subratlla la importància de difondre informació i bones pràctiques per avançar en desenvolupament sostenible."
+      },
+      "relatedODS": [
+        17,
+        10
+      ],
+      "activities": {
+        "es": [
+          "Elaborar infografías que muestren progresos y retos de los ODS en distintos países",
+          "Simular una rueda de prensa presentando datos de desarrollo mundial",
+          "Crear un repositorio de recursos abiertos (vídeos, artículos, datos) sobre sostenibilidad",
+          "Desarrollar infografías sobre indicadores ODS locales con datos abiertos",
+          "Crear un podcast entrevista a ONGs y emprendedores sociales",
+          "Diseñar un juego de mesa cooperativo sobre la consecución de los ODS"
+        ],
+        "ca": [
+          "Elaborar infografies que mostrin progressos i reptes dels ODS en diferents països",
+          "Simular una roda de premsa presentant dades de desenvolupament mundial",
+          "Crear un repositori de recursos oberts (vídeos, articles, dades) sobre sostenibilitat",
+          "Desenvolupar infografies sobre indicadors ODS locals amb dades obertes",
+          "Crear un podcast entrevista a ONG i emprenedors socials",
+          "Dissenyar un joc de taula cooperatiu sobre l'assoliment dels ODS"
+        ]
+      }
+    },
+    {
+      "day": 19,
+      "month": 11,
+      "title": {
+        "es": "Día Mundial del Retrete",
+        "ca": "Dia Mundial del Vàter"
+      },
+      "description": {
+        "es": "Hace hincapié en la importancia del saneamiento para la salud pública y la dignidad humana.",
+        "ca": "Posa èmfasi en la importància del sanejament per a la salut pública i la dignitat humana."
+      },
+      "relatedODS": [
+        6,
+        3,
+        11
+      ],
+      "activities": {
+        "es": [
+          "Construir un modelo de inodoro seco y explicar su funcionamiento",
+          "Medir el consumo de agua de distintos sistemas de descarga",
+          "Diseñar carteles para promover el lavado de manos correcto",
+          "Investigar enfermedades relacionadas con el agua insalubre y proponer soluciones",
+          "Simular la planificación de saneamiento de una comunidad rural",
+          "Analizar el acceso a baños adecuados en diferentes países y debatir impactos en igualdad de género"
+        ],
+        "ca": [
+          "Construir un model de vàter sec i explicar-ne el funcionament",
+          "Mesurar el consum d’aigua de diferents sistemes de descarrega",
+          "Dissenyar cartells per promoure el rentat de mans correcte",
+          "Investigar malalties relacionades amb aigua insalubre i proposar solucions",
+          "Simular la planificació de sanejament d’una comunitat rural",
+          "Analitzar l’accés a lavabos adequats a diferents països i debatre impactes en la igualtat de gènere"
+        ]
+      }
+    },
+    {
+      "day": 20,
+      "month": 11,
+      "title": {
+        "es": "Día universal del niño",
+        "ca": "Dia universal del nen"
+      },
+      "description": {
+        "es": "Conmemora la adopción de la Declaración de los Derechos del Niño.",
+        "ca": "Commemora l'adopció de la Declaració dels Drets de l'Infant."
+      },
+      "relatedODS": [
+        4
+      ],
+      "activities": {
+        "es": [
+          "Leer y dramatizar artículos de la Convención sobre los Derechos del Niño",
+          "Analizar datos de escolarización global y crear gráficos",
+          "Diseñar un juego educativo sobre derechos y responsabilidades",
+          "Proponer medidas de participación estudiantil en el centro",
+          "Investigar programas de UNICEF y exponer resultados",
+          "Crear mural colaborativo sobre la infancia en distintos países"
+        ],
+        "ca": [
+          "Llegir i dramatitzar articles de la Convenció sobre els Drets de l'Infant",
+          "Analitzar dades d'escolarització global i crear gràfics",
+          "Dissenyar un joc educatiu sobre drets i responsabilitats",
+          "Proposar mesures de participació estudiantil al centre",
+          "Investigar programes d'UNICEF i exposar resultats",
+          "Crear mural col·laboratiu sobre la infància en diferents països"
+        ]
+      }
+    },
+    {
+      "day": 25,
+      "month": 11,
+      "title": {
+        "es": "Día Internacional para la Eliminación de la Violencia contra la Mujer",
+        "ca": "Dia Internacional per a l'Eliminació de la Violència contra la Dona"
+      },
+      "description": {
+        "es": "Denuncia la violencia contra las mujeres y promueve políticas para su erradicación.",
+        "ca": "Denuncia la violència contra les dones i promou polítiques per a la seva erradicació."
+      },
+      "relatedODS": [
+        5,
+        10,
+        16
+      ],
+      "activities": {
+        "es": [
+          "Analizar cómo los medios representan la violencia de género",
+          "Crear campañas de sensibilización sobre relaciones sanas",
+          "Estudiar legislaciones sobre igualdad y protección a las mujeres",
+          "Analizar letras de canciones desde perspectiva de género",
+          "Crear podcasts denunciando mitos sobre violencia de pareja",
+          "Elaborar guías de recursos de ayuda locales"
+        ],
+        "ca": [
+          "Analitzar com els mitjans representen la violència de gènere",
+          "Crear campanyes de sensibilització sobre relacions sanes",
+          "Estudiar legislacions sobre igualtat i protecció a les dones",
+          "Analitzar lletres de cançons des de la perspectiva de gènere",
+          "Crear podcasts denunciant mites sobre violència de parella",
+          "Elaborar guies de recursos d'ajuda locals"
+        ]
+      }
+    },
+    {
+      "day": 1,
+      "month": 12,
+      "title": {
+        "es": "Día mundial de la lucha contra el VIH/Sida",
+        "ca": "Dia mundial de la lluita contra el VIH/Sida"
+      },
+      "description": {
+        "es": "Insta a reforzar la prevención, el tratamiento y la solidaridad.",
+        "ca": "Instar a reforçar la prevenció, el tractament i la solidaritat."
+      },
+      "relatedODS": [
+        3
+      ],
+      "activities": {
+        "es": [
+          "Invitar a un profesional sanitario para resolver dudas sobre VIH",
+          "Analizar avances científicos en tratamientos antirretrovirales",
+          "Diseñar campaña contra el estigma hacia personas con VIH",
+          "Simular programa de prevención en contextos juveniles",
+          "Crear infografía sobre diferencia entre VIH y Sida",
+          "Evaluar políticas públicas de acceso a pruebas y tratamiento"
+        ],
+        "ca": [
+          "Convidar un professional sanitari per resoldre dubtes sobre el VIH",
+          "Analitzar avenços científics en tractaments antiretrovirals",
+          "Dissenyar campanya contra l'estigma vers persones amb VIH",
+          "Simular programa de prevenció en contextos juvenils",
+          "Crear infografia sobre la diferència entre VIH i Sida",
+          "Avaluar polítiques públiques d'accés a proves i tractament"
+        ]
+      }
+    },
+    {
+      "day": 3,
+      "month": 12,
+      "title": {
+        "es": "Día Internacional de las Personas con Discapacidad",
+        "ca": "Dia Internacional de les Persones amb Discapacitat"
+      },
+      "description": {
+        "es": "Promueve los derechos y el bienestar de las personas con discapacidad en todos los ámbitos de la sociedad.",
+        "ca": "Promou els drets i el benestar de les persones amb discapacitat en tots els àmbits de la societat."
+      },
+      "relatedODS": [
+        10,
+        4,
+        8
+      ],
+      "activities": {
+        "es": [
+          "Realizar una auditoría de accesibilidad del centro educativo",
+          "Aprender vocabulario básico de lengua de signos y practicar",
+          "Diseñar materiales educativos en formatos accesibles (braille, audio, lectura fácil)",
+          "Invitar a un deportista paralímpico para hablar de superación",
+          "Crear una campaña contra el capacitismo en redes sociales",
+          "Desarrollar un juego inclusivo adaptado a distintas discapacidades"
+        ],
+        "ca": [
+          "Realitzar una auditoria d’accessibilitat del centre educatiu",
+          "Aprendre vocabulari bàsic de llengua de signes i practicar",
+          "Dissenyar materials educatius en formats accessibles (braille, àudio, lectura fàcil)",
+          "Convidar un esportista paralímpic per parlar de superació",
+          "Crear una campanya contra el capacitisme a xarxes socials",
+          "Desenvolupar un joc inclusiu adaptat a diverses discapacitats"
+        ]
+      }
+    },
+    {
+      "day": 5,
+      "month": 12,
+      "title": {
+        "es": "Día Internacional del Voluntariado",
+        "ca": "Dia Internacional del Voluntariat"
+      },
+      "description": {
+        "es": "Reconoce la labor de los voluntarios y fomenta el compromiso cívico para alcanzar los ODS.",
+        "ca": "Reconeix la tasca dels voluntaris i fomenta el compromís cívic per assolir els ODS."
+      },
+      "relatedODS": [
+        17,
+        16
+      ],
+      "activities": {
+        "es": [
+          "Organizar una feria de ONGs locales donde estudiantes puedan apuntarse como voluntarios",
+          "Elaborar un mapa de necesidades comunitarias y proponer acciones de servicio",
+          "Realizar una jornada de voluntariado ambiental en un parque",
+          "Crear vídeos cortos que muestren historias inspiradoras de voluntariado",
+          "Diseñar una app o cartelera para coordinar horas de voluntariado entre estudiantes",
+          "Debatir el impacto del voluntariado en la cohesión social"
+        ],
+        "ca": [
+          "Organitzar una fira d’ONG locals on els estudiants puguin apuntar‑se com a voluntaris",
+          "Elaborar un mapa de necessitats comunitàries i proposar accions de servei",
+          "Realitzar una jornada de voluntariat ambiental en un parc",
+          "Crear vídeos curts que mostrin històries inspiradores de voluntariat",
+          "Dissenyar una app o cartellera per coordinar hores de voluntariat entre estudiants",
+          "Debatre l’impacte del voluntariat en la cohesió social"
+        ]
+      }
+    },
+    {
+      "day": 10,
+      "month": 12,
+      "title": {
+        "es": "Día de los Derechos Humanos",
+        "ca": "Dia dels Drets Humans"
+      },
+      "description": {
+        "es": "Conmemora la fecha de adopción de la Declaración Universal de Derechos Humanos.",
+        "ca": "Commemora la data d'adopció de la Declaració Universal de Drets Humans."
+      },
+      "relatedODS": [
+        10,
+        16,
+        4,
+        5
+      ],
+      "activities": {
+        "es": [
+          "Crear una línea de tiempo sobre la evolución de los derechos humanos",
+          "Organizar un modelo de tribunal de derechos humanos con casos hipotéticos",
+          "Analizar la situación de derechos humanos en diferentes países",
+          "Organizar un juicio simulado por vulneraciones actuales de derechos",
+          "Crear cómics sobre artículos de la Declaración Universal",
+          "Evaluar el informe anual de Amnistía Internacional y presentar conclusiones"
+        ],
+        "ca": [
+          "Crear una línia de temps sobre l'evolució dels drets humans",
+          "Organitzar un model de tribunal de drets humans amb casos hipotètics",
+          "Analitzar la situació de drets humans en diferents països",
+          "Organitzar un judici simulat per vulneracions actuals de drets",
+          "Crear còmics sobre articles de la Declaració Universal",
+          "Avaluar l'informe anual d'Amnistia Internacional i presentar conclusions"
+        ]
+      }
+    },
+    {
+      "day": 12,
+      "month": 12,
+      "title": {
+        "es": "Día de la Cobertura Sanitaria Universal",
+        "ca": "Dia de la Cobertura Sanitària Universal"
+      },
+      "description": {
+        "es": "Subraya la necesidad de que todas las personas tengan acceso a servicios de salud de calidad sin dificultades económicas.",
+        "ca": "Subratlla la necessitat que totes les persones tinguin accés a serveis de salut de qualitat sense dificultats econòmiques."
+      },
+      "relatedODS": [
+        3,
+        10,
+        1
+      ],
+      "activities": {
+        "es": [
+          "Analizar sistemas de salud de distintos países y su grado de cobertura",
+          "Simular la gestión de un presupuesto sanitario limitado para un municipio",
+          "Debatir la importancia de la seguridad social y el derecho a la salud",
+          "Invitar a un profesional de salud pública para hablar de equidad sanitaria",
+          "Crear infografías sobre barreras de acceso a la salud para colectivos vulnerables",
+          "Diseñar campañas escolares para promover donación de sangre o vacunación"
+        ],
+        "ca": [
+          "Analitzar sistemes de salut de diferents països i el seu grau de cobertura",
+          "Simular la gestió d’un pressupost sanitari limitat per a un municipi",
+          "Debatre la importància de la seguretat social i el dret a la salut",
+          "Convidar un professional de salut pública per parlar d’equitat sanitària",
+          "Crear infografies sobre barreres d’accés a la salut per a col·lectius vulnerables",
+          "Dissenyar campanyes escolars per promoure donació de sang o vacunació"
+        ]
+      }
+    }
+  ]
+}

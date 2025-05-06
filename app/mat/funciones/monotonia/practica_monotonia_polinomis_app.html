@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practica la monotonía de polinomios</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.12.0/math.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            position: relative;
+        }
+        .resultat {
+            background-color: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        button.action-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button.action-btn:hover {
+            background-color: #45a049;
+        }
+        .credits {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .hidden {
+            display: none;
+        }
+        .lang-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .lang-btn {
+            background-color: #f0f0f0;
+            color: #333;
+            padding: 5px 10px;
+            margin-left: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .lang-btn.active {
+            background-color: #4CAF50;
+            color: white;
+            border: 1px solid #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="lang-buttons">
+        <button id="btn-ca" class="lang-btn">CA</button>
+        <button id="btn-es" class="lang-btn">ES</button>
+    </div>
+
+    <h1 id="title">Practica la monotonía de polinomios</h1>
+    
+    <button id="btn-generate" class="action-btn" onclick="generaFuncio()">Genera nueva función</button>
+    <button id="btn-solution" class="action-btn" onclick="mostraSolucio()">Muestra solución</button>
+    
+    <div id="funcio" class="resultat"></div>
+    <div id="solucio" class="hidden">
+        <div id="derivada" class="resultat"></div>
+        <div id="intervals" class="resultat"></div>
+        <div id="extrems" class="resultat"></div>
+    </div>
+    
+    <div id="credits" class="credits">
+        <p>Aplicación hecha por <a href="https://bilateria.org">Juan José de Haro</a></p>
+        <p>Esta obra está bajo una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es">licencia Creative Commons BY-SA</a></p>
+    </div>
+
+    <script>
+        // Objeto de traducciones
+        const translations = {
+            'ca': {
+                'title': 'Practica la monotonia de polinomis',
+                'generate': 'Genera nova funció',
+                'solution': 'Mostra solució',
+                'function': 'Funció',
+                'degree': 'grau',
+                'derivative': 'Derivada',
+                'intervals': 'Intervals de creixement i decreixement',
+                'growing': 'Creixent',
+                'decreasing': 'Decreixent',
+                'criticalPoints': 'Punts crítics',
+                'maximums': 'Màxims',
+                'minimums': 'Mínims',
+                'noMaximums': 'No hi ha màxims',
+                'noMinimums': 'No hi ha mínims',
+                'credits': 'Aplicació feta per',
+                'license': 'Aquesta obra està sota una',
+                'licenseText': 'llicència Creative Commons BY-SA',
+                'licenseUrl': 'https://creativecommons.org/licenses/by-sa/4.0/deed.ca'
+            },
+            'es': {
+                'title': 'Practica la monotonía de polinomios',
+                'generate': 'Genera nueva función',
+                'solution': 'Muestra solución',
+                'function': 'Función',
+                'degree': 'grado',
+                'derivative': 'Derivada',
+                'intervals': 'Intervalos de crecimiento y decrecimiento',
+                'growing': 'Creciente',
+                'decreasing': 'Decreciente',
+                'criticalPoints': 'Puntos críticos',
+                'maximums': 'Máximos',
+                'minimums': 'Mínimos',
+                'noMaximums': 'No hay máximos',
+                'noMinimums': 'No hay mínimos',
+                'credits': 'Aplicación hecha por',
+                'license': 'Esta obra está bajo una',
+                'licenseText': 'licencia Creative Commons BY-SA',
+                'licenseUrl': 'https://creativecommons.org/licenses/by-sa/4.0/deed.es'
+            }
+        };
+
+        // Variable para almacenar el idioma actual
+        let currentLang = 'es'; // Por defecto español
+
+        // Función para detectar el idioma del navegador
+        function detectLanguage() {
+            const lang = navigator.language || navigator.userLanguage;
+            return lang.startsWith('ca') ? 'ca' : 'es';
+        }
+
+        // Función para cambiar el idioma
+        function changeLanguage(lang) {
+            currentLang = lang;
+            
+            // Actualizar textos de la página
+            document.getElementById('title').innerText = translations[lang]['title'];
+            document.getElementById('btn-generate').innerText = translations[lang]['generate'];
+            document.getElementById('btn-solution').innerText = translations[lang]['solution'];
+            
+            // Actualizar botones de idioma
+            document.getElementById('btn-ca').classList.toggle('active', lang === 'ca');
+            document.getElementById('btn-es').classList.toggle('active', lang === 'es');
+            
+            // Actualizar créditos
+            document.getElementById('credits').innerHTML = `
+                <p>${translations[lang]['credits']} <a href="https://bilateria.org">Juan José de Haro</a></p>
+                <p>${translations[lang]['license']} <a href="${translations[lang]['licenseUrl']}">${translations[lang]['licenseText']}</a></p>
+            `;
+            
+            // Regenerar la función para que se vean los cambios
+            if (document.getElementById('funcio').innerHTML !== '') {
+                generaFuncio();
+            }
+        }
+
+        function generaCoeficient() {
+            return Math.floor(Math.random() * 21) - 10;
+        }
+
+        function generaGrau() {
+            return Math.floor(Math.random() * 3) + 1;
+        }
+
+        function generaFuncioLatex(coeficients) {
+            let latex = '';
+            for (let i = coeficients.length - 1; i >= 0; i--) {
+                if (coeficients[i] !== 0) {
+                    if (latex !== '' && coeficients[i] > 0) latex += '+';
+                    if (coeficients[i] === -1 && i > 0) latex += '-';
+                    else if (coeficients[i] !== 1 || i === 0) latex += coeficients[i];
+                    if (i > 0) latex += 'x';
+                    if (i > 1) latex += `^${i}`;
+                }
+            }
+            return latex || '0';
+        }
+
+        function calculaDerivada(coeficients) {
+            let derivada = [];
+            for (let i = 1; i < coeficients.length; i++) {
+                derivada.push(coeficients[i] * i);
+            }
+            return derivada;
+        }
+
+        function avaluaFuncio(x, coeficients) {
+            let resultat = 0;
+            for (let i = 0; i < coeficients.length; i++) {
+                resultat += coeficients[i] * Math.pow(x, i);
+            }
+            return resultat;
+        }
+
+        function trobaArrels(coeficients) {
+            const grau = coeficients.length - 1;
+            if (grau === 1) {
+                return [-coeficients[0] / coeficients[1]];
+            } else if (grau === 2) {
+                const a = coeficients[2];
+                const b = coeficients[1];
+                const c = coeficients[0];
+                const discriminant = b * b - 4 * a * c;
+                if (discriminant > 0) {
+                    return [
+                        (-b + Math.sqrt(discriminant)) / (2 * a),
+                        (-b - Math.sqrt(discriminant)) / (2 * a)
+                    ].sort((a, b) => a - b);
+                } else if (discriminant === 0) {
+                    return [-b / (2 * a)];
+                }
+            }
+            return [];
+        }
+
+        function calculaIntervals(coeficients) {
+            const derivada = calculaDerivada(coeficients);
+            const puntsCritics = trobaArrels(derivada);
+            let intervals = [];
+            
+            if (puntsCritics.length === 0) {
+                const creix = derivada[derivada.length - 1] > 0;
+                return [{
+                    interval: '(-∞,+∞)',
+                    tipus: creix ? 
+                        translations[currentLang]['growing'] : 
+                        translations[currentLang]['decreasing']
+                }];
+            }
+
+            puntsCritics.sort((a, b) => a - b);
+            let x0 = -1000; // Punt per avaluar el primer interval
+            
+            for (let i = 0; i <= puntsCritics.length; i++) {
+                const x = i === puntsCritics.length ? 1000 : puntsCritics[i];
+                const xMig = (x0 + x) / 2;
+                let creix = avaluaDerivada(xMig, derivada) > 0;
+                
+                intervals.push({
+                    interval: `(${i === 0 ? '-∞' : puntsCritics[i-1].toFixed(2)},${i === puntsCritics.length ? '+∞' : puntsCritics[i].toFixed(2)})`,
+                    tipus: creix ? 
+                        translations[currentLang]['growing'] : 
+                        translations[currentLang]['decreasing']
+                });
+                
+                x0 = x;
+            }
+            
+            return intervals;
+        }
+
+        function avaluaDerivada(x, derivada) {
+            let resultat = 0;
+            for (let i = 0; i < derivada.length; i++) {
+                resultat += derivada[i] * Math.pow(x, i);
+            }
+            return resultat;
+        }
+
+        function calculaExtrems(coeficients) {
+            const derivada = calculaDerivada(coeficients);
+            const puntsCritics = trobaArrels(derivada);
+            let extrems = {maxims: [], minims: []};
+            
+            for (let x of puntsCritics) {
+                const y = avaluaFuncio(x, coeficients);
+                const segonaDer = avaluaDerivada(x, calculaDerivada(derivada));
+                
+                if (segonaDer < 0) {
+                    extrems.maxims.push({x: Number(x.toFixed(2)), y: Number(y.toFixed(2))});
+                } else if (segonaDer > 0) {
+                    extrems.minims.push({x: Number(x.toFixed(2)), y: Number(y.toFixed(2))});
+                }
+            }
+            
+            return extrems;
+        }
+
+        function agrupaIntervals(intervals) {
+            let creixents = [];
+            let decreixents = [];
+            
+            intervals.forEach(int => {
+                if (int.tipus === translations[currentLang]['growing']) {
+                    creixents.push(int.interval);
+                } else {
+                    decreixents.push(int.interval);
+                }
+            });
+            
+            let resultat = [];
+            if (creixents.length > 0) {
+                resultat.push(`${translations[currentLang]['growing']} en ${creixents.join(' U ')}`);
+            }
+            if (decreixents.length > 0) {
+                resultat.push(`${translations[currentLang]['decreasing']} en ${decreixents.join(' U ')}`);
+            }
+            
+            return resultat;
+        }
+
+        function generaFuncio() {
+            const grau = generaGrau();
+            const coeficients = Array(grau + 1).fill(0).map(generaCoeficient);
+            while (coeficients[grau] === 0) {
+                coeficients[grau] = generaCoeficient();
+            }
+
+            const latex = generaFuncioLatex(coeficients);
+            const derivada = calculaDerivada(coeficients);
+            const derivadaLatex = generaFuncioLatex(derivada);
+            const intervals = calculaIntervals(coeficients);
+            const extrems = calculaExtrems(coeficients);
+            const intervalsAgrupats = agrupaIntervals(intervals);
+
+            document.getElementById('funcio').innerHTML = `
+                <h2>${translations[currentLang]['function']} (${translations[currentLang]['degree']} ${grau})</h2>
+                <p>f(x) = \\(${latex}\\)</p>
+            `;
+
+            document.getElementById('derivada').innerHTML = `
+                <h2>${translations[currentLang]['derivative']}</h2>
+                <p>f'(x) = \\(${derivadaLatex}\\)</p>
+            `;
+
+            document.getElementById('intervals').innerHTML = `
+                <h2>${translations[currentLang]['intervals']}</h2>
+                ${intervalsAgrupats.map(int => `<p>${int}</p>`).join('')}
+            `;
+
+            document.getElementById('extrems').innerHTML = `
+                <h2>${translations[currentLang]['criticalPoints']}</h2>
+                <h3>${translations[currentLang]['maximums']}</h3>
+                ${extrems.maxims.length ? extrems.maxims.map(m => `<p>(${m.x}, ${m.y})</p>`).join('') : `<p>${translations[currentLang]['noMaximums']}</p>`}
+                <h3>${translations[currentLang]['minimums']}</h3>
+                ${extrems.minims.length ? extrems.minims.map(m => `<p>(${m.x}, ${m.y})</p>`).join('') : `<p>${translations[currentLang]['noMinimums']}</p>`}
+            `;
+
+            document.getElementById('solucio').classList.add('hidden');
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+        }
+
+        function mostraSolucio() {
+            document.getElementById('solucio').classList.remove('hidden');
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+        }
+
+        // Inicialización al cargar la página
+        window.onload = function() {
+            // Detectar idioma del navegador
+            currentLang = detectLanguage();
+            
+            // Configurar eventos de botones de idioma
+            document.getElementById('btn-ca').addEventListener('click', function() { changeLanguage('ca'); });
+            document.getElementById('btn-es').addEventListener('click', function() { changeLanguage('es'); });
+            
+            // Aplicar idioma inicial
+            changeLanguage(currentLang);
+            
+            // Generar primera función
+            generaFuncio();
+        };
+    </script>
+</body>
+</html>

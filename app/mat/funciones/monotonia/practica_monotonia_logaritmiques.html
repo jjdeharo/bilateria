@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practica funciones logarítmicas</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            position: relative;
+        }
+        .resultat {
+            background-color: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        button.action-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button.action-btn:hover {
+            background-color: #45a049;
+        }
+        .credits {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .hidden {
+            display: none;
+        }
+        .lang-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .lang-btn {
+            background-color: #f0f0f0;
+            color: #333;
+            padding: 5px 10px;
+            margin-left: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .lang-btn.active {
+            background-color: #4CAF50;
+            color: white;
+            border: 1px solid #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="lang-buttons">
+        <button id="btn-ca" class="lang-btn">CA</button>
+        <button id="btn-es" class="lang-btn">ES</button>
+    </div>
+
+    <h1 id="title">Practica la monotonía de funciones logarítmicas</h1>
+    
+    <button id="btn-generate" class="action-btn" onclick="generaFuncio()">Genera nueva función</button>
+    <button id="btn-solution" class="action-btn" onclick="mostraSolucio()">Muestra solución</button>
+    
+    <div id="funcio" class="resultat"></div>
+    <div id="solucio" class="hidden">
+        <div id="domini" class="resultat"></div>
+        <div id="asimptotes" class="resultat"></div>
+        <div id="derivada" class="resultat"></div>
+        <div id="intervals" class="resultat"></div>
+    </div>
+    
+    <div id="credits" class="credits">
+        <p>Aplicación hecha por <a href="https://bilateria.org">Juan José de Haro</a></p>
+        <p>Esta obra está bajo una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es">licencia Creative Commons BY-SA</a></p>
+    </div>
+
+    <script>
+        // Objeto de traducciones
+        const translations = {
+            'ca': {
+                'title': 'Practica la monotonia de funcions logarítmiques',
+                'generate': 'Genera nova funció',
+                'solution': 'Mostra solució',
+                'function': 'Funció',
+                'domain': 'Domini',
+                'noDomain': 'No hi ha domini',
+                'asymptotes': 'Asímptotes verticals',
+                'noAsymptotes': 'No hi ha asímptotes verticals',
+                'noAsymptotesDetail': 'No hi ha asímptotes verticals (no hi ha punts d\'intersecció amb l\'eix X)',
+                'derivative': 'Derivada',
+                'noDerivative': 'No definida al domini real',
+                'intervals': 'Intervals de creixement i decreixement',
+                'noIntervals': 'No hi ha creixement ni decreixement',
+                'growing': 'Creixent',
+                'decreasing': 'Decreixent',
+                'credits': 'Aplicació feta per',
+                'license': 'Aquesta obra està sota una',
+                'licenseText': 'llicència Creative Commons BY-SA',
+                'licenseUrl': 'https://creativecommons.org/licenses/by-sa/4.0/deed.ca'
+            },
+            'es': {
+                'title': 'Practica la monotonía de funciones logarítmicas',
+                'generate': 'Genera nueva función',
+                'solution': 'Muestra solución',
+                'function': 'Función',
+                'domain': 'Dominio',
+                'noDomain': 'No hay dominio',
+                'asymptotes': 'Asíntotas verticales',
+                'noAsymptotes': 'No hay asíntotas verticales',
+                'noAsymptotesDetail': 'No hay asíntotas verticales (no hay puntos de intersección con el eje X)',
+                'derivative': 'Derivada',
+                'noDerivative': 'No definida en el dominio real',
+                'intervals': 'Intervalos de crecimiento y decrecimiento',
+                'noIntervals': 'No hay crecimiento ni decrecimiento',
+                'growing': 'Creciente',
+                'decreasing': 'Decreciente',
+                'credits': 'Aplicación hecha por',
+                'license': 'Esta obra está bajo una',
+                'licenseText': 'licencia Creative Commons BY-SA',
+                'licenseUrl': 'https://creativecommons.org/licenses/by-sa/4.0/deed.es'
+            }
+        };
+
+        // Variable para almacenar el idioma actual
+        let currentLang = 'es'; // Por defecto español
+
+        // Función para detectar el idioma del navegador
+        function detectLanguage() {
+            const lang = navigator.language || navigator.userLanguage;
+            return lang.startsWith('ca') ? 'ca' : 'es';
+        }
+
+        // Función para cambiar el idioma
+        function changeLanguage(lang) {
+            currentLang = lang;
+            
+            // Actualizar textos de la página
+            document.getElementById('title').innerText = translations[lang]['title'];
+            document.getElementById('btn-generate').innerText = translations[lang]['generate'];
+            document.getElementById('btn-solution').innerText = translations[lang]['solution'];
+            
+            // Actualizar botones de idioma
+            document.getElementById('btn-ca').classList.toggle('active', lang === 'ca');
+            document.getElementById('btn-es').classList.toggle('active', lang === 'es');
+            
+            // Actualizar créditos
+            document.getElementById('credits').innerHTML = `
+                <p>${translations[lang]['credits']} <a href="https://bilateria.org">Juan José de Haro</a></p>
+                <p>${translations[lang]['license']} <a href="${translations[lang]['licenseUrl']}">${translations[lang]['licenseText']}</a></p>
+            `;
+            
+            // Regenerar la función para que se vean los cambios
+            if (document.getElementById('funcio').innerHTML !== '') {
+                generaFuncio();
+            }
+        }
+
+        function generaCoeficient() {
+            let coef = 0;
+            while (coef === 0) {
+                coef = Math.floor(Math.random() * 9) - 4; // Coeficients entre -4 i 4, excloent 0
+            }
+            return coef;
+        }
+
+        function generaBase() {
+            // Genera bases comunes para funciones logarítmicas (2, 3, 10, e)
+            const bases = [2, 3, 10, Math.E];
+            return bases[Math.floor(Math.random() * bases.length)];
+        }
+
+        function generaPolinomi() {
+            const grau = Math.random() < 0.5 ? 1 : 2;
+            let coefs = [];
+            
+            for (let i = 0; i <= grau; i++) {
+                coefs.push(generaCoeficient());
+            }
+            
+            return {
+                coefs,
+                grau
+            };
+        }
+
+        function generaLatexPolinomi(coefs) {
+            let latex = '';
+            for (let i = coefs.length - 1; i >= 0; i--) {
+                if (coefs[i] !== 0) {
+                    if (latex !== '' && coefs[i] > 0) latex += '+';
+                    if (coefs[i] === -1 && i > 0) latex += '-';
+                    else if (coefs[i] !== 1 || i === 0) latex += coefs[i];
+                    if (i > 0) latex += 'x';
+                    if (i > 1) latex += `^${i}`;
+                }
+            }
+            return latex || '0';
+        }
+
+        function trobaArrels(coefs) {
+            if (coefs.length <= 2) {
+                // Polinomi de grau 1: coefs[0] + coefs[1]*x = 0 => x = -coefs[0]/coefs[1]
+                return [-coefs[0] / coefs[1]];
+            } else if (coefs.length === 3) {
+                // Polinomi de grau 2
+                const a = coefs[2];
+                const b = coefs[1];
+                const c = coefs[0];
+                const discriminant = b * b - 4 * a * c;
+                if (discriminant > 0) {
+                    return [
+                        (-b + Math.sqrt(discriminant)) / (2 * a),
+                        (-b - Math.sqrt(discriminant)) / (2 * a)
+                    ].sort((a, b) => a - b);
+                } else if (discriminant === 0) {
+                    return [-b / (2 * a)];
+                }
+            }
+            return [];
+        }
+
+        function avaluaPolinomi(x, coefs) {
+            return coefs.reduce((sum, coef, i) => sum + coef * Math.pow(x, i), 0);
+        }
+
+        function calculaDerivada(a, b, polinomiCoefs) {
+            // f(x) = a·log_b(P(x))
+            // f'(x) = a · (1/(P(x))) · P'(x) · (1/ln(b))
+            const derivadaPolinomi = polinomiCoefs.map((coef, i) => i > 0 ? coef * i : 0).slice(1);
+            return {
+                a,
+                b,
+                polinomiCoefs,
+                derivadaPolinomi
+            };
+        }
+
+        function calculaIntervals(a, b, polinomiCoefs) {
+            const arrels = trobaArrels(polinomiCoefs);
+            let intervals = [];
+            let x0;
+
+            // El domini: on el polinomi és > 0 (per al log)
+            arrels.sort((a, b) => a - b);
+            
+            for (let i = 0; i <= arrels.length; i++) {
+                if (i === 0) {
+                    x0 = arrels[0] - 1;
+                } else if (i === arrels.length) {
+                    x0 = arrels[arrels.length - 1] + 1;
+                } else {
+                    x0 = (arrels[i-1] + arrels[i]) / 2;
+                }
+
+                const valor = avaluaPolinomi(x0, polinomiCoefs);
+                if (valor > 0) {
+                    const inici = i === 0 ? '-∞' : arrels[i-1].toFixed(2);
+                    const fi = i === arrels.length ? '+∞' : arrels[i].toFixed(2);
+                    intervals.push(`(${inici},${fi})`);
+                }
+            }
+
+            // La monotonia depende del signo de a
+            const creixent = a > 0;
+            
+            return {
+                domini: intervals,
+                monotonia: creixent ? 
+                    translations[currentLang]['growing'] : 
+                    translations[currentLang]['decreasing'],
+                arrels: arrels
+            };
+        }
+
+        function generaLatexLog(a, b, polinomiLatex) {
+            let latex = '';
+            
+            if (a !== 1) {
+                latex += a === -1 ? '-' : a;
+            }
+            
+            if (b === Math.E) {
+                latex += `\\ln(${polinomiLatex})`;
+            } else {
+                latex += `\\log_{${b}}(${polinomiLatex})`;
+            }
+            
+            return latex;
+        }
+
+        function generaLatexDerivada(derivada) {
+            const {a, b, polinomiCoefs, derivadaPolinomi} = derivada;
+            const polinomiLatex = generaLatexPolinomi(polinomiCoefs);
+            const derivadaPolinomiLatex = generaLatexPolinomi(derivadaPolinomi);
+            
+            let latex = `\\frac{${a}}{${polinomiLatex}`;
+            if (b !== Math.E) {
+                latex += `\\ln(${b})`;
+            }
+            latex += `} \\cdot (${derivadaPolinomiLatex})`;
+            
+            return latex;
+        }
+
+        function generaFuncio() {
+            const a = generaCoeficient();
+            const b = generaBase();
+            const polinomi = generaPolinomi();
+            const polinomiLatex = generaLatexPolinomi(polinomi.coefs);
+            
+            const funcioLatex = generaLatexLog(a, b, polinomiLatex);
+            const derivada = calculaDerivada(a, b, polinomi.coefs);
+            const intervals = calculaIntervals(a, b, polinomi.coefs);
+
+            document.getElementById('funcio').innerHTML = `
+                <h2>${translations[currentLang]['function']}</h2>
+                <p>f(x) = \\(\\displaystyle ${funcioLatex}\\)</p>
+            `;
+
+            // Si intervals.domini está vacío, mostramos mensajes específicos
+            if (intervals.domini.length === 0) {
+                document.getElementById('domini').innerHTML = `
+                    <h2>${translations[currentLang]['domain']}</h2>
+                    <p>${translations[currentLang]['noDomain']}</p>
+                `;
+                document.getElementById('asimptotes').innerHTML = `
+                    <h2>${translations[currentLang]['asymptotes']}</h2>
+                    <p>${translations[currentLang]['noAsymptotesDetail']}</p>
+                `;
+                document.getElementById('derivada').innerHTML = `
+                    <h2>${translations[currentLang]['derivative']}</h2>
+                    <p>f'(x) = 0 (${translations[currentLang]['noDerivative']})</p>
+                `;
+                document.getElementById('intervals').innerHTML = `
+                    <h2>${translations[currentLang]['intervals']}</h2>
+                    <p>${translations[currentLang]['noIntervals']}</p>
+                `;
+            } else {
+                document.getElementById('domini').innerHTML = `
+                    <h2>${translations[currentLang]['domain']}</h2>
+                    <p>D = ${intervals.domini.join(' U ')}</p>
+                `;
+
+                document.getElementById('asimptotes').innerHTML = `
+                    <h2>${translations[currentLang]['asymptotes']}</h2>
+                    ${
+                        intervals.arrels.length > 0
+                        ? intervals.arrels.map(x => `<p>x = ${x.toFixed(2)}</p>`).join('')
+                        : `<p>${translations[currentLang]['noAsymptotes']}</p>`
+                    }
+                `;
+
+                document.getElementById('derivada').innerHTML = `
+                    <h2>${translations[currentLang]['derivative']}</h2>
+                    <p>f'(x) = \\(\\displaystyle ${generaLatexDerivada(derivada)}\\)</p>
+                `;
+
+                document.getElementById('intervals').innerHTML = `
+                    <h2>${translations[currentLang]['intervals']}</h2>
+                    ${intervals.domini.map(interval => `<p>${intervals.monotonia} en ${interval}</p>`).join('')}
+                `;
+            }
+
+            document.getElementById('solucio').classList.add('hidden');
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+        }
+
+        function mostraSolucio() {
+            document.getElementById('solucio').classList.remove('hidden');
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+        }
+
+        // Inicialización al cargar la página
+        window.onload = function() {
+            // Detectar idioma del navegador
+            currentLang = detectLanguage();
+            
+            // Configurar eventos de botones de idioma
+            document.getElementById('btn-ca').addEventListener('click', function() { changeLanguage('ca'); });
+            document.getElementById('btn-es').addEventListener('click', function() { changeLanguage('es'); });
+            
+            // Aplicar idioma inicial
+            changeLanguage(currentLang);
+            
+            // Generar primera función
+            generaFuncio();
+        };
+    </script>
+</body>
+</html>

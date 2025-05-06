@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasa de variación media</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.5.0/math.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .input-group {
+            margin: 10px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 150px;
+            padding: 5px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #resultat {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .grafic {
+            margin-top: 20px;
+        }
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .katex { font-size: 1.1em; }
+        .language-selector {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+        .language-btn {
+            padding: 5px 10px;
+            margin-left: 5px;
+            background-color: #ddd;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .language-btn.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="language-selector">
+            <button id="ca-btn" class="language-btn">CA</button>
+            <button id="es-btn" class="language-btn">ES</button>
+        </div>
+        
+        <h1 id="title">Tasa de variación media</h1>
+        
+        <div style="margin: 20px 0; text-align: center;">
+            <p id="description">La tasa de variación media en el intervalo [a,b] es el cociente:</p>
+            <p id="formula"></p>
+        </div>
+        
+        <div class="input-group">
+            <label for="funcio" id="label-function">Función f(x):</label>
+            <input type="text" id="funcio" value="x^2" placeholder="Ejemplo: x^2">
+        </div>
+        
+        <div class="input-group">
+            <label for="a" id="label-a">Valor de a:</label>
+            <input type="number" id="a" value="1">
+            
+            <label for="b" id="label-b">Valor de b:</label>
+            <input type="number" id="b" value="3">
+        </div>
+        
+        <button onclick="calcularTVM()" id="calculate-btn">Calcular TVM</button>
+        
+        <div id="resultat"></div>
+        
+        <div class="grafic">
+            <canvas id="graficCanvas"></canvas>
+        </div>
+    </div>
+
+    <footer>
+        <p id="footer-credit">Aplicación hecha por <a href="https://bilateria.org">Juan José de Haro</a></p>
+        <p id="footer-license">Esta obra está bajo una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es">licencia Creative Commons BY-SA</a></p>
+    </footer>
+
+    <script>
+    var grafic = null;
+    var currentLang = 'es'; // Valor predeterminado
+    
+    // Traducciones
+    const translations = {
+        'ca': {
+            'title': 'Taxa de variació mitjana',
+            'description': 'La taxa de variació mitjana en l\'interval [a,b] és el quocient:',
+            'label-function': 'Funció f(x):',
+            'function-placeholder': 'Exemple: x^2',
+            'label-a': 'Valor de a:',
+            'label-b': 'Valor de b:',
+            'calculate-btn': 'Calcular TVM',
+            'error-msg': 'Error: Comprova que la funció estigui ben escrita.',
+            'footer-credit': 'Aplicació feta per <a href="https://bilateria.org">Juan José de Haro</a>',
+            'footer-license': 'Aquesta obra està sota una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ca">llicència Creative Commons BY-SA</a>',
+            'formula': 'TVM=\\frac{f(b)-f(a)}{b-a}'
+        },
+        'es': {
+            'title': 'Tasa de variación media',
+            'description': 'La tasa de variación media en el intervalo [a,b] es el cociente:',
+            'label-function': 'Función f(x):',
+            'function-placeholder': 'Ejemplo: x^2',
+            'label-a': 'Valor de a:',
+            'label-b': 'Valor de b:',
+            'calculate-btn': 'Calcular TVM',
+            'error-msg': 'Error: Comprueba que la función esté bien escrita.',
+            'footer-credit': 'Aplicación hecha por <a href="https://bilateria.org">Juan José de Haro</a>',
+            'footer-license': 'Esta obra está bajo una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es">licencia Creative Commons BY-SA</a>',
+            'formula': 'TVM=\\frac{f(b)-f(a)}{b-a}'
+        }
+    };
+    
+    // Detectar el idioma del navegador
+    function detectarIdioma() {
+        const navLang = navigator.language || navigator.userLanguage;
+        if (navLang.startsWith('ca')) {
+            return 'ca';
+        } else {
+            return 'es';
+        }
+    }
+
+    // Actualizar todos los textos según el idioma
+    function actualizarIdioma(lang) {
+        currentLang = lang;
+        document.documentElement.lang = lang;
+        
+        // Actualizar textos
+        document.getElementById('title').textContent = translations[lang]['title'];
+        document.getElementById('description').textContent = translations[lang]['description'];
+        document.getElementById('label-function').textContent = translations[lang]['label-function'];
+        document.getElementById('funcio').placeholder = translations[lang]['function-placeholder'];
+        document.getElementById('label-a').textContent = translations[lang]['label-a'];
+        document.getElementById('label-b').textContent = translations[lang]['label-b'];
+        document.getElementById('calculate-btn').textContent = translations[lang]['calculate-btn'];
+        document.getElementById('footer-credit').innerHTML = translations[lang]['footer-credit'];
+        document.getElementById('footer-license').innerHTML = translations[lang]['footer-license'];
+        
+        // Actualizar la fórmula
+        katex.render(translations[lang]['formula'], document.getElementById("formula"), {
+            displayMode: true
+        });
+        
+        // Actualizar los botones de idioma
+        document.getElementById('ca-btn').classList.toggle('active', lang === 'ca');
+        document.getElementById('es-btn').classList.toggle('active', lang === 'es');
+        
+        // Si ya hay un resultado, recalcular para mostrar en el idioma correcto
+        if (document.getElementById('resultat').innerHTML !== '') {
+            calcularTVM();
+        }
+    }
+
+    // Inicializar la aplicación al cargar
+    window.onload = function() {
+        // Configurar los botones de idioma
+        document.getElementById('ca-btn').addEventListener('click', function() {
+            actualizarIdioma('ca');
+        });
+        document.getElementById('es-btn').addEventListener('click', function() {
+            actualizarIdioma('es');
+        });
+        
+        // Detectar el idioma del navegador e inicializar
+        currentLang = detectarIdioma();
+        actualizarIdioma(currentLang);
+        
+        // Calcular TVM inicialmente
+        calcularTVM();
+    };
+
+    function calcularTVM() {
+        const funcioStr = document.getElementById('funcio').value;
+        const a = parseFloat(document.getElementById('a').value);
+        const b = parseFloat(document.getElementById('b').value);
+
+        try {
+            const f = math.compile(funcioStr);
+            const fa = f.evaluate({x: a});
+            const fb = f.evaluate({x: b});
+            const tvm = (fb - fa) / (b - a);
+            
+            const resultat = document.getElementById('resultat');
+            resultat.innerHTML = '<div id="fa"></div><div id="fb"></div><div id="tvm"></div>';
+            
+            katex.render(`f(${a}) = ${fa.toFixed(4)}`, document.getElementById('fa'));
+            katex.render(`f(${b}) = ${fb.toFixed(4)}`, document.getElementById('fb'));
+            // Calculamos las restas del numerador y denominador
+            const restaNumerador = (fb - fa).toFixed(4);
+            const restaDenominador = b - a;
+            
+            katex.render(
+                `TVM = \\frac{${fb.toFixed(4)} - ${fa.toFixed(4)}}{${b} - ${a}} = \\frac{${restaNumerador}}{${restaDenominador}} = ${tvm.toFixed(4)}`, 
+                document.getElementById('tvm')
+            );
+            
+            actualitzarGrafic(f, a, b, fa, fb, tvm);
+            
+        } catch (error) {
+            document.getElementById('resultat').innerHTML = 
+                `<p style="color: red;">${translations[currentLang]['error-msg']}</p>`;
+        }
+    }
+
+    function actualitzarGrafic(f, a, b, fa, fb, tvm) {
+        const punts = 100;
+        const min = Math.min(a, b) - 1;
+        const max = Math.max(a, b) + 1;
+        const pas = (max - min) / punts;
+        
+        const dades = [];
+        const dadesTVM = [];
+        
+        for (let x = min; x <= max; x += pas) {
+            dades.push({
+                x: x,
+                y: f.evaluate({x: x})
+            });
+            
+            const y = fa + tvm * (x - a);
+            dadesTVM.push({
+                x: x,
+                y: y
+            });
+        }
+        
+        if (grafic) {
+            grafic.destroy();
+        }
+        
+        const ctx = document.getElementById('graficCanvas').getContext('2d');
+        grafic = new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'f(x)',
+                    data: dades,
+                    borderColor: 'blue',
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    fill: false
+                }, {
+                    label: 'TVM',
+                    data: dadesTVM,
+                    borderColor: 'red',
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    borderDash: [5, 5],
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'horizontal'
+                    }
+                }
+            }
+        });
+    }
+    </script>
+</body>
+</html>

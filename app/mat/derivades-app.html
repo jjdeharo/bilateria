@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Practica les taules de derivades / Practica las tablas de derivadas</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7ff 0%, #e0e7ff 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            max-width: 600px;
+            width: 100%;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        h1 {
+            color: #1e1b4b;
+            font-size: 28px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4338ca;
+        }
+
+        .btn-secondary {
+            background: #e0e7ff;
+            color: #4f46e5;
+        }
+
+        .btn-secondary:hover {
+            background: #c7d2fe;
+        }
+
+        .question {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .question p {
+            color: #1e1b4b;
+            font-size: 18px;
+            margin-bottom: 16px;
+        }
+
+        .function {
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #1e1b4b;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option {
+            background: white;
+            border: 2px solid #e0e7ff;
+            padding: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .option:hover {
+            border-color: #4f46e5;
+            background: #f8fafc;
+        }
+
+        .option.correct {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+
+        .option.incorrect {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .footer {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .score {
+            color: #1e1b4b;
+            font-weight: 600;
+            font-size: 18px;
+            padding: 8px;
+        }
+
+        .result {
+            text-align: center;
+            padding: 12px;
+            border-radius: 12px;
+            margin-top: 16px;
+            font-weight: 600;
+        }
+
+        .result.correct {
+            background: #f0fdf4;
+            color: #166534;
+        }
+
+        .result.incorrect {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
+        .credits {
+            margin-top: 24px;
+            text-align: center;
+            font-size: 14px;
+            color: #6b7280;
+            padding-top: 16px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .credits a {
+            color: #4f46e5;
+            text-decoration: none;
+        }
+
+        .credits a:hover {
+            text-decoration: underline;
+        }
+
+        .lang-selector {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 16px;
+        }
+
+        .lang-btn {
+            padding: 4px 8px;
+            margin-left: 8px;
+            background: #e0e7ff;
+            color: #4f46e5;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .lang-btn.active {
+            background: #4f46e5;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="lang-selector">
+            <button id="btnCa" class="lang-btn active">CA</button>
+            <button id="btnEs" class="lang-btn">ES</button>
+        </div>
+
+        <h1 id="titulo">Practica les derivades</h1>
+        
+        <div class="button-group">
+            <button id="btnSimples" class="btn btn-primary">Simples</button>
+            <button id="btnCompostes" class="btn btn-secondary">Compostes</button>
+        </div>
+
+        <div class="question">
+            <p id="pregunta">Quina és la derivada de:</p>
+            <div id="funcio" class="function"></div>
+            
+            <div id="opcions" class="options">
+                <!-- Las opciones se generarán dinámicamente -->
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="score">
+                <span id="textoAciertos">Encerts:</span> <span id="puntuacio">0</span>
+            </div>
+            <button id="seguent" class="btn btn-primary" style="display: none;">Següent</button>
+        </div>
+
+        <div id="resultat" class="result" style="display: none;"></div>
+
+        <div class="credits">
+            <span id="creditoTexto">Aplicació feta per </span><a href="https://bilateria.org" target="_blank">Juan José de Haro</a><br>
+            <span id="licenciaTexto">Aquesta obra està sota una llicència </span><a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons BY-SA</a>
+        </div>
+    </div>
+
+    <script>
+        // Definición de textos en ambos idiomas
+        const textos = {
+            ca: {
+                titulo: "Practica les taules de derivades",
+                btnSimples: "Simples",
+                btnCompostes: "Compostes",
+                pregunta: "Quina és la derivada de:",
+                siguienteBtn: "Següent",
+                aciertos: "Encerts:",
+                correcto: "✨ Correcte!",
+                incorrecto: "❌ Incorrecte",
+                creditoTexto: "Aplicació feta per ",
+                licenciaTexto: "Aquesta obra està sota una llicència "
+            },
+            es: {
+                titulo: "Practica las tablas de derivadas",
+                btnSimples: "Simples",
+                btnCompostes: "Compuestas",
+                pregunta: "¿Cuál es la derivada de:",
+                siguienteBtn: "Siguiente",
+                aciertos: "Aciertos:",
+                correcto: "✨ ¡Correcto!",
+                incorrecto: "❌ Incorrecto",
+                creditoTexto: "Aplicación hecha por ",
+                licenciaTexto: "Esta obra está bajo una licencia "
+            }
+        };
+
+        // Funciones y derivadas (iguales en ambos idiomas)
+        const derivadesSimples = [
+            { funcio: 'k', derivada: '0', opcions: ['0', 'k', '1', 'x'] },
+            { funcio: 'x', derivada: '1', opcions: ['1', 'x', '0', '2x'] },
+            { funcio: 'kx', derivada: 'k', opcions: ['k', '1', 'kx', '0'] },
+            { funcio: 'x^n', derivada: 'nx^{n-1}', opcions: ['nx^{n-1}', 'x^n', 'nx^n', 'x^{n-1}'] },
+            { funcio: '\\sqrt{x}', derivada: '\\frac{1}{2\\sqrt{x}}', opcions: ['\\frac{1}{2\\sqrt{x}}', '2\\sqrt{x}', '\\sqrt{x}', '\\frac{2}{\\sqrt{x}}'] },
+            { funcio: '\\sqrt[n]{x}', derivada: '\\frac{1}{n\\sqrt[n]{x^{n-1}}}', opcions: ['\\frac{1}{n\\sqrt[n]{x^{n-1}}}', '\\frac{1}{\\sqrt[n]{x}}', 'n\\sqrt[n]{x}', '\\sqrt[n]{x^{n-1}}'] },
+            { funcio: 'e^x', derivada: 'e^x', opcions: ['e^x', 'xe^x', '1', 'e^{x-1}'] },
+            { funcio: 'a^x', derivada: 'a^x\\ln a', opcions: ['a^x\\ln a', 'a^x', 'xa^{x-1}', '\\ln a'] },
+            { funcio: '\\ln x', derivada: '\\frac{1}{x}', opcions: ['\\frac{1}{x}', '\\ln x', 'x', '1'] },
+            { funcio: '\\log_a x', derivada: '\\frac{1}{x\\ln a}', opcions: ['\\frac{1}{x\\ln a}', '\\frac{1}{x}', '\\log_a x', '\\ln a'] },
+            { funcio: '\\sin x', derivada: '\\cos x', opcions: ['\\cos x', '\\sin x', '-\\sin x', '-\\cos x'] },
+            { funcio: '\\cos x', derivada: '-\\sin x', opcions: ['-\\sin x', '\\cos x', '\\sin x', '-\\cos x'] },
+            { funcio: '\\tan x', derivada: '\\frac{1}{\\cos^2 x}', opcions: ['\\frac{1}{\\cos^2 x}', '\\sec^2 x', '\\tan x', '\\cos^2 x'] }
+        ];
+
+        const derivadesCompostes = [
+            { funcio: 'f^n', derivada: 'f\'\\cdot n\\cdot f^{n-1}', opcions: ['f\'\\cdot n\\cdot f^{n-1}', 'n\\cdot f^{n-1}', 'f^n', 'f\'\\cdot f^n'] },
+            { funcio: '\\sqrt{f}', derivada: '\\frac{f\'}{2\\sqrt{f}}', opcions: ['\\frac{f\'}{2\\sqrt{f}}', '\\frac{1}{2\\sqrt{f}}', 'f\'\\sqrt{f}', '\\sqrt{f\'} '] },
+            { funcio: '\\sqrt[n]{f}', derivada: '\\frac{f\'}{n\\sqrt[n]{f^{n-1}}}', opcions: ['\\frac{f\'}{n\\sqrt[n]{f^{n-1}}}', '\\frac{f\'}{\\sqrt[n]{f}}', 'f\'\\sqrt[n]{f}', '\\sqrt[n]{f\'}'] },
+            { funcio: 'e^f', derivada: 'f\'\\cdot e^f', opcions: ['f\'\\cdot e^f', 'e^f', 'f\\cdot e^f', 'e^{f\'}'] },
+            { funcio: 'a^f', derivada: 'f\'\\cdot a^f\\cdot\\ln a', opcions: ['f\'\\cdot a^f\\cdot\\ln a', 'a^f\\cdot\\ln a', 'f\'\\cdot a^f', 'a^{f\'}'] },
+            { funcio: '\\ln f', derivada: '\\frac{f\'}{f}', opcions: ['\\frac{f\'}{f}', '\\frac{1}{f}', 'f\'\\ln f', '\\ln f\''] },
+            { funcio: '\\log_a f', derivada: '\\frac{f\'}{f\\ln a}', opcions: ['\\frac{f\'}{f\\ln a}', '\\frac{f\'}{f}', '\\frac{1}{f\\ln a}', '\\log_a f\''] },
+            { funcio: '\\sin f', derivada: 'f\'\\cdot\\cos f', opcions: ['f\'\\cdot\\cos f', '\\cos f', '-f\'\\cdot\\sin f', '\\sin f\''] },
+            { funcio: '\\cos f', derivada: '-f\'\\cdot\\sin f', opcions: ['-f\'\\cdot\\sin f', '-\\sin f', 'f\'\\cdot\\cos f', '\\cos f\''] },
+            { funcio: '\\tan f', derivada: '\\frac{f\'}{\\cos^2 f}', opcions: ['\\frac{f\'}{\\cos^2 f}', '\\frac{1}{\\cos^2 f}', 'f\'\\tan f', '\\tan f\''] }
+        ];
+
+        let derivadaActual;
+        let tipus = 'simples';
+        let puntuacio = 0;
+        let respostaSeleccionada = false;
+        let idiomaActual = 'ca'; // Idioma por defecto
+
+        // Detectar el idioma del navegador al cargar la página
+        function detectarIdioma() {
+            const idiomaNavegador = navigator.language || navigator.userLanguage;
+            if (idiomaNavegador.substring(0, 2) === 'ca') {
+                cambiarIdioma('ca');
+            } else {
+                cambiarIdioma('es');
+            }
+        }
+
+        // Función para cambiar el idioma
+        function cambiarIdioma(idioma) {
+            idiomaActual = idioma;
+            
+            // Actualizar textos
+            document.getElementById('titulo').textContent = textos[idioma].titulo;
+            document.getElementById('btnSimples').textContent = textos[idioma].btnSimples;
+            document.getElementById('btnCompostes').textContent = textos[idioma].btnCompostes;
+            document.getElementById('pregunta').textContent = textos[idioma].pregunta;
+            document.getElementById('seguent').textContent = textos[idioma].siguienteBtn;
+            document.getElementById('textoAciertos').textContent = textos[idioma].aciertos;
+            document.getElementById('creditoTexto').textContent = textos[idioma].creditoTexto;
+            document.getElementById('licenciaTexto').textContent = textos[idioma].licenciaTexto;
+            
+            // Cambiar clase activa en botones de idioma
+            if (idioma === 'ca') {
+                document.getElementById('btnCa').classList.add('active');
+                document.getElementById('btnEs').classList.remove('active');
+            } else {
+                document.getElementById('btnCa').classList.remove('active');
+                document.getElementById('btnEs').classList.add('active');
+            }
+            
+            // Si hay un resultado mostrado, actualizar su texto
+            if (document.getElementById('resultat').style.display !== 'none') {
+                const resultado = document.getElementById('resultat');
+                if (resultado.classList.contains('correct')) {
+                    resultado.innerHTML = textos[idioma].correcto;
+                } else if (resultado.classList.contains('incorrect')) {
+                    resultado.innerHTML = textos[idioma].incorrecto;
+                }
+            }
+        }
+
+        function mostraDerivada() {
+            const derivades = tipus === 'simples' ? derivadesSimples : derivadesCompostes;
+            derivadaActual = derivades[Math.floor(Math.random() * derivades.length)];
+            
+            document.getElementById('funcio').innerHTML = `\\[${derivadaActual.funcio}\\]`;
+            
+            const opcionsBarrejades = [...derivadaActual.opcions].sort(() => Math.random() - 0.5);
+            
+            const opcionsHTML = opcionsBarrejades.map((opcio) => `
+                <button class="option" data-valor="${opcio}">
+                    \\[${opcio}\\]
+                </button>
+            `).join('');
+            
+            document.getElementById('opcions').innerHTML = opcionsHTML;
+            document.getElementById('seguent').style.display = 'none';
+            document.getElementById('resultat').style.display = 'none';
+            respostaSeleccionada = false;
+            
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+
+            document.querySelectorAll('.option').forEach(boto => {
+                boto.addEventListener('click', (e) => comprovaResposta(e.currentTarget));
+            });
+        }
+
+        function comprovaResposta(botoSeleccionat) {
+            if (respostaSeleccionada) return;
+            
+            respostaSeleccionada = true;
+            const respostaSeleccionadaValor = botoSeleccionat.dataset.valor;
+            const correcte = respostaSeleccionadaValor === derivadaActual.derivada;
+            
+            document.querySelectorAll('.option').forEach(boto => {
+                const esCorrecte = boto.dataset.valor === derivadaActual.derivada;
+                if (esCorrecte) {
+                    boto.classList.add('correct');
+                } else if (boto === botoSeleccionat) {
+                    boto.classList.add('incorrect');
+                }
+            });
+
+            const resultatDiv = document.getElementById('resultat');
+            if (correcte) {
+                puntuacio++;
+                resultatDiv.innerHTML = textos[idiomaActual].correcto;
+                resultatDiv.classList.remove('incorrect');
+                resultatDiv.classList.add('correct');
+            } else {
+                resultatDiv.innerHTML = textos[idiomaActual].incorrecto;
+                resultatDiv.classList.remove('correct');
+                resultatDiv.classList.add('incorrect');
+            }
+            resultatDiv.style.display = 'block';
+
+            document.getElementById('puntuacio').textContent = puntuacio;
+            document.getElementById('seguent').style.display = 'block';
+        }
+
+        // Event Listeners
+        document.getElementById('btnSimples').addEventListener('click', () => {
+            tipus = 'simples';
+            document.getElementById('btnSimples').classList.remove('btn-secondary');
+            document.getElementById('btnSimples').classList.add('btn-primary');
+            document.getElementById('btnCompostes').classList.remove('btn-primary');
+            document.getElementById('btnCompostes').classList.add('btn-secondary');
+            mostraDerivada();
+        });
+
+        document.getElementById('btnCompostes').addEventListener('click', () => {
+            tipus = 'compostes';
+            document.getElementById('btnCompostes').classList.remove('btn-secondary');
+            document.getElementById('btnCompostes').classList.add('btn-primary');
+            document.getElementById('btnSimples').classList.remove('btn-primary');
+            document.getElementById('btnSimples').classList.add('btn-secondary');
+            mostraDerivada();
+        });
+
+        document.getElementById('seguent').addEventListener('click', mostraDerivada);
+        document.getElementById('btnCa').addEventListener('click', () => cambiarIdioma('ca'));
+        document.getElementById('btnEs').addEventListener('click', () => cambiarIdioma('es'));
+
+        // Detectar idioma al iniciar y mostrar primera derivada
+        detectarIdioma();
+        mostraDerivada();
+    </script>
+</body>
+</html>

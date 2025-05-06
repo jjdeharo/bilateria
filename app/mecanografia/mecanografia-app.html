@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeyBlitz - Juego de Mecanografía</title>
+    <style>
+        :root {
+            --bg-color: #082029;
+            --text-color: #ffffff;
+            --shooter-color: #00ffcc;
+            --word-color: #ffffff;
+            --active-word-color: #ff9900;
+            --laser-color: #ffffff;
+        }
+        
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .game-container {
+            position: relative;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .word {
+            position: absolute;
+            font-size: 1.5rem;
+            user-select: none;
+            transition: color 0.3s;
+        }
+        
+        .active-word {
+            color: var(--active-word-color);
+        }
+        
+        .shooter {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 30px;
+            background-color: var(--shooter-color);
+            border-radius: 50% 50% 0 0;
+            z-index: 10;
+            transform-origin: center bottom;
+            box-shadow: 0 0 15px 5px rgba(0, 255, 204, 0.4);
+        }
+        
+        .shooter-tip {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 12px;
+            background-color: rgba(0, 255, 204, 0.9);
+            border-radius: 2px;
+            box-shadow: 0 0 5px 2px rgba(0, 255, 204, 0.5);
+            z-index: 11;
+        }
+        
+        .laser {
+            position: absolute;
+            width: 6px;
+            height: 15px;
+            background-color: var(--laser-color);
+            border-radius: 3px;
+            z-index: 5;
+            transition: none;
+            box-shadow: 0 0 8px 2px rgba(255, 255, 255, 0.7);
+        }
+        
+        .explosion {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #ff9500;
+            z-index: 6;
+            animation: explode 0.5s forwards;
+        }
+        
+        @keyframes explode {
+            0% {
+                transform: scale(0.1);
+                opacity: 1;
+                box-shadow: 0 0 10px 5px rgba(255, 149, 0, 0.8);
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+                box-shadow: 0 0 0 0 rgba(255, 149, 0, 0);
+            }
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            z-index: 6;
+            animation: particle 0.5s forwards;
+        }
+        
+        @keyframes particle {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+        
+        .controls {
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .input-container {
+            position: relative;
+            flex: 1;
+            max-width: 500px;
+            min-width: 200px;
+        }
+        
+        #word-input {
+            width: 100%;
+            padding: 8px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: var(--text-color);
+        }
+        
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #336699;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        button:hover {
+            background-color: #254e77;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: #0a3040;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            color: white;
+        }
+
+        .settings-item {
+            margin-bottom: 15px;
+        }
+        .settings-item label {
+            display: inline-block;
+            min-width: 80px;
+            margin-right: 10px;
+        }
+
+        /* Botones de idioma en configuración */
+        .language-toggle {
+            display: inline-flex;
+            gap: 5px;
+        }
+        .lang-btn {
+            padding: 5px 10px;
+            background-color: #444;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+        }
+        .lang-btn.active {
+            background-color: #336699;
+            font-weight: bold;
+        }
+        
+        .modal textarea {
+            width: 100%;
+            height: 150px;
+            margin: 10px 0;
+            padding: 8px;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        .close-modal {
+            background-color: #cc3333;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .stat {
+            text-align: center;
+            margin: 5px;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 0.8rem;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .footer a {
+            color: #66ccff;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .word {
+                font-size: 1.2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .input-container {
+                width: 100%;
+            }
+            
+            .stats {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stats">
+        <div class="stat">
+            <div>Puntuación (precisión × velocidad):</div>
+            <div id="score">0</div>
+        </div>
+        <div class="stat">
+            <div>Nivel:</div>
+            <div id="level">1</div>
+        </div>
+        <div class="stat">
+            <div>Palabras por minuto:</div>
+            <div id="wpm">0</div>
+        </div>
+        <div class="stat">
+            <div>Precisión:</div>
+            <div id="accuracy">100%</div>
+        </div>
+    </div>
+
+    <div class="game-container" id="game-container">
+        <div class="shooter" id="shooter">
+            <div class="shooter-tip" id="shooter-tip"></div>
+        </div>
+        <div class="laser" id="laser"></div>
+        <!-- Las palabras se generarán aquí -->
+    </div>
+
+    <div class="controls">
+        <div class="input-container">
+            <input type="text" id="word-input" placeholder="Escribe aquí..." autocomplete="off" autofocus>
+        </div>
+        <button id="settings-btn">Configuración</button>
+        <button id="start-btn">Iniciar</button>
+        <button id="pause-btn">Pausar</button>
+        <button id="load-words-btn">Cargar palabras</button>
+        <button id="reset-btn">Reiniciar</button>
+    </div>
+
+    <div class="modal" id="settings-modal">
+        <div class="modal-content">
+            <h2>Configuración</h2>
+
+            <div class="settings-item">
+                <label for="speed-slider">Velocidad:</label>
+                <input type="range" id="speed-slider" min="1" max="10" value="5">
+                <span id="speed-value">5</span>
+            </div>
+
+            <div class="settings-item">
+                <label for="difficulty-select">Dificultad:</label>
+                <select id="difficulty-select">
+                    <option value="easy">Fácil</option>
+                    <option value="medium" selected>Media</option>
+                    <option value="hard">Difícil</option>
+                </select>
+            </div>
+
+            <div class="settings-item">
+                <label for="sound-toggle">Sonido:</label>
+                <input type="checkbox" id="sound-toggle" checked>
+            </div>
+
+            <div class="settings-item">
+                <label>Idioma:</label>
+                <div class="language-toggle">
+                    <button id="settings-lang-es" class="lang-btn">ES</button>
+                    <button id="settings-lang-ca" class="lang-btn">CA</button>
+                </div>
+            </div>
+
+            <div class="settings-item">
+                <button id="restore-defaults">Restaurar</button>
+            </div>
+
+            <div class="buttons">
+                <button id="save-settings">Guardar</button>
+                <button class="close-modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="load-words-modal">
+        <div class="modal-content">
+            <h2>Cargar palabras</h2>
+            <p>Pega el texto. Se extraerán palabras únicas (sin duplicados):</p>
+            <textarea id="words-input" placeholder="Pega el texto aquí o carga un archivo de texto"></textarea>
+            <div>
+                <input type="file" id="file-input" accept=".txt">
+                <p>O selecciona un archivo de texto</p>
+            </div>
+            <div class="buttons">
+                <button id="load-words">Aceptar y usar palabras</button>
+                <button class="close-modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Aplicación hecha por <a href="https://bilateria.org" target="_blank">Juan José de Haro</a></p>
+        <p>Esta obra está bajo una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank">licencia Creative Commons BY-SA</a></p>
+    </div>
+
+    <script>
+        /* 
+         * En esta versión se permite repetir palabras: 
+         * se usa "wordIndex" para recorrer el array completo (incluyendo repeticiones).
+         * Además, la palabra activa (targetWord) se mantiene fija hasta ser destruida o desaparecer,
+         * sin cambiar a nuevas palabras que vayan apareciendo.
+         */
+
+        const gameContainer = document.getElementById('game-container');
+        const wordInput = document.getElementById('word-input');
+        const shooter = document.getElementById('shooter');
+        const shooterTip = document.getElementById('shooter-tip');
+        const laser = document.getElementById('laser');
+        const scoreDisplay = document.getElementById('score');
+        const levelDisplay = document.getElementById('level');
+        const wpmDisplay = document.getElementById('wpm');
+        const accuracyDisplay = document.getElementById('accuracy');
+        const startBtn = document.getElementById('start-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const settingsBtn = document.getElementById('settings-btn');
+        const loadWordsBtn = document.getElementById('load-words-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const settingsModal = document.getElementById('settings-modal');
+        const loadWordsModal = document.getElementById('load-words-modal');
+        const speedSlider = document.getElementById('speed-slider');
+        const speedValue = document.getElementById('speed-value');
+        const difficultySelect = document.getElementById('difficulty-select');
+        const saveSettingsBtn = document.getElementById('save-settings');
+        const closeModalBtns = document.querySelectorAll('.close-modal');
+        const loadWordsBtn2 = document.getElementById('load-words');
+        const wordsInput = document.getElementById('words-input');
+        const fileInput = document.getElementById('file-input');
+        const settingsLangEsBtn = document.getElementById('settings-lang-es');
+        const settingsLangCaBtn = document.getElementById('settings-lang-ca');
+        const restoreDefaultsBtn = document.getElementById('restore-defaults');
+        
+        const defaultWordsEs = [
+            'casa', 'perro', 'gato', 'libro', 'mesa', 'silla', 'puerta', 'ventana', 
+            'jardín', 'escuela', 'trabajo', 'tiempo', 'mundo', 'amigo', 'familia', 
+            'comida', 'agua', 'fuego', 'tierra', 'aire', 'ciudad', 'campo', 'mar', 
+            'montaña', 'sol', 'luna', 'estrella', 'cielo', 'nube', 'lluvia', 'nieve',
+            'computadora', 'teclado', 'ratón', 'pantalla', 'teléfono', 'internet',
+            'programa', 'juego', 'música', 'película', 'imagen', 'palabra', 'texto'
+        ];
+
+        const defaultWordsCa = [
+            'casa', 'gos', 'gat', 'llibre', 'taula', 'cadira', 'porta', 'finestra', 
+            'jardí', 'escola', 'feina', 'temps', 'món', 'amic', 'família', 
+            'menjar', 'aigua', 'foc', 'terra', 'aire', 'ciutat', 'camp', 'mar', 
+            'muntanya', 'sol', 'lluna', 'estrella', 'cel', 'núvol', 'pluja', 'neu',
+            'ordinador', 'teclat', 'ratolí', 'pantalla', 'telèfon', 'internet',
+            'programa', 'joc', 'música', 'pel·lícula', 'imatge', 'paraula', 'text'
+        ];
+
+        // Variables de estado
+        let currentLanguage = 'es';
+        let words = [];             // Todas las palabras, incluidas repeticiones
+        let wordIndex = 0;          // Recorre el array de palabras
+        let activeWords = [];
+        let currentInput = '';
+        let targetWord = null;
+        let gameActive = false;
+        let gamePaused = false;
+        let score = 0;
+        let level = 1;
+        let speed = 5;             // Valor base tomado del slider
+        let difficulty = 'medium';
+        let correctKeystrokes = 0;
+        let totalKeystrokes = 0;
+        let startTime = 0;
+        let wordsCounted = 0;
+        let animationFrameId = null;
+        
+        // Sonido
+        let soundEnabled = true;
+        let audioContext;
+
+        // Para spawn continuo en medium/hard
+        let lastSpawnTime = 0;
+        let spawnInterval = 3000;
+
+        /* ==========================
+         *   AUDIO
+         * ========================== */
+        function initAudio() {
+            if (!audioContext) {
+                try {
+                    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+                    audioContext = new AudioContext();
+                } catch (e) {
+                    console.warn('Web Audio API no soportada en este navegador');
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        function playShootSound() {
+            if (!soundEnabled) return;
+            if (!initAudio()) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.type = 'square';
+            oscillator.frequency.setValueAtTime(1200, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.15);
+            
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.5, audioContext.currentTime + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.15);
+        }
+        
+        function playDestroySound() {
+            if (!soundEnabled) return;
+            if (!initAudio()) return;
+            
+            const bufferSize = 4096;
+            const noiseNode = audioContext.createScriptProcessor(bufferSize, 1, 1);
+            const gainNode = audioContext.createGain();
+            
+            noiseNode.onaudioprocess = function(e) {
+                const output = e.outputBuffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = Math.random() * 2 - 1;
+                }
+            };
+            
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.5, audioContext.currentTime + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            noiseNode.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            setTimeout(() => {
+                noiseNode.disconnect();
+                gainNode.disconnect();
+            }, 300);
+        }
+
+        /* ==========================
+         *   IDIOMA / TEXTOS
+         * ========================== */
+        function detectBrowserLanguage() {
+            const browserLang = navigator.language || navigator.userLanguage || 'es';
+            return browserLang.toLowerCase().includes('ca') ? 'ca' : 'es';
+        }
+        
+        function updateButtonsText(lang) {
+            const texts = {
+                'es': {
+                    startBtn: 'Iniciar',
+                    pauseBtn: 'Pausar',
+                    continueBtn: 'Continuar',
+                    loadWordsBtn: 'Cargar palabras',
+                    settingsBtn: 'Configuración',
+                    saveSettingsBtn: 'Guardar',
+                    closeBtn: 'Cancelar',
+                    loadBtn: 'Aceptar y usar palabras',
+                    resetBtn: 'Reiniciar',
+                    restoreBtn: 'Restaurar'
+                },
+                'ca': {
+                    startBtn: 'Iniciar',
+                    pauseBtn: 'Pausar',
+                    continueBtn: 'Continuar',
+                    loadWordsBtn: 'Carregar paraules',
+                    settingsBtn: 'Configuració',
+                    saveSettingsBtn: 'Guardar',
+                    closeBtn: 'Cancel·lar',
+                    loadBtn: 'Acceptar i usar paraules',
+                    resetBtn: 'Reiniciar',
+                    restoreBtn: 'Restaurar'
+                }
+            };
+            
+            startBtn.textContent = gamePaused ? texts[lang].continueBtn : texts[lang].startBtn;
+            pauseBtn.textContent = gamePaused ? texts[lang].continueBtn : texts[lang].pauseBtn;
+            loadWordsBtn.textContent = texts[lang].loadWordsBtn;
+            settingsBtn.textContent = texts[lang].settingsBtn;
+            saveSettingsBtn.textContent = texts[lang].saveSettingsBtn;
+            closeModalBtns.forEach(btn => btn.textContent = texts[lang].closeBtn);
+            loadWordsBtn2.textContent = texts[lang].loadBtn;
+            resetBtn.textContent = texts[lang].resetBtn;
+            restoreDefaultsBtn.textContent = texts[lang].restoreBtn;
+            
+            document.querySelector('#settings-modal h2').textContent = lang === 'es' ? 'Configuración' : 'Configuració';
+            document.querySelector('#load-words-modal h2').textContent = lang === 'es' ? 'Cargar palabras' : 'Carregar paraules';
+            document.querySelector('#load-words-modal p').textContent = lang === 'es'
+                ? 'Pega el texto. Se extraerán palabras únicas (sin duplicados):'
+                : 'Enganxa el text. S\'extrauran paraules úniques (sense duplicats):';
+            document.querySelector('#load-words-modal div p').textContent = lang === 'es'
+                ? 'O selecciona un archivo de texto'
+                : 'O selecciona un fitxer de text';
+            
+            document.querySelectorAll('.stat div:first-child')[0].textContent = lang === 'es'
+                ? 'Puntuación (precisión × velocidad):' : 'Puntuació (precisió × velocitat):';
+            document.querySelectorAll('.stat div:first-child')[1].textContent = lang === 'es'
+                ? 'Nivel:' : 'Nivell:';
+            document.querySelectorAll('.stat div:first-child')[2].textContent = lang === 'es'
+                ? 'Palabras por minuto:' : 'Paraules per minut:';
+            document.querySelectorAll('.stat div:first-child')[3].textContent = lang === 'es'
+                ? 'Precisión:' : 'Precisió:';
+            
+            wordInput.placeholder = lang === 'es' ? 'Escribe aquí...' : 'Escriu aquí...';
+        }
+
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            if (lang === 'es') {
+                words = [...defaultWordsEs];
+                settingsLangEsBtn.classList.add('active');
+                settingsLangCaBtn.classList.remove('active');
+            } else {
+                words = [...defaultWordsCa];
+                settingsLangEsBtn.classList.remove('active');
+                settingsLangCaBtn.classList.add('active');
+            }
+            // Empezamos siempre desde la primera palabra
+            wordIndex = 0;
+            updateButtonsText(lang);
+        }
+
+        /* ==========================
+         *   ESTADO / REINICIAR / RESTAURAR
+         * ========================== */
+        function resetGameState() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            gameActive = false;
+            gamePaused = false;
+            
+            gameContainer.querySelectorAll('.word').forEach(word => word.remove());
+            activeWords = [];
+            wordIndex = 0;
+            
+            score = 0;
+            level = 1;
+            correctKeystrokes = 0;
+            totalKeystrokes = 0;
+            wordsCounted = 0;
+            updateStats();
+            
+            wordInput.value = '';
+            wordInput.disabled = true;
+            
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+            pauseBtn.textContent = currentLanguage === 'es' ? 'Pausar' : 'Pausar';
+        }
+
+        function restoreDefaults() {
+            localStorage.removeItem('typingGameSettings');
+            location.reload();
+        }
+
+        /* ==========================
+         *   INICIAR / PAUSAR / FIN
+         * ==========================
+         */
+        function init() {
+            gameContainer.querySelectorAll('.word').forEach(word => word.remove());
+            activeWords = [];
+            wordIndex = 0;
+            
+            score = 0;
+            level = 1;
+            correctKeystrokes = 0;
+            totalKeystrokes = 0;
+            wordsCounted = 0;
+            
+            speed = 1;
+            updateStats();
+            speedValue.textContent = speed;
+            speedSlider.value = speed;
+            
+            setupInputHandling();
+            startGame();
+        }
+
+        function startGame() {
+            if (!gameActive) {
+                gameActive = true;
+                gamePaused = false;
+                startTime = Date.now();
+                wordInput.disabled = false;
+                wordInput.focus();
+                startBtn.disabled = true;
+                pauseBtn.disabled = false;
+                
+                lastSpawnTime = performance.now();
+                requestAnimationFrame(gameLoop);
+            }
+        }
+
+        function pauseGame() {
+            if (gameActive && !gamePaused) {
+                gamePaused = true;
+                pauseBtn.textContent = currentLanguage === 'es' ? 'Continuar' : 'Continuar';
+            } else if (gameActive && gamePaused) {
+                gamePaused = false;
+                pauseBtn.textContent = currentLanguage === 'es' ? 'Pausar' : 'Pausar';
+                lastSpawnTime = performance.now();
+                requestAnimationFrame(gameLoop);
+            }
+        }
+
+        function endGame() {
+            gameActive = false;
+            gamePaused = false;
+            wordInput.disabled = true;
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+            pauseBtn.textContent = currentLanguage === 'es' ? 'Pausar' : 'Pausar';
+            
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            
+            const finalMessage = currentLanguage === 'es'
+                ? `¡Juego terminado!\nPuntuación final: ${score}\nPalabras por minuto: ${wpmDisplay.textContent}\nPrecisión: ${accuracyDisplay.textContent}`
+                : `Joc finalitzat!\nPuntuació final: ${score}\nParaules per minut: ${wpmDisplay.textContent}\nPrecisió: ${accuracyDisplay.textContent}`;
+            
+            alert(finalMessage);
+        }
+
+        /* ==========================
+         *   ENTRADA DE TEXTO
+         * ==========================
+         */
+        function setupInputHandling() {
+            wordInput.value = '';
+            currentInput = '';
+            
+            wordInput.addEventListener('input', handleInput);
+            wordInput.addEventListener('keydown', handleKeydown);
+        }
+
+        function handleInput(e) {
+            const newInput = e.target.value.trim().toLowerCase();
+            
+            if (newInput === '') {
+                currentInput = '';
+                highlightTargetWord();
+                return;
+            }
+            
+            if (newInput.length > currentInput.length) {
+                totalKeystrokes++;
+                if (targetWord && targetWord.word.toLowerCase().startsWith(newInput)) {
+                    correctKeystrokes++;
+                    shootLaser(targetWord.element);
+                }
+            }
+            
+            currentInput = newInput;
+            updateTargetWord();
+            
+            if (targetWord && targetWord.word.toLowerCase() === currentInput) {
+                handleWordCompletion();
+            }
+            
+            updateStats();
+        }
+
+        function handleKeydown(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
+        }
+
+        /* ==========================
+         *   CREAR PALABRAS
+         * ==========================
+         */
+        function createWord() {
+            if (!gameActive || gamePaused) return;
+            
+            if (wordIndex >= words.length) {
+                if (activeWords.length === 0) {
+                    setTimeout(() => {
+                        const congratsMsg = currentLanguage === 'es'
+                            ? `¡Felicidades! Has completado todas las palabras.\nPuntuación final: ${score}\nPalabras por minuto: ${wpmDisplay.textContent}\nPrecisión: ${accuracyDisplay.textContent}`
+                            : `Felicitats! Has completat totes les paraules.\nPuntuació final: ${score}\nParaules per minut: ${wpmDisplay.textContent}\nPrecisió: ${accuracyDisplay.textContent}`;
+                        alert(congratsMsg);
+                        endGame();
+                    }, 500);
+                }
+                return;
+            }
+            
+            const wordText = words[wordIndex];
+            wordIndex++;
+            
+            const wordElement = document.createElement('div');
+            wordElement.className = 'word';
+            wordElement.textContent = wordText;
+            
+            const containerWidth = gameContainer.clientWidth;
+            const wordWidth = wordText.length * 15;
+            const maxX = containerWidth - wordWidth;
+            const x = Math.max(10, Math.floor(Math.random() * maxX));
+            
+            wordElement.style.left = `${x}px`;
+            wordElement.style.top = '0px';
+            
+            gameContainer.appendChild(wordElement);
+            
+            const baseSpeed = 0.3;
+            const levelMultiplier = 1 + (level - 1) * 0.1;
+            let finalSpeed = baseSpeed * levelMultiplier * speed;
+            
+            const randomFactor = 0.85 + Math.random() * 0.3;
+            finalSpeed *= randomFactor;
+            
+            const wordObj = {
+                element: wordElement,
+                word: wordText,
+                x: x,
+                y: 0,
+                speed: finalSpeed,
+                completed: false
+            };
+            
+            activeWords.push(wordObj);
+            // Solo asignamos la palabra activa si aún no hay una
+            if (!targetWord) {
+                targetWord = wordObj;
+                highlightTargetWord();
+            }
+        }
+
+        function updateWords() {
+            const containerHeight = gameContainer.clientHeight;
+            const deadWords = [];
+            
+            for (let i = 0; i < activeWords.length; i++) {
+                const wordObj = activeWords[i];
+                if (wordObj.completed) continue;
+                
+                wordObj.y += wordObj.speed;
+                wordObj.element.style.top = `${wordObj.y}px`;
+                
+                if (wordObj.y > containerHeight) {
+                    deadWords.push(i);
+                    score = Math.max(0, score - 10);
+                }
+            }
+            
+            for (let i = deadWords.length - 1; i >= 0; i--) {
+                const index = deadWords[i];
+                const wordObj = activeWords[index];
+                if (targetWord === wordObj) {
+                    targetWord = null;
+                }
+                wordObj.element.remove();
+                activeWords.splice(index, 1);
+            }
+            
+            if (!targetWord && activeWords.length > 0) {
+                // La siguiente palabra a disparar es la primera que apareció y aún está en pantalla
+                targetWord = activeWords[0];
+                highlightTargetWord();
+                wordInput.value = '';
+                currentInput = '';
+            }
+            
+            updateStats();
+        }
+
+        function highlightTargetWord() {
+            activeWords.forEach(wordObj => {
+                wordObj.element.classList.remove('active-word');
+            });
+            
+            if (targetWord) {
+                targetWord.element.classList.add('active-word');
+                pointShooterAtTarget();
+            }
+        }
+        
+        function pointShooterAtTarget() {
+            if (!targetWord) return;
+            
+            const shooterRect = shooter.getBoundingClientRect();
+            const targetRect = targetWord.element.getBoundingClientRect();
+            const containerRect = gameContainer.getBoundingClientRect();
+            
+            const shooterBaseX = shooterRect.left + shooterRect.width / 2 - containerRect.left;
+            const shooterBaseY = shooterRect.top - containerRect.top;
+            const targetCenterX = targetRect.left + targetRect.width / 2 - containerRect.left;
+            const targetCenterY = targetRect.top + targetRect.height / 2 - containerRect.top;
+            
+            const angle = Math.atan2(targetCenterY - shooterBaseY, targetCenterX - shooterBaseX) + Math.PI/2;
+            const angleDegrees = angle * (180 / Math.PI);
+            
+            shooter.style.transform = `translateX(-50%) rotate(${angleDegrees}deg)`;
+        }
+
+        function updateTargetWord() {
+            if (!targetWord) return;
+            if (currentInput && targetWord.word.toLowerCase().startsWith(currentInput.toLowerCase())) {
+                const remainingText = targetWord.word.substring(currentInput.length);
+                targetWord.element.textContent = remainingText;
+            } else {
+                targetWord.element.textContent = targetWord.word;
+            }
+        }
+
+        function handleWordCompletion() {
+            if (!targetWord) return;
+            
+            playDestroySound();
+            targetWord.completed = true;
+            
+            const rect = targetWord.element.getBoundingClientRect();
+            const containerRect = gameContainer.getBoundingClientRect();
+            const x = rect.left + rect.width / 2 - containerRect.left;
+            const y = rect.top + rect.height / 2 - containerRect.top;
+            
+            createBigExplosion(x, y);
+            
+            targetWord.element.style.opacity = '0';
+            targetWord.element.style.transform = 'scale(1.5)';
+            targetWord.element.style.transition = 'opacity 0.3s, transform 0.3s';
+            
+            setTimeout(() => {
+                if (targetWord && targetWord.element.parentNode) {
+                    targetWord.element.remove();
+                    const index = activeWords.indexOf(targetWord);
+                    if (index !== -1) {
+                        activeWords.splice(index, 1);
+                    }
+                    
+                    wordsCounted++;
+                    updateStats();
+                    
+                    if (wordsCounted % 5 === 0) {
+                        level++;
+                        showLevelUpMessage();
+                    }
+                    
+                    if (wordIndex >= words.length && activeWords.length === 0) {
+                        setTimeout(() => {
+                            const congratsMsg = currentLanguage === 'es'
+                                ? `¡Felicidades! Has completado todas las palabras.\nPuntuación final: ${score}\nPalabras por minuto: ${wpmDisplay.textContent}\nPrecisión: ${accuracyDisplay.textContent}`
+                                : `Felicitats! Has completat totes les paraules.\nPuntuació final: ${score}\nParaules per minut: ${wpmDisplay.textContent}\nPrecisió: ${accuracyDisplay.textContent}`;
+                            alert(congratsMsg);
+                            endGame();
+                        }, 500);
+                    } else {
+                        targetWord = null;
+                    }
+                    
+                    wordInput.value = '';
+                    currentInput = '';
+                }
+            }, 300);
+        }
+
+        function showLevelUpMessage() {
+            const levelMessage = document.createElement('div');
+            levelMessage.textContent = currentLanguage === 'es'
+                ? `¡Nivel ${level}!`
+                : `Nivell ${level}!`;
+            levelMessage.style.position = 'absolute';
+            levelMessage.style.top = '50%';
+            levelMessage.style.left = '50%';
+            levelMessage.style.transform = 'translate(-50%, -50%)';
+            levelMessage.style.fontSize = '3rem';
+            levelMessage.style.color = '#ffcc00';
+            levelMessage.style.fontWeight = 'bold';
+            levelMessage.style.textShadow = '0 0 10px rgba(255, 204, 0, 0.7)';
+            levelMessage.style.zIndex = '100';
+            levelMessage.style.opacity = '0';
+            levelMessage.style.transition = 'opacity 0.5s, transform 0.5s';
+            
+            gameContainer.appendChild(levelMessage);
+            
+            setTimeout(() => {
+                levelMessage.style.opacity = '1';
+                levelMessage.style.transform = 'translate(-50%, -50%) scale(1.2)';
+            }, 10);
+            
+            setTimeout(() => {
+                levelMessage.style.opacity = '0';
+                levelMessage.style.transform = 'translate(-50%, -50%) scale(0.8)';
+            }, 1500);
+            
+            setTimeout(() => {
+                if (levelMessage.parentNode) {
+                    levelMessage.remove();
+                }
+            }, 2000);
+        }
+
+        function shootLaser(target) {
+            if (!target) return;
+            playShootSound();
+            
+            const tipRect = shooterTip.getBoundingClientRect();
+            const targetRect = target.getBoundingClientRect();
+            const containerRect = gameContainer.getBoundingClientRect();
+            
+            const tipCenterX = tipRect.left + tipRect.width / 2 - containerRect.left;
+            const tipCenterY = tipRect.top - containerRect.top;
+            const targetCenterX = targetRect.left + targetRect.width / 2 - containerRect.left;
+            const targetCenterY = targetRect.top + targetRect.height / 2 - containerRect.top;
+            
+            const bulletLaser = document.createElement('div');
+            bulletLaser.className = 'laser';
+            gameContainer.appendChild(bulletLaser);
+            
+            bulletLaser.style.left = `${tipCenterX - 3}px`;
+            bulletLaser.style.top = `${tipCenterY - 3}px`;
+            
+            const destinationX = targetCenterX - 3;
+            const destinationY = targetCenterY - 7.5;
+            
+            const angle = Math.atan2(targetCenterY - tipCenterY, targetCenterX - tipCenterX);
+            bulletLaser.style.transform = `rotate(${angle}rad)`;
+            
+            const startTime = performance.now();
+            const duration = 150;
+            
+            function animateBullet(timestamp) {
+                const elapsed = timestamp - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                const currentX = tipCenterX + (destinationX - tipCenterX) * progress;
+                const currentY = tipCenterY + (destinationY - tipCenterY) * progress;
+                
+                bulletLaser.style.left = `${currentX}px`;
+                bulletLaser.style.top = `${currentY}px`;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animateBullet);
+                } else {
+                    createExplosion(destinationX, destinationY);
+                    bulletLaser.remove();
+                }
+            }
+            
+            requestAnimationFrame(animateBullet);
+        }
+
+        function createExplosion(x, y) {
+            const explosion = document.createElement('div');
+            explosion.className = 'explosion';
+            explosion.style.left = `${x}px`;
+            explosion.style.top = `${y}px`;
+            gameContainer.appendChild(explosion);
+            
+            const numParticles = 8;
+            const colors = ['#ff9500', '#ffcc00', '#ff6600', '#ffffff'];
+            
+            for (let i = 0; i < numParticles; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                const angle = (Math.PI * 2 / numParticles) * i;
+                const distance = 20 + Math.random() * 20;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+                
+                particle.style.setProperty('--tx', `${tx}px`);
+                particle.style.setProperty('--ty', `${ty}px`);
+                
+                gameContainer.appendChild(particle);
+                
+                setTimeout(() => {
+                    if (particle.parentNode) {
+                        particle.remove();
+                    }
+                }, 500);
+            }
+            
+            setTimeout(() => {
+                if (explosion.parentNode) {
+                    explosion.remove();
+                }
+            }, 500);
+        }
+        
+        function createBigExplosion(x, y) {
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    const offsetX = (Math.random() - 0.5) * 30;
+                    const offsetY = (Math.random() - 0.5) * 30;
+                    
+                    const explosion = document.createElement('div');
+                    explosion.className = 'explosion';
+                    explosion.style.left = `${x + offsetX}px`;
+                    explosion.style.top = `${y + offsetY}px`;
+                    explosion.style.width = `${30 + Math.random() * 20}px`;
+                    explosion.style.height = `${30 + Math.random() * 20}px`;
+                    gameContainer.appendChild(explosion);
+                    
+                    const numParticles = 12;
+                    const colors = ['#ff9500', '#ffcc00', '#ff6600', '#ffffff', '#ff0000'];
+                    
+                    for (let j = 0; j < numParticles; j++) {
+                        const particle = document.createElement('div');
+                        particle.className = 'particle';
+                        particle.style.left = `${x + offsetX}px`;
+                        particle.style.top = `${y + offsetY}px`;
+                        particle.style.width = `${4 + Math.random() * 4}px`;
+                        particle.style.height = `${4 + Math.random() * 4}px`;
+                        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                        
+                        const angle = (Math.PI * 2 / numParticles) * j + Math.random() * 0.5;
+                        const distance = 30 + Math.random() * 40;
+                        const tx = Math.cos(angle) * distance;
+                        const ty = Math.sin(angle) * distance;
+                        
+                        particle.style.setProperty('--tx', `${tx}px`);
+                        particle.style.setProperty('--ty', `${ty}px`);
+                        
+                        gameContainer.appendChild(particle);
+                        
+                        setTimeout(() => {
+                            if (particle.parentNode) {
+                                particle.remove();
+                            }
+                        }, 500);
+                    }
+                    
+                    setTimeout(() => {
+                        if (explosion.parentNode) {
+                            explosion.remove();
+                        }
+                    }, 500);
+                }, i * 100);
+            }
+        }
+
+        function updateStats() {
+            const elapsedMinutes = (Date.now() - startTime) / 60000;
+            const wpm = elapsedMinutes > 0 ? Math.round(wordsCounted / elapsedMinutes) : 0;
+            const accuracy = totalKeystrokes > 0 ? Math.round((correctKeystrokes / totalKeystrokes) * 100) : 100;
+            
+            if (gameActive && wordsCounted > 0) {
+                const speedFactor = 1 + (wpm / 50);
+                const accuracyFactor = accuracy / 100;
+                const baseScore = wordsCounted * 10 * (1 + (level - 1) * 0.1);
+                score = Math.round(baseScore * accuracyFactor * speedFactor);
+            }
+            
+            scoreDisplay.textContent = score;
+            levelDisplay.textContent = level;
+            wpmDisplay.textContent = wpm;
+            accuracyDisplay.textContent = `${accuracy}%`;
+        }
+
+        /* ==========================
+         *   BUCLE PRINCIPAL
+         * ==========================
+         */
+        function gameLoop(now) {
+            if (!gameActive || gamePaused) return;
+            
+            if (difficulty !== 'easy') {
+                speed = Math.min(speed + 0.00005, 10);
+            }
+
+            if (difficulty === 'easy') {
+                if (activeWords.length === 0) {
+                    createWord();
+                }
+            } else {
+                const elapsedSinceSpawn = now - lastSpawnTime;
+                if (elapsedSinceSpawn >= spawnInterval) {
+                    createWord();
+                    lastSpawnTime = now;
+                }
+            }
+
+            updateWords();
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        /* ==========================
+         *   CARGA DE PALABRAS
+         * ==========================
+         */
+        loadWordsBtn2.addEventListener('click', () => {
+            const input = wordsInput.value.trim();
+            if (input) {
+                const newWords = input
+                    .split(/\s+/)
+                    .map(word => word.trim())
+                    .filter(word => word.length > 0);
+                
+                if (newWords.length > 0) {
+                    words = newWords;
+                    wordIndex = 0;
+                    loadWordsModal.style.display = 'none';
+                } else {
+                    const errorMsg = currentLanguage === 'es'
+                        ? 'No se encontraron palabras válidas.'
+                        : 'No s\'han trobat paraules vàlides.';
+                    alert(errorMsg);
+                }
+            } else {
+                const promptMsg = currentLanguage === 'es'
+                    ? 'Por favor, ingresa algunas palabras o carga un archivo.'
+                    : 'Si us plau, introdueix algunes paraules o carrega un fitxer.';
+                alert(promptMsg);
+            }
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    wordsInput.value = event.target.result;
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        /* ==========================
+         *   GUARDAR AJUSTES
+         * ==========================
+         */
+        saveSettingsBtn.addEventListener('click', () => {
+            speed = parseInt(speedSlider.value);
+            difficulty = difficultySelect.value;
+            soundEnabled = document.getElementById('sound-toggle').checked;
+            
+            let settings = localStorage.getItem('typingGameSettings');
+            settings = settings ? JSON.parse(settings) : {};
+            
+            settings.speed = speed;
+            settings.difficulty = difficulty;
+            settings.soundEnabled = soundEnabled;
+            settings.language = currentLanguage;
+            
+            localStorage.setItem('typingGameSettings', JSON.stringify(settings));
+            settingsModal.style.display = 'none';
+        });
+        
+        speedSlider.addEventListener('input', () => {
+            speedValue.textContent = speedSlider.value;
+        });
+        
+        closeModalBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                settingsModal.style.display = 'none';
+                loadWordsModal.style.display = 'none';
+            });
+        });
+        
+        pauseBtn.addEventListener('click', pauseGame);
+        settingsBtn.addEventListener('click', () => {
+            settingsModal.style.display = 'flex';
+        });
+        loadWordsBtn.addEventListener('click', () => {
+            loadWordsModal.style.display = 'flex';
+        });
+        startBtn.addEventListener('click', init);
+        resetBtn.addEventListener('click', resetGameState);
+        restoreDefaultsBtn.addEventListener('click', restoreDefaults);
+
+        // Botones de idioma en configuración
+        settingsLangEsBtn.addEventListener('click', () => {
+            setLanguage('es');
+            let settings = localStorage.getItem('typingGameSettings');
+            settings = settings ? JSON.parse(settings) : {};
+            settings.language = 'es';
+            localStorage.setItem('typingGameSettings', JSON.stringify(settings));
+        });
+        
+        settingsLangCaBtn.addEventListener('click', () => {
+            setLanguage('ca');
+            let settings = localStorage.getItem('typingGameSettings');
+            settings = settings ? JSON.parse(settings) : {};
+            settings.language = 'ca';
+            localStorage.setItem('typingGameSettings', JSON.stringify(settings));
+        });
+
+        // Ajustar posiciones si cambia el tamaño de la ventana
+        window.addEventListener('resize', () => {
+            activeWords.forEach(wordObj => {
+                const containerWidth = gameContainer.clientWidth;
+                if (wordObj.x > containerWidth) {
+                    wordObj.x = containerWidth - 50;
+                    wordObj.element.style.left = `${wordObj.x}px`;
+                }
+            });
+        });
+
+        /* ==========================
+         *   AL CARGAR LA PÁGINA
+         * ==========================
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedSettings = localStorage.getItem('typingGameSettings');
+            if (savedSettings) {
+                const settings = JSON.parse(savedSettings);
+                speed = settings.speed || speed;
+                difficulty = settings.difficulty || difficulty;
+                soundEnabled = typeof settings.soundEnabled === 'boolean' ? settings.soundEnabled : soundEnabled;
+                const lang = settings.language || 'es';
+                
+                speedSlider.value = speed;
+                speedValue.textContent = speed;
+                difficultySelect.value = difficulty;
+                document.getElementById('sound-toggle').checked = soundEnabled;
+                
+                setLanguage(lang);
+            } else {
+                const detectedLanguage = detectBrowserLanguage();
+                setLanguage(detectedLanguage);
+            }
+        });
+    </script>
+</body>
+</html>
+

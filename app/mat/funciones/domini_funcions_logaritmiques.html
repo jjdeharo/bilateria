@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Practica el domini de les funcions logarítmiques</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+    #lang-switch {
+      text-align: right;
+      margin-bottom: 20px;
+    }
+    #lang-switch button {
+      padding: 6px 12px;
+      font-size: 14px;
+      cursor: pointer;
+      background-color: #4a90e2;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      margin-left: 5px;
+      transition: all 0.3s ease;
+    }
+    /* Botón del idioma activo */
+    #lang-switch button.active-lang {
+      background-color: #f39c12;
+    }
+    #lang-switch button:hover {
+      background-color: #357abd;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+    }
+    button {
+      padding: 12px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #4a90e2;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      background-color: #357abd;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    button.nova-funcio {
+      background-color: #28a745;
+      margin-top: 20px;
+    }
+    button.nova-funcio:hover {
+      background-color: #218838;
+    }
+    #resultat {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    #estadistiques {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      text-align: center;
+      font-size: 18px;
+      color: #2c3e50;
+    }
+    .correcte {
+      color: green;
+    }
+    .incorrecte {
+      color: red;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 0.9em;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <!-- Botones para cambiar el idioma -->
+  <div id="lang-switch">
+    <button id="btn-ca" onclick="setLanguage('ca')">CA</button>
+    <button id="btn-es" onclick="setLanguage('es')">ES</button>
+  </div>
+
+  <h1>Practica el domini de les funcions logarítmiques</h1>
+  <div id="funcio"></div>
+  <div class="options" id="opcions"></div>
+  <div id="resultat"></div>
+  <div id="estadistiques"></div>
+  <button onclick="novaFuncio()" class="nova-funcio">Nova funció</button>
+  
+  <footer>
+    <p>Aplicació feta per <a href="https://bilateria.org">Juan José de Haro</a></p>
+    <p>Aquesta obra està sota una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ca">llicència Creative Commons BY-SA</a></p>
+  </footer>
+
+  <script>
+    let encerts = 0;
+    let intents = 0;
+    let funcioActual = null;
+    let dominiCorrecte = null;
+
+    // Detecta l'idioma del navegador: si comença per "ca" s'usa el català, en qualsevol altre cas es mostra en castellà.
+    let currentLanguage = (navigator.language && navigator.language.toLowerCase().startsWith("ca")) ? "ca" : "es";
+
+    const translations = {
+      ca: {
+        title: "Practica el domini de les funcions logarítmiques",
+        header: "Practica el domini de les funcions logarítmiques",
+        newFunction: "Nova funció",
+        correct: "Correcte!",
+        incorrect: "Incorrecte! La resposta correcta és: ",
+        statistics: "Encerts: ",
+        by: "Aplicació feta per ",
+        license: "Aquesta obra està sota una llicència Creative Commons BY-SA"
+      },
+      es: {
+        title: "Practica el dominio de las funciones logarítmicas",
+        header: "Practica el dominio de las funciones logarítmicas",
+        newFunction: "Nueva función",
+        correct: "¡Correcto!",
+        incorrect: "¡Incorrecto! La respuesta correcta es: ",
+        statistics: "Aciertos: ",
+        by: "Aplicación hecha por ",
+        license: "Esta obra está bajo una licencia Creative Commons BY-SA"
+      }
+    };
+
+    function updateUI() {
+      document.title = translations[currentLanguage].title;
+      document.querySelector('h1').innerText = translations[currentLanguage].header;
+      document.querySelector('.nova-funcio').innerText = translations[currentLanguage].newFunction;
+      // Actualitza el peu de pàgina
+      const footerParagraphs = document.querySelectorAll('footer p');
+      if (footerParagraphs.length >= 2) {
+        footerParagraphs[0].innerHTML = translations[currentLanguage].by + '<a href="https://bilateria.org">Juan José de Haro</a>';
+        if (currentLanguage === "ca") {
+          footerParagraphs[1].innerHTML = translations[currentLanguage].license.replace("Creative Commons BY-SA", '<a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ca">Creative Commons BY-SA</a>');
+        } else {
+          footerParagraphs[1].innerHTML = translations[currentLanguage].license.replace("Creative Commons BY-SA", '<a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es">Creative Commons BY-SA</a>');
+        }
+      }
+      // Actualitza l'estil dels botons d'idioma
+      document.getElementById("btn-ca").classList.remove("active-lang");
+      document.getElementById("btn-es").classList.remove("active-lang");
+      if (currentLanguage === "ca") {
+        document.getElementById("btn-ca").classList.add("active-lang");
+      } else {
+        document.getElementById("btn-es").classList.add("active-lang");
+      }
+      actualitzarEstadistiques();
+    }
+
+    function setLanguage(lang) {
+      currentLanguage = lang;
+      updateUI();
+    }
+
+    // Genera una funció logarítmica (lineal o quadràtica)
+    function generarFuncioLogaritmica() {
+      const base = Math.floor(Math.random() * 8) + 2;
+      const esLineal = Math.random() < 0.5;
+      if (esLineal) {
+        const a = Math.random() < 0.5 ? 1 : -1;
+        const b = Math.floor(Math.random() * 20) - 10;
+        return { base, polinomi: [a, b], tipus: "lineal" };
+      } else {
+        const a = Math.random() < 0.5 ? 1 : -1;
+        const b = Math.floor(Math.random() * 10) - 5;
+        const c = Math.floor(Math.random() * 20) - 10;
+        return { base, polinomi: [a, b, c], tipus: "cuadratica" };
+      }
+    }
+
+    // Calcula el domini de la funció logarítmica
+    function calcularDomini(funcio) {
+      const coefs = funcio.polinomi;
+      if (funcio.tipus === "lineal") {
+        const [a, b] = coefs;
+        if (a === 0) {
+          return (b > 0) ? "ℝ" : "Ø";
+        }
+        const x0 = -b / a;
+        return (a > 0) 
+          ? `(${x0.toFixed(2)},∞)` 
+          : `(-∞,${x0.toFixed(2)})`;
+      } else {
+        const [a, b, c] = coefs;
+        if (a === 0) {
+          if (b === 0) {
+            return (c > 0) ? "ℝ" : "Ø";
+          }
+          const x0 = -c / b;
+          return (b > 0)
+            ? `(${x0.toFixed(2)},∞)`
+            : `(-∞,${x0.toFixed(2)})`;
+        }
+        const disc = b * b - 4 * a * c;
+        if (disc < 0) {
+          return (a > 0) ? "ℝ" : "Ø";
+        }
+        const r1 = (-b - Math.sqrt(disc)) / (2 * a);
+        const r2 = (-b + Math.sqrt(disc)) / (2 * a);
+        const [x1, x2] = [r1, r2].sort((x, y) => x - y);
+        return (a > 0) 
+          ? `(-∞,${x1.toFixed(2)})∪(${x2.toFixed(2)},∞)` 
+          : `(${x1.toFixed(2)},${x2.toFixed(2)})`;
+      }
+    }
+
+    // Converteix els coeficients del polinomi a cadena
+    function polinomiAString(coefs) {
+      let resultado = '';
+      const grado = coefs.length - 1; 
+      for (let i = 0; i < coefs.length; i++) {
+        const exponente = grado - i;    
+        const coef = coefs[i];
+        if (coef === 0) continue;
+        if (resultado !== '') {
+          resultado += (coef > 0) ? '+' : '-';
+        } else if (coef < 0) {
+          resultado += '-';
+        }
+        const absCoef = Math.abs(coef);
+        if (exponente === 0) {
+          resultado += absCoef;
+        } else {
+          if (absCoef !== 1) resultado += absCoef;
+          resultado += 'x';
+          if (exponente !== 1) {
+            resultado += '^' + exponente;
+          }
+        }
+      }
+      return resultado || '0';
+    }
+
+    // Genera les opcions (incloent la correcta) i les barreja
+    function generarOpcions(dominiCorrecte) {
+      const opciones = new Set([dominiCorrecte]);
+      const raices = dominiCorrecte.match(/-?\d+(\.\d+)?/g)?.map(parseFloat) || [];
+      while (opciones.size < 4) {
+        if (raices.length >= 2) {
+          const r1 = raices[0] + (Math.random() - 0.5);
+          const r2 = raices[1] + (Math.random() - 0.5);
+          const opcionFalsa = `(${r1.toFixed(2)},${r2.toFixed(2)})`;
+          opciones.add(opcionFalsa);
+        } else {
+          const opcionFalsa = (Math.random() < 0.5)
+            ? `(${(-Math.random() * 10).toFixed(2)},∞)`
+            : `(-∞,${(Math.random() * 10).toFixed(2)})`;
+          opciones.add(opcionFalsa);
+        }
+      }
+      let arr = Array.from(opciones);
+      arr.sort(() => 0.5 - Math.random());
+      return arr;
+    }
+
+    function novaFuncio() {
+      document.getElementById('resultat').innerHTML = '';
+      funcioActual = generarFuncioLogaritmica();
+      dominiCorrecte = calcularDomini(funcioActual);
+      document.getElementById('funcio').innerHTML = 
+        `\\[ f(x) = \\log_{${funcioActual.base}}\\Bigl(${polinomiAString(funcioActual.polinomi)}\\Bigr) \\]`;
+      MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+      const opciones = generarOpcions(dominiCorrecte);
+      const botones = opciones
+        .map(opcion => `<button onclick="comprovarResposta('${opcion}')">${opcion}</button>`)
+        .join("");
+      document.getElementById("opcions").innerHTML = botones;
+    }
+
+    function comprovarResposta(resposta) {
+      intents++;
+      const correcte = (resposta === dominiCorrecte);
+      if (correcte) encerts++;
+      document.getElementById("resultat").innerHTML = correcte
+        ? `<p class="correcte">${translations[currentLanguage].correct}</p>`
+        : `<p class="incorrecte">${translations[currentLanguage].incorrect}${dominiCorrecte}</p>`;
+      actualitzarEstadistiques();
+    }
+
+    function actualitzarEstadistiques() {
+      const percentatge = (intents === 0) ? 0 : Math.round((encerts / intents) * 100);
+      document.getElementById('estadistiques').innerHTML = 
+        translations[currentLanguage].statistics + `${encerts}/${intents} (${percentatge}%)`;
+    }
+
+    window.onload = function() {
+      updateUI();
+      novaFuncio();
+    };
+  </script>
+</body>
+</html>
+
