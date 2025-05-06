@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GAG - Generador Aleatorio de Grupos</title>
+  <style>
+    :root {
+      --primary-color: #3498db;
+      --hover-color: #2980b9;
+      --secondary-color: #2c3e50;
+      --background-color: #f5f5f5;
+      --card-color: #ffffff;
+      --text-color: #333333;
+      --border-radius: 8px;
+      --transition: all 0.3s ease;
+      --success-color: #2ecc71;
+      --success-hover: #27ae60;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    
+    .main-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      flex-grow: 1;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    h1 {
+      margin: 0;
+      color: var(--secondary-color);
+    }
+    
+    .language-selector {
+      display: flex;
+      gap: 5px;
+    }
+    
+    .lang-btn {
+      padding: 5px 10px;
+      background-color: var(--card-color);
+      border: 1px solid var(--primary-color);
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+    
+    .lang-btn:hover {
+      background-color: #e6f7ff;
+    }
+    
+    .lang-btn.active {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .container {
+      background-color: var(--card-color);
+      border-radius: var(--border-radius);
+      padding: 25px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      resize: vertical;
+      font-size: 15px;
+      transition: var(--transition);
+    }
+    
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+    
+    .group-controls {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    
+    .size-input {
+      display: flex;
+      align-items: center;
+    }
+    
+    input[type="number"] {
+      width: 60px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      font-size: 15px;
+      transition: var(--transition);
+    }
+    
+    input[type="number"]:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+    
+    #groupInfo {
+      background-color: #f0f7ff;
+      padding: 12px 15px;
+      border-radius: var(--border-radius);
+      margin-bottom: 20px;
+      border-left: 4px solid var(--primary-color);
+      font-weight: 500;
+    }
+    
+    .question {
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    
+    .options {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+    
+    .radio-option {
+      display: flex;
+      align-items: center;
+    }
+    
+    .radio-option input {
+      margin-right: 8px;
+    }
+    
+    .buttons {
+      display: flex;
+      gap: 15px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    
+    button {
+      padding: 10px 20px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    
+    button:hover {
+      background-color: var(--hover-color);
+    }
+    
+    #copyButton {
+      background-color: var(--success-color);
+    }
+    
+    #copyButton:hover {
+      background-color: var(--success-hover);
+    }
+    
+    #resetButton {
+      background-color: #e74c3c;
+    }
+    
+    #resetButton:hover {
+      background-color: #c0392b;
+    }
+    
+    #copyMessage {
+      display: none;
+      margin-left: 10px;
+      color: var(--success-color);
+      font-weight: 500;
+    }
+    
+    #output {
+      list-style-type: none;
+      padding: 0;
+      margin-top: 25px;
+    }
+    
+    #output li {
+      background-color: #f8f9fa;
+      border-left: 3px solid var(--primary-color);
+      padding: 12px 15px;
+      margin-bottom: 8px;
+      border-radius: var(--border-radius);
+    }
+    
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      color: var(--secondary-color);
+    }
+    
+    footer a {
+      color: var(--primary-color);
+      text-decoration: none;
+    }
+    
+    footer a:hover {
+      text-decoration: underline;
+    }
+    
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+      
+      .language-selector {
+        align-self: flex-end;
+      }
+      
+      .buttons {
+        flex-direction: column;
+        width: 100%;
+      }
+      
+      button {
+        width: 100%;
+      }
+      
+      #copyMessage {
+        margin-left: 0;
+        margin-top: 10px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <div class="header">
+      <h1 id="pageTitle">Generador aleatorio de grupos</h1>
+      <div class="language-selector">
+        <button id="langES" class="lang-btn active" onclick="changeLanguage('es')">ES</button>
+        <button id="langCA" class="lang-btn" onclick="changeLanguage('ca')">CA</button>
+      </div>
+    </div>
+    
+    <div class="container">
+      <label id="studentsLabel" for="students">Nombres separados por comas o saltos de línea:</label>
+      <textarea id="students" oninput="updateInfo()">Ana, Jordi, Carmen, David, Elena, Felipe, Gabriela, Héctor, Isabel, Jorge, Karla, Luis, Mariana, Nicolás, Olivia, Pedro, Raquel, Sergio, Teresa, Úrsula, Víctor, Ximena, Yolanda</textarea>
+      
+      <div class="group-controls">
+        <div class="size-input">
+          <label id="groupSizeLabel" for="groupSize">Tamaño de los grupos:</label>
+          <input type="number" id="groupSize" value="4" min="1" oninput="updateInfo()">
+        </div>
+      </div>
+      
+      <div id="groupInfo"></div>
+      
+      <div id="remainderQuestion" class="question">¿Qué hacer con los alumnos sobrantes?</div>
+      <div class="options">
+        <div class="radio-option">
+          <input type="radio" id="addToGroups" name="remainderOption" value="addToGroups" checked>
+          <label id="addToGroupsLabel" for="addToGroups">Añadirlos a los grupos existentes</label>
+        </div>
+        <div class="radio-option">
+          <input type="radio" id="newGroup" name="remainderOption" value="newGroup">
+          <label id="newGroupLabel" for="newGroup">Crear un nuevo grupo con ellos</label>
+        </div>
+      </div>
+      
+      <div class="buttons">
+        <button id="generateButton" onclick="generateGroups()">Generar grupos</button>
+        <button id="copyButton" onclick="copyGroups()" style="display: none;">Copiar grupos</button>
+        <button id="resetButton" onclick="reset()">Borrar todo</button>
+        <span id="copyMessage">¡Grupos copiados!</span>
+      </div>
+      
+      <ul id="output"></ul>
+    </div>
+    
+    <footer>
+      <p><span id="createdBy">GAG - Generador aleatorio de grupos, creado por</span> <a href="https://bilateria.org/" target="_blank">Juan José de Haro</a></p>
+      <p><span id="license">Licencia</span> <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons BY-SA</a></p>
+    </footer>
+  </div>
+  
+  <script>
+    // Textos en ambos idiomas
+    const texts = {
+      es: {
+        title: "Generador aleatorio de grupos",
+        inputLabel: "Nombres separados por comas o saltos de línea:",
+        groupSizeLabel: "Tamaño de los grupos:",
+        remainderQuestion: "¿Qué hacer con los alumnos sobrantes?",
+        addToGroups: "Añadirlos a los grupos existentes",
+        newGroup: "Crear un nuevo grupo con ellos",
+        generateButton: "Generar grupos",
+        copyButton: "Copiar grupos",
+        resetButton: "Borrar todo",
+        copySuccess: "¡Grupos copiados!",
+        studentsInfo: "Hay {0} alumnos. Se generarán {1} grupos. Sobran {2} alumnos.",
+        invalidGroupSize: "Por favor, ingresa un tamaño de grupo válido.",
+        createdBy: "GAG - Generador aleatorio de grupos, creado por",
+        license: "Licencia",
+        noGroups: "No hay grupos para copiar."
+      },
+      ca: {
+        title: "Generador aleatori de grups",
+        inputLabel: "Noms separats per comes o salts de línia:",
+        groupSizeLabel: "Mida dels grups:",
+        remainderQuestion: "Què fer amb els alumnes sobrants?",
+        addToGroups: "Afegir-los als grups existents",
+        newGroup: "Crear un nou grup amb ells",
+        generateButton: "Generar grups",
+        copyButton: "Copiar grups",
+        resetButton: "Esborrar tot",
+        copySuccess: "Grups copiats!",
+        studentsInfo: "Hi ha {0} alumnes. Es generaran {1} grups. Sobren {2} alumnes.",
+        invalidGroupSize: "Si us plau, introdueix una mida de grup vàlida.",
+        createdBy: "GAG - Generador aleatori de grups, creat per",
+        license: "Llicència",
+        noGroups: "No hi ha grups per copiar."
+      }
+    };
+    
+    // Idioma actual
+    let currentLanguage = '';
+    
+    // Detectar idioma del navegador
+    function detectLanguage() {
+      const lang = navigator.language || navigator.userLanguage;
+      return lang.startsWith('ca') ? 'ca' : 'es';
+    }
+    
+    // Cambiar idioma
+    function changeLanguage(lang) {
+      currentLanguage = lang;
+      // Guardar el idioma en localStorage
+      localStorage.setItem('gagLanguage', lang);
+      updateTexts();
+      updateButtonStyles();
+    }
+    
+    // Actualizar textos según el idioma
+    function updateTexts() {
+      document.getElementById('pageTitle').textContent = texts[currentLanguage].title;
+      document.getElementById('studentsLabel').textContent = texts[currentLanguage].inputLabel;
+      document.getElementById('groupSizeLabel').textContent = texts[currentLanguage].groupSizeLabel;
+      document.getElementById('remainderQuestion').textContent = texts[currentLanguage].remainderQuestion;
+      document.getElementById('addToGroupsLabel').textContent = texts[currentLanguage].addToGroups;
+      document.getElementById('newGroupLabel').textContent = texts[currentLanguage].newGroup;
+      document.getElementById('generateButton').textContent = texts[currentLanguage].generateButton;
+      document.getElementById('copyButton').textContent = texts[currentLanguage].copyButton;
+      document.getElementById('resetButton').textContent = texts[currentLanguage].resetButton;
+      document.getElementById('copyMessage').textContent = texts[currentLanguage].copySuccess;
+      document.getElementById('createdBy').textContent = texts[currentLanguage].createdBy;
+      document.getElementById('license').textContent = texts[currentLanguage].license;
+      updateInfo();
+    }
+    
+    // Actualizar estilos de botones de idioma
+    function updateButtonStyles() {
+      document.getElementById('langES').classList.toggle('active', currentLanguage === 'es');
+      document.getElementById('langCA').classList.toggle('active', currentLanguage === 'ca');
+    }
+    
+    // Actualizar información de grupos
+    function updateInfo() {
+      const studentsInput = document.getElementById("students");
+      const groupSizeInput = document.getElementById("groupSize");
+      const groupInfo = document.getElementById("groupInfo");
+    
+      const students = studentsInput.value.split(/[\n,]+/).filter(Boolean).map(name => name.trim());
+      const groupSize = parseInt(groupSizeInput.value);
+    
+      if (isNaN(groupSize) || groupSize < 1) {
+        groupInfo.textContent = "";
+        return;
+      }
+    
+      const numStudents = students.length;
+      const numGroups = Math.floor(numStudents / groupSize);
+      const remainder = numStudents % groupSize;
+    
+      let infoText = texts[currentLanguage].studentsInfo;
+      infoText = infoText.replace('{0}', numStudents);
+      infoText = infoText.replace('{1}', numGroups);
+      infoText = infoText.replace('{2}', remainder);
+      
+      groupInfo.textContent = infoText;
+    }
+    
+    // Generar grupos
+    function generateGroups() {
+      const studentsInput = document.getElementById("students");
+      const groupSizeInput = document.getElementById("groupSize");
+      const output = document.getElementById("output");
+      const copyButton = document.getElementById("copyButton");
+      
+      const students = studentsInput.value.split(/[\n,]+/).filter(Boolean).map(name => name.trim());
+      const groupSize = parseInt(groupSizeInput.value);
+      
+      if (isNaN(groupSize) || groupSize < 1) {
+        alert(texts[currentLanguage].invalidGroupSize);
+        return;
+      }
+      
+      // Mezclar aleatoriamente los estudiantes
+      const shuffledStudents = [...students];
+      for (let i = shuffledStudents.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledStudents[i], shuffledStudents[j]] = [shuffledStudents[j], shuffledStudents[i]];
+      }
+      
+      const groups = [];
+      const numGroups = Math.floor(shuffledStudents.length / groupSize);
+      const remainder = shuffledStudents.length % groupSize;
+      const remainderOption = document.querySelector("input[name='remainderOption']:checked").value;
+      
+      // Distribuir estudiantes en grupos
+      for (let i = 0; i < numGroups; i++) {
+        groups.push(shuffledStudents.slice(i * groupSize, (i + 1) * groupSize));
+      }
+      
+      // Manejar estudiantes sobrantes
+      if (remainder > 0) {
+        const remainingStudents = shuffledStudents.slice(numGroups * groupSize);
+        
+        if (remainderOption === "addToGroups") {
+          // Distribuir equitativamente los estudiantes sobrantes
+          for (let i = 0; i < remainder; i++) {
+            groups[i % numGroups].push(remainingStudents[i]);
+          }
+        } else {
+          // Crear un nuevo grupo con los estudiantes sobrantes
+          groups.push(remainingStudents);
+        }
+      }
+      
+      displayGroups(groups);
+      copyButton.style.display = "block"; // Mostrar el botón de copiar
+    }
+    
+    // Mostrar los grupos generados
+    function displayGroups(groups) {
+      const output = document.getElementById("output");
+      output.innerHTML = '';
+      
+      for (let i = 0; i < groups.length; i++) {
+        const groupElement = document.createElement('li');
+        groupElement.textContent = `G${i + 1}: ${groups[i].join(', ')}`;
+        output.appendChild(groupElement);
+      }
+      
+      // Desplazarse al resultado
+      output.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Copiar grupos al portapapeles
+    function copyGroups() {
+      const output = document.getElementById("output");
+      const copyMessage = document.getElementById("copyMessage");
+      
+      if (output.children.length === 0) {
+        alert(texts[currentLanguage].noGroups);
+        return;
+      }
+      
+      // Crear texto con todos los grupos
+      let groupText = "";
+      for (let i = 0; i < output.children.length; i++) {
+        groupText += output.children[i].textContent + "\n";
+      }
+      
+      // Copiar al portapapeles
+      navigator.clipboard.writeText(groupText).then(() => {
+        // Mostrar mensaje de éxito
+        copyMessage.style.display = "inline-block";
+        
+        // Ocultar el mensaje después de 2 segundos
+        setTimeout(() => {
+          copyMessage.style.display = "none";
+        }, 2000);
+      }).catch(err => {
+        console.error('Error al copiar: ', err);
+      });
+    }
+    
+    // Reiniciar la aplicación
+    function reset() {
+      document.getElementById("students").value = "";
+      document.getElementById("groupSize").value = "4";
+      document.getElementById("output").innerHTML = "";
+      document.getElementById("copyButton").style.display = "none";
+      document.getElementById("copyMessage").style.display = "none";
+      updateInfo();
+    }
+    
+    // Inicializar la aplicación
+    window.onload = function() {
+      // Comprobar si hay un idioma guardado
+      const savedLanguage = localStorage.getItem('gagLanguage');
+      
+      // Si hay un idioma guardado, usarlo; si no, detectar el idioma del navegador
+      currentLanguage = savedLanguage || detectLanguage();
+      
+      // Actualizar la interfaz con el idioma seleccionado
+      updateTexts();
+      updateButtonStyles();
+    };
+  </script>
+</body>
+</html>

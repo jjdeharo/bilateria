@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selector aleatorio de nombres</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --text-color: #ecf0f1;
+            --bg-color: #121e2d;
+            --card-bg: rgba(44, 62, 80, 0.7);
+            --btn-hover: #2980b9;
+            --stop-color: #e74c3c;
+            --stop-hover: #c0392b;
+            --border-radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin: 20px 0;
+            color: var(--primary-color);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            padding: 25px;
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        #nombres {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border: 2px solid transparent;
+            border-radius: var(--border-radius);
+            resize: vertical;
+            min-height: 120px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 1px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        #nombres:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+        }
+
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .main-btn {
+            flex: 1;
+            min-width: 140px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            padding: 12px 20px;
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        #botonIniciar {
+            background-color: var(--primary-color);
+        }
+
+        #botonIniciar:hover {
+            background-color: var(--btn-hover);
+            transform: translateY(-2px);
+        }
+
+        #botonDetener {
+            background-color: var(--stop-color);
+        }
+
+        #botonDetener:hover {
+            background-color: var(--stop-hover);
+            transform: translateY(-2px);
+        }
+
+        .main-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+        }
+
+        #nombreElegido {
+            text-align: center;
+            font-size: 9rem; /* Tamaño mucho más grande para visibilidad desde lejos */
+            font-weight: bold;
+            min-height: 250px;
+            margin: 40px auto;
+            max-width: 95%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.6); /* Sombra más pronunciada para mejor legibilidad */
+            transition: all 0.3s ease;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            background-color: rgba(0,0,0,0.2);
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            hyphens: auto;
+            line-height: 1.1; /* Líneas más juntas para nombres largos */
+        }
+
+        .options-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-wrapper label {
+            cursor: pointer;
+        }
+
+        .tool-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .tool-btn {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            border: none;
+            padding: 8px 15px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .tool-btn:hover {
+            background-color: rgba(44, 62, 80, 0.9);
+            transform: translateY(-1px);
+        }
+
+        .language-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .lang-btn {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            border: none;
+            padding: 5px 10px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .lang-btn.active {
+            background-color: var(--primary-color);
+            box-shadow: 0 0 8px rgba(52, 152, 219, 0.5);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: auto;
+            padding: 20px 0;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer a:hover {
+            color: var(--btn-hover);
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+                margin-top: 40px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            #nombreElegido {
+                font-size: 5rem; /* Tamaño aumentado pero viable para móviles */
+                min-height: 180px;
+            }
+
+            .language-switcher {
+                top: 10px;
+                right: 10px;
+            }
+
+            .options-row {
+                flex-direction: column;
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 0.5s;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher">
+        <button id="es-btn" class="lang-btn active">ES</button>
+        <button id="ca-btn" class="lang-btn">CA</button>
+    </div>
+
+    <h1 id="main-title">Selector aleatorio de nombres</h1>
+    
+    <div class="container">
+        <textarea id="nombres" rows="8" placeholder="Escribe o pega aquí los nombres separados por comas o saltos de línea"></textarea>
+        
+        <div class="buttons">
+            <button id="botonIniciar" class="main-btn">Iniciar</button>
+            <button id="botonDetener" class="main-btn">Detener</button>
+        </div>
+        
+        <div class="options-row">
+            <div class="checkbox-wrapper">
+                <input type="checkbox" id="eliminarNombre">
+                <label for="eliminarNombre" id="labelEliminar">Eliminar el nombre seleccionado de la lista</label>
+            </div>
+            <div class="checkbox-wrapper">
+                <input type="checkbox" id="activarSonido" checked>
+                <label for="activarSonido" id="labelSonido">Activar sonido</label>
+            </div>
+        </div>
+        
+        <div class="tool-buttons">
+            <button class="tool-btn" id="guardarLista">Guardar lista</button>
+            <button class="tool-btn" id="cargarLista">Cargar lista</button>
+            <button class="tool-btn" id="limpiarLista">Limpiar</button>
+        </div>
+    </div>
+
+    <div id="nombreElegido"></div>
+
+    <div class="footer">
+        <p>
+            <a href="https://bilateria.org/" target="_blank">Aplicación hecha por Juan José de Haro</a><br>
+            <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank">Esta obra está bajo una licencia Creative Commons BY-SA</a>
+        </p>
+    </div>
+
+    <script>
+        // Diccionario de traducciones
+        const translations = {
+            'es': {
+                'title': 'Selector aleatorio de nombres',
+                'placeholder': 'Escribe o pega aquí los nombres separados por comas o saltos de línea',
+                'start': 'Iniciar',
+                'stop': 'Detener',
+                'remove': 'Eliminar el nombre seleccionado de la lista',
+                'sound': 'Activar sonido',
+                'save': 'Guardar lista',
+                'load': 'Cargar lista',
+                'clear': 'Limpiar',
+                'credit': 'Aplicación hecha por Juan José de Haro',
+                'license': 'Esta obra está bajo una licencia Creative Commons BY-SA'
+            },
+            'ca': {
+                'title': 'Selector aleatori de noms',
+                'placeholder': 'Escriu o enganxa aquí els noms separats per comes o salts de línia',
+                'start': 'Iniciar',
+                'stop': 'Aturar',
+                'remove': 'Eliminar el nom seleccionat de la llista',
+                'sound': 'Activar so',
+                'save': 'Desar llista',
+                'load': 'Carregar llista',
+                'clear': 'Netejar',
+                'credit': 'Aplicació feta per Juan José de Haro',
+                'license': 'Aquesta obra està sota una llicència Creative Commons BY-SA'
+            }
+        };
+
+        // Detectar idioma del navegador
+        function detectLanguage() {
+            const language = navigator.language || navigator.userLanguage;
+            return language.startsWith('ca') ? 'ca' : 'es';
+        }
+
+        // Cambiar el idioma de la interfaz
+        function changeLanguage(lang) {
+            const trans = translations[lang];
+            
+            document.getElementById('main-title').textContent = trans.title;
+            document.getElementById('nombres').placeholder = trans.placeholder;
+            document.getElementById('botonIniciar').textContent = trans.start;
+            document.getElementById('botonDetener').textContent = trans.stop;
+            document.getElementById('labelEliminar').textContent = trans.remove;
+            document.getElementById('labelSonido').textContent = trans.sound;
+            document.getElementById('guardarLista').textContent = trans.save;
+            document.getElementById('cargarLista').textContent = trans.load;
+            document.getElementById('limpiarLista').textContent = trans.clear;
+            
+            // Actualizar título de la página
+            document.title = trans.title;
+            
+            // Actualizar el footer
+            document.querySelector('.footer a:first-child').textContent = trans.credit;
+            document.querySelector('.footer a:last-child').textContent = trans.license;
+
+            // Actualizar los botones de idioma
+            document.getElementById('es-btn').classList.toggle('active', lang === 'es');
+            document.getElementById('ca-btn').classList.toggle('active', lang === 'ca');
+
+            // Cambiar el atributo lang del HTML
+            document.documentElement.lang = lang;
+            
+            // Guardar preferencia de idioma
+            localStorage.setItem('preferredLanguage', lang);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Verificar si hay un idioma guardado en localStorage
+            const savedLanguage = localStorage.getItem('preferredLanguage');
+            // Si no hay idioma guardado, detectar el del navegador
+            const initialLang = savedLanguage || detectLanguage();
+            changeLanguage(initialLang);
+
+            // Eventos para los botones de idioma
+            document.getElementById('es-btn').addEventListener('click', () => changeLanguage('es'));
+            document.getElementById('ca-btn').addEventListener('click', () => changeLanguage('ca'));
+
+            const botonIniciar = document.getElementById('botonIniciar');
+            const botonDetener = document.getElementById('botonDetener');
+            const nombres = document.getElementById('nombres');
+            const nombreElegido = document.getElementById('nombreElegido');
+            const eliminarNombre = document.getElementById('eliminarNombre');
+            const guardarLista = document.getElementById('guardarLista');
+            const cargarLista = document.getElementById('cargarLista');
+            const limpiarLista = document.getElementById('limpiarLista');
+            
+            let intervaloAnimacion;
+            let borrarNombre = false;
+    
+            // Función para reproducir el sonido final (ding)
+            function playDing() {
+                const activarSonido = document.getElementById('activarSonido');
+    
+                if (!activarSonido.checked) {
+                    return;
+                }
+                
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const bufferSize = 4096;
+                const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+                const output = buffer.getChannelData(0);
+
+                for (let i = 0; i < bufferSize; i++) {
+                    const time = i / audioContext.sampleRate;
+                    const amplitude = Math.exp(-time * 1.5);
+                    const frequency = 550;
+                    output[i] = amplitude * Math.sin(2 * Math.PI * frequency * time);
+                }
+
+                const bufferSource = audioContext.createBufferSource();
+                bufferSource.buffer = buffer;
+
+                const gainNode = audioContext.createGain();
+                bufferSource.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                gainNode.gain.setValueAtTime(1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 1);
+
+                bufferSource.start(audioContext.currentTime);
+                bufferSource.stop(audioContext.currentTime + 1);
+            }
+
+            // Función para reproducir el sonido de clic durante la animación
+            function playClick() {
+                const activarSonido = document.getElementById('activarSonido');
+    
+                if (!activarSonido.checked) {
+                    return;
+                }
+                
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+    
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+    
+                gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.05);
+    
+                oscillator.frequency.value = 800 + Math.random() * 400;
+                oscillator.type = "sine";
+    
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.05);
+            }
+
+            // Función para generar colores aleatorios
+            function generarColorAleatorio() {
+                // Generar colores vibrantes para mejor legibilidad
+                const h = Math.floor(Math.random() * 360);
+                const s = 80 + Math.floor(Math.random() * 20); // Entre 80% y 100%
+                const l = 55 + Math.floor(Math.random() * 15); // Entre 55% y 70%
+                return `hsl(${h}, ${s}%, ${l}%)`;
+            }
+    
+            // Evento para el botón Detener
+            botonDetener.addEventListener('click', () => {
+                const listaNombres = obtenerListaNombres();
+                if (listaNombres.length > 0) {
+                    detenerAnimacion(listaNombres);
+                }
+            });
+    
+            // Evento para el botón Iniciar
+            botonIniciar.addEventListener('click', () => {
+                const listaNombres = obtenerListaNombres();
+                if (listaNombres.length > 0) {
+                    if (borrarNombre && eliminarNombre.checked && nombreElegido.textContent) {
+                        const index = listaNombres.indexOf(nombreElegido.textContent);
+                        if (index > -1) {
+                            listaNombres.splice(index, 1);
+                            nombres.value = listaNombres.join('\n');
+                        }
+                    }
+                    animacionSeleccion(listaNombres, 100);
+                    borrarNombre = true;
+                }
+            });
+            
+            // Función para obtener la lista de nombres del textarea
+            function obtenerListaNombres() {
+                return nombres.value
+                    .split(/[\n,]+/)
+                    .map(nombre => nombre.trim())
+                    .filter(nombre => nombre !== "");
+            }
+    
+            // Variable para controlar el estado de la animación
+            let animacionActiva = false;
+            let timeoutId = null;
+            
+            // Función para la animación de selección
+            function animacionSeleccion(listaNombres, intervaloInicial) {
+                // Detener cualquier animación previa
+                animacionActiva = true;
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                }
+                
+                let contador = 0;
+                // Iniciar con velocidad rápida y luego ralentizar
+                let velocidadActual = intervaloInicial;
+                const duracionMaxima = 4000; // 4 segundos
+                const tiempoInicio = Date.now();
+                
+                // Función para actualizar la animación
+                const actualizarAnimacion = () => {
+                    // Si la animación fue detenida, no continuar
+                    if (!animacionActiva) return;
+                    
+                    const tiempoTranscurrido = Date.now() - tiempoInicio;
+                    const factor = Math.min(1, tiempoTranscurrido / duracionMaxima);
+                    
+                    // Incrementar el intervalo gradualmente para ralentizar
+                    velocidadActual = intervaloInicial + (factor * 300);
+                    
+                    // Actualizar el nombre mostrado
+                    nombreElegido.textContent = listaNombres[contador % listaNombres.length];
+                    nombreElegido.style.color = generarColorAleatorio();
+                    contador++;
+                    playClick();
+                    
+                    // Si ha pasado el tiempo máximo, detener automáticamente
+                    if (tiempoTranscurrido > duracionMaxima) {
+                        detenerAnimacion(listaNombres);
+                        return;
+                    }
+                    
+                    // Programar la próxima actualización solo si la animación sigue activa
+                    if (animacionActiva) {
+                        timeoutId = setTimeout(actualizarAnimacion, velocidadActual);
+                    }
+                };
+                
+                // Iniciar la animación
+                actualizarAnimacion();
+            }
+    
+            // Función para detener la animación y mostrar el nombre seleccionado
+            function detenerAnimacion(listaNombres) {
+                // Detener la animación
+                animacionActiva = false;
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                    timeoutId = null;
+                }
+                
+                if (listaNombres.length === 0) return;
+                
+                const seleccionado = seleccionarAlAzar(listaNombres);
+                
+                // Animación para mostrar el nombre seleccionado
+                nombreElegido.style.transform = 'scale(0.8)';
+                nombreElegido.style.opacity = '0.5';
+                
+                setTimeout(() => {
+                    nombreElegido.textContent = seleccionado;
+                    nombreElegido.style.color = '#FFFFFF';
+                    nombreElegido.style.transform = 'scale(1.1)';
+                    nombreElegido.style.opacity = '1';
+                    nombreElegido.classList.add('pulse');
+                    
+                    setTimeout(() => {
+                        nombreElegido.style.transform = 'scale(1)';
+                        nombreElegido.classList.remove('pulse');
+                    }, 500);
+                    
+                    playDing();
+                    
+                    // Eliminar el nombre seleccionado si está marcada la opción
+                    if (eliminarNombre.checked) {
+                        const index = listaNombres.indexOf(seleccionado);
+                        if (index > -1) {
+                            listaNombres.splice(index, 1);
+                            nombres.value = listaNombres.join('\n');
+                        }
+                    }
+                }, 300);
+            }
+    
+            // Función para seleccionar un elemento aleatorio de la lista
+            function seleccionarAlAzar(lista) {
+                return lista[Math.floor(Math.random() * lista.length)];
+            }
+            
+            // Evento para guardar la lista de nombres
+            guardarLista.addEventListener('click', () => {
+                const listaNombres = nombres.value;
+                if (listaNombres.trim() !== '') {
+                    const blob = new Blob([listaNombres], {type: 'text/plain'});
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'lista_nombres.txt';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }
+            });
+            
+            // Evento para cargar una lista de nombres
+            cargarLista.addEventListener('click', () => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.txt';
+                
+                input.onchange = e => {
+                    const file = e.target.files[0];
+                    const reader = new FileReader();
+                    
+                    reader.onload = event => {
+                        nombres.value = event.target.result;
+                    };
+                    
+                    reader.readAsText(file);
+                };
+                
+                input.click();
+            });
+            
+            // Evento para limpiar la lista y el resultado
+            limpiarLista.addEventListener('click', () => {
+                nombres.value = '';
+                nombreElegido.textContent = '';
+            });
+            
+            // Verificar si hay una lista guardada en localStorage
+            const savedList = localStorage.getItem('nombresList');
+            if (savedList) {
+                nombres.value = savedList;
+            }
+            
+            // Guardar la lista automáticamente cuando cambia
+            nombres.addEventListener('input', () => {
+                localStorage.setItem('nombresList', nombres.value);
+            });
+            
+            // Soporte para atajos de teclado
+            document.addEventListener('keydown', (e) => {
+                // Iniciar con la tecla Espacio
+                if (e.code === 'Space' && !e.target.matches('textarea, input')) {
+                    e.preventDefault();
+                    botonIniciar.click();
+                }
+                
+                // Detener con la tecla Enter
+                if (e.code === 'Enter' && !e.target.matches('textarea, input')) {
+                    e.preventDefault();
+                    botonDetener.click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rúbrica interactiva</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            line-height: 1.6;
+            color: var(--dark-color);
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--dark-color);
+        }
+
+        .language-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .language-btn {
+            border: 1px solid var(--primary-color);
+            background: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .language-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        
+        .file-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        
+        .auto-save-info {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .auto-save-status {
+            font-weight: bold;
+        }
+        
+        .auto-save-time {
+            font-style: italic;
+        }
+
+        .tab-buttons {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-button.active {
+            border-bottom: 3px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .button {
+            padding: 8px 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .button.warning {
+            background-color: var(--warning-color);
+        }
+
+        .button.warning:hover {
+            background-color: #e67e22;
+        }
+
+        .button.success {
+            background-color: var(--success-color);
+        }
+
+        .button.success:hover {
+            background-color: #219653;
+        }
+
+        .button.accent {
+            background-color: var(--accent-color);
+        }
+
+        .button.accent:hover {
+            background-color: #c0392b;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"], 
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: var(--font-family);
+        }
+
+        .configuration-container,
+        .preview-container {
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .selected-level {
+            background-color: #e3f2fd;
+            border: 2px solid var(--primary-color);
+        }
+        
+        .evaluation-summary {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .score-display {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        
+        #total-score {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 0 5px;
+        }
+        
+        .student-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .student-actions {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .student-selector {
+            margin-bottom: 15px;
+        }
+        
+        .student-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        #student-select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+        
+        .level-radio {
+            display: none;
+        }
+        
+        .level-label {
+            display: block;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .level-radio:checked + .level-label {
+            background-color: #e3f2fd;
+            border: 2px solid var(--primary-color);
+        }
+        
+        .evaluation-badge {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        th {
+            background-color: var(--light-color);
+            font-weight: bold;
+        }
+
+        .rubric-title {
+            width: 100%;
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .criterion-name {
+            font-weight: bold;
+            background-color: #f8f9fa;
+        }
+
+        .scoring-info {
+            font-style: italic;
+            text-align: right;
+            margin-bottom: 10px;
+        }
+
+        .print-section {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .criteria-container,
+        .levels-container {
+            margin-bottom: 30px;
+        }
+
+        .criterion-item,
+        .level-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .criterion-item input,
+        .level-item input {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+
+        .criteria-matrix {
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        textarea.cell-description {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .comments-container {
+            margin: 20px 0;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        
+        #additional-comments {
+            width: 100%;
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .print-options {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .print-options label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+        
+        .student-page-break {
+            page-break-before: always;
+        }
+        
+        .print-student-container {
+            margin-bottom: 30px;
+        }
+
+        @media print {
+            .actions, .tab-buttons, .print-section, .language-selector, footer, .student-actions {
+                display: none;
+            }
+            
+            .container {
+                box-shadow: none;
+                max-width: 100%;
+                padding: 0;
+            }
+            
+            body {
+                padding: 0;
+                background-color: white;
+            }
+            
+            .tab-content {
+                display: none;
+            }
+            
+            /* Solo se mostrará la pestaña activa para impresión */
+            #preview-tab.print-active, #evaluation-tab.print-active {
+                display: block !important;
+            }
+            
+            /* Al imprimir evaluaciones, mostrar el contenedor de todos los alumnos y ocultar el actual */
+            #evaluation-tab.print-active #current-student-container {
+                display: none;
+            }
+            
+            #evaluation-tab.print-active #all-students-print-container {
+                display: block !important;
+            }
+            
+            /* Cuando se imprime un solo alumno */
+            #evaluation-tab.print-single-student #all-students-print-container {
+                display: none !important;
+            }
+            
+            #evaluation-tab.print-single-student #current-student-container {
+                display: block !important;
+            }
+            
+            /* Asegurar que los comentarios adicionales se muestren completos */
+            textarea, .comments-content {
+                height: auto !important;
+                min-height: fit-content !important;
+                overflow: visible !important;
+                white-space: normal !important;
+            }
+            
+            /* Mostrar comentarios adicionales en un contenedor separado */
+            .comments-container {
+                page-break-inside: avoid;
+                margin-top: 20px;
+                border-top: 1px solid #ddd;
+                padding-top: 10px;
+            }
+            
+            /* Ajustar espaciados para optimizar el espacio de impresión */
+            .student-info, .evaluation-summary {
+                margin: 10px 0;
+                padding: 10px;
+            }
+            
+            @page {
+                margin: 1cm;
+            }
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .responsive-table {
+            overflow-x: auto;
+        }
+
+        .help-text {
+            font-size: 14px;
+            color: #777;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-selector">
+        <button class="language-btn" id="es-btn">ES</button>
+        <button class="language-btn" id="ca-btn">CA</button>
+    </div>
+
+    <div class="container">
+        <h1 id="app-title">Rúbrica interactiva</h1>
+
+        <div class="tab-buttons">
+            <button class="tab-button active" id="config-btn" data-tab="config-tab">Configuración</button>
+            <button class="tab-button" id="preview-btn" data-tab="preview-tab">Vista previa</button>
+            <button class="tab-button" id="evaluation-btn" data-tab="evaluation-tab">Calificación</button>
+        </div>
+
+        <div class="tab-content active" id="config-tab">
+            <div class="input-group">
+                <label for="rubric-title" id="lbl-rubric-title">Título de la rúbrica:</label>
+                <input type="text" id="rubric-title" placeholder="Título de la rúbrica">
+            </div>
+            
+            <div class="file-actions">
+                <button class="button" id="save-rubric-btn">Guardar rúbrica</button>
+                <button class="button" id="open-rubric-btn">Abrir rúbrica</button>
+                <button class="button warning" id="reset-config-btn">Restablecer por defecto</button>
+                <input type="file" id="rubric-file-input" accept=".csv" style="display: none">
+            </div>
+            
+            <div class="auto-save-info">
+                <div class="auto-save-status" id="auto-save-status"></div>
+                <div class="auto-save-time" id="auto-save-time"></div>
+            </div>
+
+            <div class="criteria-container">
+                <h2 id="criteria-header">Criterios</h2>
+                <div id="criteria-list">
+                    <!-- Los criterios se añadirán dinámicamente -->
+                </div>
+                <div class="actions">
+                    <button class="button" id="add-criterion-btn">Añadir criterio</button>
+                </div>
+            </div>
+
+            <div class="levels-container">
+                <h2 id="levels-header">Niveles de desempeño</h2>
+                <div id="levels-list">
+                    <!-- Los niveles se añadirán dinámicamente -->
+                </div>
+                <div class="actions">
+                    <button class="button" id="add-level-btn">Añadir nivel</button>
+                </div>
+            </div>
+
+            <div class="criteria-matrix">
+                <h2 id="matrix-header">Matriz de descripción</h2>
+                <p id="matrix-instructions" class="help-text">Para cada combinación de criterio y nivel, escribe una descripción detallada.</p>
+                <div class="responsive-table">
+                    <table id="criteria-matrix-table">
+                        <thead>
+                            <tr id="levels-header-row">
+                                <th id="criteria-column-header">Criterios</th>
+                                <!-- Las columnas de nivel se añadirán dinámicamente -->
+                            </tr>
+                        </thead>
+                        <tbody id="criteria-matrix-body">
+                            <!-- Las filas y celdas se añadirán dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="preview-tab">
+            <div class="preview-container">
+                <div id="rubric-title-preview" class="rubric-title">Título de la rúbrica</div>
+                <div class="responsive-table">
+                    <table id="rubric-preview-table">
+                        <thead>
+                            <tr id="preview-header-row">
+                                <th id="preview-criteria-header">Criterios</th>
+                                <!-- Las columnas de nivel se añadirán dinámicamente -->
+                            </tr>
+                        </thead>
+                        <tbody id="preview-body">
+                            <!-- Las filas y celdas se añadirán dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="print-section">
+                    <button class="button success" id="print-preview-btn">Imprimir rúbrica</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="evaluation-tab">
+            <div class="evaluation-container">
+                <div class="student-actions">
+                    <div class="student-selector">
+                        <label for="student-select" id="lbl-student-select">Lista de alumnos:</label>
+                        <select id="student-select">
+                            <option value="" id="no-students-option">No hay alumnos calificados</option>
+                        </select>
+                    </div>
+                    <div class="student-buttons">
+                        <button class="button" id="add-student-btn">Añadir otro alumno</button>
+                        <button class="button accent" id="delete-student-btn">Eliminar alumno</button>
+                        <button class="button warning" id="reset-eval-btn">Borrar calificación</button>
+                    </div>
+                </div>
+
+                <div id="current-student-container">
+                    <div class="student-info">
+                        <div class="input-group">
+                            <label for="student-name" id="lbl-student-name">Nombre del alumno:</label>
+                            <input type="text" id="student-name" placeholder="Nombre del alumno">
+                        </div>
+                        <div class="input-group">
+                            <label for="evaluation-date" id="lbl-evaluation-date">Fecha de evaluación:</label>
+                            <input type="date" id="evaluation-date">
+                        </div>
+                    </div>
+
+                    <div id="evaluation-summary" class="evaluation-summary">
+                        <h3 id="score-summary-title">Resumen de calificación</h3>
+                        <div class="score-display">
+                            <span id="total-score-label">Puntuación total:</span>
+                            <span id="total-score">0</span>
+                            <span id="max-score-label">de</span>
+                            <span id="max-score">0</span>
+                        </div>
+                    </div>
+
+                    <div class="responsive-table">
+                        <table id="evaluation-table">
+                            <thead>
+                                <tr id="evaluation-header-row">
+                                    <th id="evaluation-criteria-header">Criterios</th>
+                                    <!-- Las columnas de nivel se añadirán dinámicamente -->
+                                </tr>
+                            </thead>
+                            <tbody id="evaluation-body">
+                                <!-- Las filas y celdas se añadirán dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="comments-container">
+                        <div class="input-group">
+                            <label for="additional-comments" id="lbl-additional-comments">Comentarios adicionales:</label>
+                            <textarea id="additional-comments" rows="5"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contenedor para todos los alumnos (solo visible al imprimir) -->
+                <div id="all-students-print-container" style="display: none;">
+                    <!-- Se llenará dinámicamente al imprimir -->
+                </div>
+                
+                <div class="print-section">
+                    <button class="button success" id="print-evaluation-btn">Imprimir calificación</button>
+                    <div class="print-options">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="print-all-students" checked>
+                            <span class="checkbox-label" id="lbl-print-all-students">Imprimir todos los alumnos</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>
+                <span id="footer-app-by">Aplicación hecha por</span> <a href="https://bilateria.org" target="_blank">Juan José de Haro</a><br>
+                <span id="footer-license">Esta obra está bajo una licencia</span> <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons BY-SA</a>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Diccionario de traducciones
+        const translations = {
+            es: {
+                appTitle: "Rúbrica interactiva",
+                configTab: "Configuración",
+                previewTab: "Vista previa",
+                evaluationTab: "Calificación",
+                rubricTitle: "Título de la rúbrica:",
+                criteriaHeader: "Criterios",
+                levelsHeader: "Niveles de desempeño",
+                matrixHeader: "Matriz de descripción",
+                matrixInstructions: "Para cada combinación de criterio y nivel, escribe una descripción detallada.",
+                addCriterion: "Añadir criterio",
+                addLevel: "Añadir nivel",
+                criteriaColumnHeader: "Criterios",
+                saveRubricButton: "Guardar rúbrica",
+                openRubricButton: "Abrir rúbrica",
+                resetConfigButton: "Restablecer por defecto",
+                resetEvalButton: "Borrar calificación",
+                addStudentButton: "Añadir otro alumno",
+                studentList: "Lista de alumnos",
+                deleteStudentButton: "Eliminar alumno",
+                confirmReset: "¿Estás seguro de que deseas restablecer la configuración? Se perderán todos los datos.",
+                confirmResetEval: "¿Estás seguro de que deseas borrar esta calificación?",
+                confirmDeleteStudent: "¿Estás seguro de que deseas eliminar este alumno?",
+                noStudents: "No hay alumnos calificados",
+                printRubricButton: "Imprimir rúbrica",
+                printEvaluationButton: "Imprimir calificación",
+                printAllStudents: "Imprimir todos los alumnos",
+                autoSaveEnabled: "Autoguardado activado",
+                lastSaved: "Último guardado:",
+                restoreSession: "Se ha restaurado la sesión anterior",
+                criterionPlaceholder: "Nombre del criterio",
+                levelPlaceholder: "Nombre del nivel",
+                scorePlaceholder: "Puntuación",
+                defaultCriterion: "Criterio",
+                defaultLevel: "Nivel",
+                defaultStudent: "Alumno",
+                removeCriterion: "Eliminar",
+                removeLevel: "Eliminar",
+                description: "Descripción",
+                studentName: "Nombre del alumno:",
+                evaluationDate: "Fecha de evaluación:",
+                additionalComments: "Comentarios adicionales:",
+                scoreSummaryTitle: "Resumen de calificación",
+                totalScoreLabel: "Puntuación total:",
+                maxScoreLabel: "de",
+                selectLevelInstructions: "Selecciona un nivel para cada criterio",
+                footerAppBy: "Aplicación hecha por",
+                footerLicense: "Esta obra está bajo una licencia"
+            },
+            ca: {
+                appTitle: "Rúbrica interactiva",
+                configTab: "Configuració",
+                previewTab: "Vista prèvia",
+                evaluationTab: "Qualificació",
+                rubricTitle: "Títol de la rúbrica:",
+                criteriaHeader: "Criteris",
+                levelsHeader: "Nivells d'acompliment",
+                matrixHeader: "Matriu de descripció",
+                matrixInstructions: "Per a cada combinació de criteri i nivell, escriu una descripció detallada.",
+                addCriterion: "Afegir criteri",
+                addLevel: "Afegir nivell",
+                criteriaColumnHeader: "Criteris",
+                saveRubricButton: "Desar rúbrica",
+                openRubricButton: "Obrir rúbrica",
+                resetConfigButton: "Restablir per defecte",
+                resetEvalButton: "Esborrar qualificació",
+                addStudentButton: "Afegir un altre alumne",
+                studentList: "Llista d'alumnes",
+                deleteStudentButton: "Eliminar alumne",
+                confirmReset: "Estàs segur que vols restablir la configuració? Es perdran totes les dades.",
+                confirmResetEval: "Estàs segur que vols esborrar aquesta qualificació?",
+                confirmDeleteStudent: "Estàs segur que vols eliminar aquest alumne?",
+                noStudents: "No hi ha alumnes qualificats",
+                printRubricButton: "Imprimir rúbrica",
+                printEvaluationButton: "Imprimir qualificació",
+                printAllStudents: "Imprimir tots els alumnes",
+                autoSaveEnabled: "Autodesament activat",
+                lastSaved: "Últim desament:",
+                restoreSession: "S'ha restaurat la sessió anterior",
+                criterionPlaceholder: "Nom del criteri",
+                levelPlaceholder: "Nom del nivell",
+                scorePlaceholder: "Puntuació",
+                defaultCriterion: "Criteri",
+                defaultLevel: "Nivell",
+                defaultStudent: "Alumne",
+                removeCriterion: "Eliminar",
+                removeLevel: "Eliminar",
+                description: "Descripció",
+                studentName: "Nom de l'alumne:",
+                evaluationDate: "Data d'avaluació:",
+                additionalComments: "Comentaris addicionals:",
+                scoreSummaryTitle: "Resum de qualificació",
+                totalScoreLabel: "Puntuació total:",
+                maxScoreLabel: "de",
+                selectLevelInstructions: "Selecciona un nivell per a cada criteri",
+                footerAppBy: "Aplicació feta per",
+                footerLicense: "Aquesta obra està sota una llicència"
+            }
+        };
+
+        // Variables globales
+        let currentLanguage = 'es';
+        let criteriaCount = 0;
+        let levelsCount = 0;
+        let autoSaveTimer = null;
+        const AUTO_SAVE_INTERVAL = 2 * 60 * 1000; // 2 minutos en milisegundos
+        let students = []; // Lista de estudiantes evaluados
+        let currentStudentIndex = -1; // Índice del estudiante actual
+
+        // Función para detectar el idioma del navegador
+        function detectBrowserLanguage() {
+            const lang = navigator.language || navigator.userLanguage;
+            return lang.startsWith('ca') ? 'ca' : 'es';
+        }
+
+        // Función para cambiar el idioma
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Actualizar botones de idioma
+            document.getElementById('es-btn').classList.toggle('active', lang === 'es');
+            document.getElementById('ca-btn').classList.toggle('active', lang === 'ca');
+            
+            // Actualizar textos de la interfaz
+            document.getElementById('app-title').textContent = translations[lang].appTitle;
+            document.getElementById('config-btn').textContent = translations[lang].configTab;
+            document.getElementById('preview-btn').textContent = translations[lang].previewTab;
+            document.getElementById('evaluation-btn').textContent = translations[lang].evaluationTab;
+            document.getElementById('lbl-rubric-title').textContent = translations[lang].rubricTitle;
+            document.getElementById('criteria-header').textContent = translations[lang].criteriaHeader;
+            document.getElementById('levels-header').textContent = translations[lang].levelsHeader;
+            document.getElementById('matrix-header').textContent = translations[lang].matrixHeader;
+            document.getElementById('matrix-instructions').textContent = translations[lang].matrixInstructions;
+            document.getElementById('add-criterion-btn').textContent = translations[lang].addCriterion;
+            document.getElementById('add-level-btn').textContent = translations[lang].addLevel;
+            document.getElementById('criteria-column-header').textContent = translations[lang].criteriaColumnHeader;
+            document.getElementById('preview-criteria-header').textContent = translations[lang].criteriaColumnHeader;
+            document.getElementById('evaluation-criteria-header').textContent = translations[lang].criteriaColumnHeader;
+            document.getElementById('save-rubric-btn').textContent = translations[lang].saveRubricButton;
+            document.getElementById('open-rubric-btn').textContent = translations[lang].openRubricButton;
+            document.getElementById('reset-config-btn').textContent = translations[lang].resetConfigButton;
+            document.getElementById('reset-eval-btn').textContent = translations[lang].resetEvalButton;
+            document.getElementById('add-student-btn').textContent = translations[lang].addStudentButton;
+            document.getElementById('delete-student-btn').textContent = translations[lang].deleteStudentButton;
+            document.getElementById('lbl-student-select').textContent = translations[lang].studentList;
+            document.getElementById('print-preview-btn').textContent = translations[lang].printRubricButton;
+            document.getElementById('print-evaluation-btn').textContent = translations[lang].printEvaluationButton;
+            document.getElementById('lbl-print-all-students').textContent = translations[lang].printAllStudents;
+            document.getElementById('lbl-student-name').textContent = translations[lang].studentName;
+            document.getElementById('lbl-evaluation-date').textContent = translations[lang].evaluationDate;
+            document.getElementById('lbl-additional-comments').textContent = translations[lang].additionalComments;
+            document.getElementById('score-summary-title').textContent = translations[lang].scoreSummaryTitle;
+            document.getElementById('total-score-label').textContent = translations[lang].totalScoreLabel;
+            document.getElementById('max-score-label').textContent = translations[lang].maxScoreLabel;
+            document.getElementById('footer-app-by').textContent = translations[lang].footerAppBy;
+            document.getElementById('footer-license').textContent = translations[lang].footerLicense;
+            
+            // Actualizar placeholder del título
+            document.getElementById('rubric-title').placeholder = translations[lang].rubricTitle;
+            
+            // Actualizar placeholder de criterios y niveles existentes
+            document.querySelectorAll('.criterion-name-input').forEach(input => {
+                input.placeholder = translations[lang].criterionPlaceholder;
+            });
+            
+            document.querySelectorAll('.level-name-input').forEach(input => {
+                input.placeholder = translations[lang].levelPlaceholder;
+            });
+            
+            document.querySelectorAll('.level-score-input').forEach(input => {
+                input.placeholder = translations[lang].scorePlaceholder;
+            });
+            
+            // Actualizar botones de eliminar
+            document.querySelectorAll('.remove-criterion-btn').forEach(btn => {
+                btn.textContent = translations[lang].removeCriterion;
+            });
+            
+            document.querySelectorAll('.remove-level-btn').forEach(btn => {
+                btn.textContent = translations[lang].removeLevel;
+            });
+            
+            // Actualizar la tabla de descripción
+            updateMatrixTable();
+            
+            // Actualizar vista previa
+            updatePreview();
+            
+            // Actualizar textos de autoguardado
+            if (document.getElementById('auto-save-status')) {
+                document.getElementById('auto-save-status').textContent = translations[lang].autoSaveEnabled;
+                const savedTime = document.getElementById('auto-save-time').getAttribute('data-time');
+                if (savedTime) {
+                    const date = new Date(savedTime);
+                    const formattedTime = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+                    document.getElementById('auto-save-time').textContent = `${translations[lang].lastSaved} ${formattedTime}`;
+                }
+            }
+            
+            // Si no hay estudiantes, mostrar la opción predeterminada
+            if (document.getElementById('no-students-option')) {
+                document.getElementById('no-students-option').textContent = translations[lang].noStudents;
+            }
+        }
+
+        // Función para agregar un criterio
+        function addCriterion() {
+            criteriaCount++;
+            const criterionId = `criterion-${criteriaCount}`;
+            
+            const criterionDiv = document.createElement('div');
+            criterionDiv.className = 'criterion-item';
+            criterionDiv.id = criterionId;
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'criterion-name-input';
+            input.placeholder = translations[currentLanguage].criterionPlaceholder;
+            input.value = `${translations[currentLanguage].defaultCriterion} ${criteriaCount}`;
+            input.dataset.id = criterionId;
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'button accent';
+            removeBtn.textContent = translations[currentLanguage].removeCriterion;
+            removeBtn.onclick = () => removeCriterion(criterionId);
+            
+            criterionDiv.appendChild(input);
+            criterionDiv.appendChild(removeBtn);
+            
+            document.getElementById('criteria-list').appendChild(criterionDiv);
+            
+            // Actualizar matriz y vista previa
+            updateMatrixTable();
+            updatePreview();
+            
+            return criterionId;
+        }
+
+        // Función para eliminar un criterio
+        function removeCriterion(criterionId) {
+            document.getElementById(criterionId).remove();
+            
+            // Actualizar matriz y vista previa
+            updateMatrixTable();
+            updatePreview();
+        }
+
+        // Función para agregar un nivel
+        function addLevel() {
+            levelsCount++;
+            const levelId = `level-${levelsCount}`;
+            
+            const levelDiv = document.createElement('div');
+            levelDiv.className = 'level-item';
+            levelDiv.id = levelId;
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'level-name-input';
+            input.placeholder = translations[currentLanguage].levelPlaceholder;
+            input.value = `${translations[currentLanguage].defaultLevel} ${levelsCount}`;
+            input.dataset.id = levelId;
+            
+            const scoreInput = document.createElement('input');
+            scoreInput.type = 'number';
+            scoreInput.className = 'level-score-input';
+            scoreInput.placeholder = translations[currentLanguage].scorePlaceholder;
+            scoreInput.value = levelsCount;
+            scoreInput.min = "0";
+            scoreInput.step = "1";
+            scoreInput.style.width = "80px";
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'button accent';
+            removeBtn.textContent = translations[currentLanguage].removeLevel;
+            removeBtn.onclick = () => removeLevel(levelId);
+            
+            levelDiv.appendChild(input);
+            levelDiv.appendChild(scoreInput);
+            levelDiv.appendChild(removeBtn);
+            
+            document.getElementById('levels-list').appendChild(levelDiv);
+            
+            // Actualizar matriz y vista previa
+            updateMatrixTable();
+            updatePreview();
+            
+            return levelId;
+        }
+
+        // Función para eliminar un nivel
+        function removeLevel(levelId) {
+            document.getElementById(levelId).remove();
+            
+            // Actualizar matriz y vista previa
+            updateMatrixTable();
+            updatePreview();
+        }
+
+        // Función para actualizar la tabla de matriz
+        function updateMatrixTable() {
+            // Obtener criterios y niveles
+            const criteria = [...document.querySelectorAll('.criterion-name-input')].map(input => ({
+                id: input.dataset.id,
+                name: input.value
+            }));
+            
+            const levels = [...document.querySelectorAll('.level-name-input')].map(input => ({
+                id: input.dataset.id,
+                name: input.value,
+                score: document.querySelector(`#${input.dataset.id} .level-score-input`).value
+            }));
+            
+            // Actualizar cabeceras de niveles
+            const headerRow = document.getElementById('levels-header-row');
+            
+            // Limpiar cabeceras previas excepto la primera columna
+            while (headerRow.children.length > 1) {
+                headerRow.removeChild(headerRow.lastChild);
+            }
+            
+            // Añadir cabeceras de nivel
+            levels.forEach(level => {
+                const th = document.createElement('th');
+                th.textContent = `${level.name} (${level.score})`;
+                th.dataset.levelId = level.id;
+                headerRow.appendChild(th);
+            });
+            
+            // Actualizar filas de criterios
+            const tableBody = document.getElementById('criteria-matrix-body');
+            tableBody.innerHTML = '';
+            
+            criteria.forEach(criterion => {
+                const row = document.createElement('tr');
+                row.dataset.criterionId = criterion.id;
+                
+                // Añadir celda de nombre de criterio
+                const criterionNameCell = document.createElement('td');
+                criterionNameCell.textContent = criterion.name;
+                criterionNameCell.className = 'criterion-name';
+                row.appendChild(criterionNameCell);
+                
+                // Añadir celdas para cada nivel
+                levels.forEach(level => {
+                    const cell = document.createElement('td');
+                    const cellId = `${criterion.id}-${level.id}`;
+                    
+                    const textarea = document.createElement('textarea');
+                    textarea.className = 'cell-description';
+                    textarea.id = cellId;
+                    textarea.placeholder = `${translations[currentLanguage].description}`;
+                    
+                    cell.appendChild(textarea);
+                    row.appendChild(cell);
+                });
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Función para actualizar la vista previa
+        function updatePreview() {
+            // Actualizar título
+            const titlePreview = document.getElementById('rubric-title-preview');
+            titlePreview.textContent = document.getElementById('rubric-title').value || translations[currentLanguage].rubricTitle;
+            
+            // Obtener criterios y niveles
+            const criteria = [...document.querySelectorAll('.criterion-name-input')].map(input => ({
+                id: input.dataset.id,
+                name: input.value
+            }));
+            
+            const levels = [...document.querySelectorAll('.level-name-input')].map(input => ({
+                id: input.dataset.id,
+                name: input.value,
+                score: document.querySelector(`#${input.dataset.id} .level-score-input`).value
+            }));
+            
+            // Actualizar cabeceras de niveles
+            const headerRow = document.getElementById('preview-header-row');
+            
+            // Limpiar cabeceras previas excepto la primera columna
+            while (headerRow.children.length > 1) {
+                headerRow.removeChild(headerRow.lastChild);
+            }
+            
+            // Añadir cabeceras de nivel
+            levels.forEach(level => {
+                const th = document.createElement('th');
+                th.textContent = `${level.name} (${level.score})`;
+                headerRow.appendChild(th);
+            });
+            
+            // Actualizar filas de criterios
+            const previewBody = document.getElementById('preview-body');
+            previewBody.innerHTML = '';
+            
+            criteria.forEach(criterion => {
+                const row = document.createElement('tr');
+                
+                // Añadir celda de nombre de criterio
+                const criterionNameCell = document.createElement('td');
+                criterionNameCell.textContent = criterion.name;
+                criterionNameCell.className = 'criterion-name';
+                row.appendChild(criterionNameCell);
+                
+                // Añadir celdas para cada nivel
+                levels.forEach(level => {
+                    const cell = document.createElement('td');
+                    const cellId = `${criterion.id}-${level.id}`;
+                    
+                    // Obtener la descripción de la celda
+                    const textarea = document.getElementById(cellId);
+                    const description = textarea ? textarea.value : '';
+                    
+                    cell.innerHTML = description.replace(/\n/g, '<br>');
+                    row.appendChild(cell);
+                });
+                
+                previewBody.appendChild(row);
+            });
+            
+            // También actualizar la pestaña de evaluación
+            updateEvaluationTab();
+        }
+        
+        // Función para actualizar la pestaña de evaluación
+        function updateEvaluationTab() {
+            // Obtener criterios y niveles
+            const criteria = [...document.querySelectorAll('.criterion-name-input')].map(input => ({
+                id: input.dataset.id,
+                name: input.value
+            }));
+            
+            const levels = [...document.querySelectorAll('.level-name-input')].map(input => ({
+                id: input.dataset.id,
+                name: input.value,
+                score: parseInt(document.querySelector(`#${input.dataset.id} .level-score-input`).value) || 0
+            }));
+            
+            // Actualizar cabeceras de niveles
+            const headerRow = document.getElementById('evaluation-header-row');
+            
+            // Limpiar cabeceras previas excepto la primera columna
+            while (headerRow.children.length > 1) {
+                headerRow.removeChild(headerRow.lastChild);
+            }
+            
+            // Añadir cabeceras de nivel
+            levels.forEach(level => {
+                const th = document.createElement('th');
+                th.textContent = `${level.name} (${level.score})`;
+                headerRow.appendChild(th);
+            });
+            
+            // Actualizar filas de criterios
+            const evaluationBody = document.getElementById('evaluation-body');
+            evaluationBody.innerHTML = '';
+            
+            criteria.forEach(criterion => {
+                const row = document.createElement('tr');
+                row.dataset.criterionId = criterion.id;
+                
+                // Añadir celda de nombre de criterio
+                const criterionNameCell = document.createElement('td');
+                criterionNameCell.textContent = criterion.name;
+                criterionNameCell.className = 'criterion-name';
+                row.appendChild(criterionNameCell);
+                
+                // Añadir celdas para cada nivel
+                levels.forEach(level => {
+                    const cell = document.createElement('td');
+                    const cellId = `${criterion.id}-${level.id}`;
+                    
+                    // Obtener la descripción de la celda
+                    const textarea = document.getElementById(cellId);
+                    const description = textarea ? textarea.value : '';
+                    
+                    // Crear radio button para seleccionar este nivel
+                    const radioId = `radio-${cellId}`;
+                    const radioInput = document.createElement('input');
+                    radioInput.type = 'radio';
+                    radioInput.name = `criterion-${criterion.id}`;
+                    radioInput.id = radioId;
+                    radioInput.className = 'level-radio';
+                    radioInput.value = level.score;
+                    radioInput.dataset.levelId = level.id;
+                    radioInput.dataset.criterionId = criterion.id;
+                    radioInput.addEventListener('change', updateTotalScore);
+                    
+                    const radioLabel = document.createElement('label');
+                    radioLabel.htmlFor = radioId;
+                    radioLabel.className = 'level-label';
+                    radioLabel.innerHTML = description.replace(/\n/g, '<br>');
+                    
+                    cell.appendChild(radioInput);
+                    cell.appendChild(radioLabel);
+                    row.appendChild(cell);
+                });
+                
+                evaluationBody.appendChild(row);
+            });
+            
+            // Actualizar puntaje máximo posible
+            updateMaxScore();
+        }
+        
+        // Función para actualizar la puntuación total
+        function updateTotalScore() {
+            let totalScore = 0;
+            
+            // Obtener todos los radio buttons seleccionados
+            const selectedRadios = document.querySelectorAll('.level-radio:checked');
+            
+            // Sumar los valores de los radios seleccionados
+            selectedRadios.forEach(radio => {
+                totalScore += parseInt(radio.value) || 0;
+            });
+            
+            // Actualizar el puntaje total mostrado
+            document.getElementById('total-score').textContent = totalScore;
+            
+            // Actualizar la vista de evaluación para marcar las celdas seleccionadas
+            document.querySelectorAll('.level-label').forEach(label => {
+                label.parentElement.classList.remove('selected-level');
+            });
+            
+            selectedRadios.forEach(radio => {
+                const label = document.querySelector(`label[for="${radio.id}"]`);
+                if (label) {
+                    label.parentElement.classList.add('selected-level');
+                }
+            });
+            
+            // Si hay un estudiante seleccionado, guardar sus datos
+            if (currentStudentIndex >= 0) {
+                saveCurrentStudentData();
+            }
+        }
+        
+        // Función para actualizar el puntaje máximo posible
+        function updateMaxScore() {
+            const levels = [...document.querySelectorAll('.level-name-input')].map(input => ({
+                id: input.dataset.id,
+                score: parseInt(document.querySelector(`#${input.dataset.id} .level-score-input`).value) || 0
+            }));
+            
+            const criteria = document.querySelectorAll('.criterion-name-input');
+            
+            // Calcular el puntaje máximo posible
+            const maxScores = levels.map(level => level.score);
+            const maxScore = criteria.length * (Math.max(...maxScores) || 0);
+            
+            // Actualizar el puntaje máximo mostrado
+            document.getElementById('max-score').textContent = maxScore;
+        }
+        
+        // Función para guardar la rúbrica como CSV
+        function saveRubricAsCSV() {
+            // Obtener título de la rúbrica
+            const title = document.getElementById('rubric-title').value || translations[currentLanguage].rubricTitle;
+            
+            // Obtener criterios
+            const criteria = [...document.querySelectorAll('.criterion-name-input')].map(input => ({
+                id: input.dataset.id,
+                name: input.value
+            }));
+            
+            // Obtener niveles
+            const levels = [...document.querySelectorAll('.level-name-input')].map(input => ({
+                id: input.dataset.id,
+                name: input.value,
+                score: document.querySelector(`#${input.dataset.id} .level-score-input`).value
+            }));
+            
+            // Crear estructura de datos para el CSV
+            let csvData = [];
+            
+            // Añadir información de título
+            csvData.push(['title', title]);
+            csvData.push([]);
+            
+            // Añadir información de criterios
+            csvData.push(['criteria']);
+            criteria.forEach(criterion => {
+                csvData.push(['criterion', criterion.id, criterion.name]);
+            });
+            csvData.push([]);
+            
+            // Añadir información de niveles
+            csvData.push(['levels']);
+            levels.forEach(level => {
+                csvData.push(['level', level.id, level.name, level.score]);
+            });
+            csvData.push([]);
+            
+            // Añadir descripciones de celdas
+            csvData.push(['descriptions']);
+            criteria.forEach(criterion => {
+                levels.forEach(level => {
+                    const cellId = `${criterion.id}-${level.id}`;
+                    const textarea = document.getElementById(cellId);
+                    const description = textarea ? textarea.value : '';
+                    csvData.push(['description', criterion.id, level.id, description]);
+                });
+            });
+            
+            // Convertir a formato CSV
+            let csvContent = "data:text/csv;charset=utf-8,";
+            
+            csvData.forEach(row => {
+                const csvRow = row.map(item => {
+                    // Escapar comillas y encerrar en comillas si contiene comas
+                    if (typeof item === 'string' && (item.includes(',') || item.includes('"') || item.includes('\n'))) {
+                        return `"${item.replace(/"/g, '""')}"`;
+                    }
+                    return item;
+                }).join(',');
+                csvContent += csvRow + '\r\n';
+            });
+            
+            // Crear un enlace para descargar el archivo
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', `${title.replace(/[^\w\s]/gi, '')}.csv`);
+            document.body.appendChild(link);
+            
+            // Simular click para descargar
+            link.click();
+            
+            // Eliminar el enlace
+            document.body.removeChild(link);
+        }
+        
+        // Función para abrir un archivo CSV de rúbrica
+        function openRubricFromCSV(file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(event) {
+                const csvData = event.target.result;
+                parseRubricCSV(csvData);
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        // Función para parsear el CSV y cargar la rúbrica
+        function parseRubricCSV(csvData) {
+            // Dividir por líneas
+            const lines = csvData.split(/\r\n|\n/);
+            
+            // Parsear cada línea
+            let section = '';
+            let criteriaMap = {};
+            let levelsMap = {};
+            
+            // Limpiar la rúbrica actual
+            document.getElementById('criteria-list').innerHTML = '';
+            document.getElementById('levels-list').innerHTML = '';
+            criteriaCount = 0;
+            levelsCount = 0;
+            
+            // Procesar líneas
+            for (let i = 0; i < lines.length; i++) {
+                // Ignorar líneas vacías
+                if (!lines[i].trim()) continue;
+                
+                // Dividir la línea en campos usando parseCSVLine para manejar comillas correctamente
+                const row = parseCSVLine(lines[i]);
+                
+                if (row.length === 0) continue;
+                
+                const type = row[0];
+                
+                if (type === 'title' && row.length > 1) {
+                    // Establecer título
+                    document.getElementById('rubric-title').value = row[1];
+                } else if (type === 'criteria') {
+                    section = 'criteria';
+                } else if (type === 'levels') {
+                    section = 'levels';
+                } else if (type === 'descriptions') {
+                    section = 'descriptions';
+                } else if (type === 'criterion' && row.length > 2 && section === 'criteria') {
+                    // Añadir criterio
+                    const criterionId = row[1];
+                    const criterionName = row[2];
+                    
+                    const newCriterionId = addCriterion();
+                    criteriaMap[criterionId] = newCriterionId;
+                    
+                    // Establecer nombre
+                    document.querySelector(`#${newCriterionId} .criterion-name-input`).value = criterionName;
+                } else if (type === 'level' && row.length > 3 && section === 'levels') {
+                    // Añadir nivel
+                    const levelId = row[1];
+                    const levelName = row[2];
+                    const levelScore = row[3];
+                    
+                    const newLevelId = addLevel();
+                    levelsMap[levelId] = newLevelId;
+                    
+                    // Establecer nombre y puntuación
+                    document.querySelector(`#${newLevelId} .level-name-input`).value = levelName;
+                    document.querySelector(`#${newLevelId} .level-score-input`).value = levelScore;
+                } else if (type === 'description' && row.length > 3 && section === 'descriptions') {
+                    // Añadir descripción
+                    const criterionId = row[1];
+                    const levelId = row[2];
+                    const description = row[3];
+                    
+                    // Asegurarse de que la matriz de descripción esté actualizada
+                    updateMatrixTable();
+                    
+                    // Mapear IDs antiguos a nuevos
+                    const newCriterionId = criteriaMap[criterionId];
+                    const newLevelId = levelsMap[levelId];
+                    
+                    if (newCriterionId && newLevelId) {
+                        const cellId = `${newCriterionId}-${newLevelId}`;
+                        const textarea = document.getElementById(cellId);
+                        if (textarea) {
+                            textarea.value = description;
+                        }
+                    }
+                }
+            }
+            
+            // Actualizar matriz y vista previa
+            updateMatrixTable();
+            updatePreview();
+        }
+        
+        // Función auxiliar para parsear líneas CSV respetando comillas
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                
+                if (char === '"') {
+                    if (i < line.length - 1 && line[i + 1] === '"') {
+                        // Doble comilla dentro de comillas, añadir comilla simple
+                        current += '"';
+                        i++; // Saltar la siguiente comilla
+                    } else {
+                        // Alternar estado de comillas
+                        inQuotes = !inQuotes;
+                    }
+                } else if (char === ',' && !inQuotes) {
+                    // Fin del campo
+                    result.push(current);
+                    current = '';
+                } else {
+                    // Carácter normal
+                    current += char;
+                }
+            }
+            
+            // Añadir el último campo
+            result.push(current);
+            
+            return result;
+        }
+        
+        // Función para guardar el estado actual en localStorage
+        function saveStateToLocalStorage() {
+            try {
+                // Obtener título de la rúbrica
+                const title = document.getElementById('rubric-title').value || translations[currentLanguage].rubricTitle;
+                
+                // Obtener criterios
+                const criteria = [...document.querySelectorAll('.criterion-name-input')].map(input => ({
+                    id: input.dataset.id,
+                    name: input.value
+                }));
+                
+                // Obtener niveles
+                const levels = [...document.querySelectorAll('.level-name-input')].map(input => ({
+                    id: input.dataset.id,
+                    name: input.value,
+                    score: document.querySelector(`#${input.dataset.id} .level-score-input`).value
+                }));
+                
+                // Obtener descripciones
+                const descriptions = [];
+                criteria.forEach(criterion => {
+                    levels.forEach(level => {
+                        const cellId = `${criterion.id}-${level.id}`;
+                        const textarea = document.getElementById(cellId);
+                        if (textarea) {
+                            descriptions.push({
+                                criterionId: criterion.id,
+                                levelId: level.id,
+                                text: textarea.value
+                            });
+                        }
+                    });
+                });
+                
+                // Obtener información del estudiante y comentarios (si estamos en la pestaña de evaluación)
+                const studentInfo = {
+                    students,
+                    currentStudentIndex
+                };
+                
+                // Crear objeto de estado
+                const state = {
+                    title,
+                    criteria,
+                    levels,
+                    descriptions,
+                    studentInfo,
+                    criteriaCount,
+                    levelsCount,
+                    timestamp: new Date().toISOString(),
+                    version: "1.0" // Para futuras actualizaciones de formato
+                };
+                
+                // Guardar en localStorage
+                localStorage.setItem('rubricaInteractivaState', JSON.stringify(state));
+                
+                // Actualizar información de autoguardado
+                updateAutoSaveInfo(state.timestamp);
+                
+                return true;
+            } catch (error) {
+                console.error('Error al guardar el estado:', error);
+                return false;
+            }
+        }
+        
+        // Función para cargar el estado desde localStorage
+        function loadStateFromLocalStorage() {
+            try {
+                const stateJson = localStorage.getItem('rubricaInteractivaState');
+                if (!stateJson) return false;
+                
+                const state = JSON.parse(stateJson);
+                
+                // Verificar versión
+                if (!state.version) return false;
+                
+                // Establecer contadores globales
+                criteriaCount = state.criteriaCount || 0;
+                levelsCount = state.levelsCount || 0;
+                
+                // Limpiar criterios y niveles actuales
+                document.getElementById('criteria-list').innerHTML = '';
+                document.getElementById('levels-list').innerHTML = '';
+                
+                // Establecer título
+                document.getElementById('rubric-title').value = state.title;
+                
+                // Recrear criterios
+                state.criteria.forEach(criterion => {
+                    const criterionId = addCriterion();
+                    document.querySelector(`#${criterionId} .criterion-name-input`).value = criterion.name;
+                });
+                
+                // Recrear niveles
+                state.levels.forEach(level => {
+                    const levelId = addLevel();
+                    document.querySelector(`#${levelId} .level-name-input`).value = level.name;
+                    document.querySelector(`#${levelId} .level-score-input`).value = level.score;
+                });
+                
+                // Asegurarse de que la matriz está actualizada
+                updateMatrixTable();
+                
+                // Establecer descripciones
+                state.descriptions.forEach(desc => {
+                    // Necesitamos mapear los IDs antiguos a los nuevos
+                    const criterionIndex = state.criteria.findIndex(c => c.id === desc.criterionId);
+                    const levelIndex = state.levels.findIndex(l => l.id === desc.levelId);
+                    
+                    if (criterionIndex >= 0 && levelIndex >= 0) {
+                        const newCriterionId = document.querySelectorAll('.criterion-name-input')[criterionIndex].dataset.id;
+                        const newLevelId = document.querySelectorAll('.level-name-input')[levelIndex].dataset.id;
+                        
+                        const cellId = `${newCriterionId}-${newLevelId}`;
+                        const textarea = document.getElementById(cellId);
+                        if (textarea) {
+                            textarea.value = desc.text;
+                        }
+                    }
+                });
+                
+                // Establecer información del estudiante
+                if (state.studentInfo) {
+                    // Restaurar lista de estudiantes
+                    students = state.studentInfo.students || [];
+                    currentStudentIndex = state.studentInfo.currentStudentIndex || -1;
+                    
+                    // Actualizar selector de estudiantes
+                    updateStudentSelector();
+                    
+                    // Cargar datos del estudiante actual si hay uno
+                    if (currentStudentIndex >= 0 && students[currentStudentIndex]) {
+                        loadStudentData(students[currentStudentIndex]);
+                    } else {
+                        // Inicializar fecha de evaluación con la fecha actual
+                        const today = new Date();
+                        const formattedDate = today.toISOString().split('T')[0];
+                        document.getElementById('evaluation-date').value = formattedDate;
+                    }
+                }
+                
+                // Mostrar mensaje de restauración
+                showSessionRestoredMessage();
+                
+                // Actualizar información de autoguardado
+                updateAutoSaveInfo(state.timestamp);
+                
+                return true;
+            } catch (error) {
+                console.error('Error al cargar el estado:', error);
+                return false;
+            }
+        }
+        
+        // Función para mostrar la información de autoguardado
+        function updateAutoSaveInfo(timestamp) {
+            const autoSaveStatus = document.getElementById('auto-save-status');
+            const autoSaveTime = document.getElementById('auto-save-time');
+            
+            autoSaveStatus.textContent = translations[currentLanguage].autoSaveEnabled;
+            
+            if (timestamp) {
+                const date = new Date(timestamp);
+                const formattedTime = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+                autoSaveTime.textContent = `${translations[currentLanguage].lastSaved} ${formattedTime}`;
+                autoSaveTime.setAttribute('data-time', timestamp);
+            } else {
+                autoSaveTime.textContent = '';
+            }
+        }
+        
+        // Función para mostrar un mensaje de sesión restaurada
+        function showSessionRestoredMessage() {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'restore-message';
+            messageDiv.textContent = translations[currentLanguage].restoreSession;
+            messageDiv.style.position = 'fixed';
+            messageDiv.style.top = '20px';
+            messageDiv.style.left = '50%';
+            messageDiv.style.transform = 'translateX(-50%)';
+            messageDiv.style.backgroundColor = '#4CAF50';
+            messageDiv.style.color = 'white';
+            messageDiv.style.padding = '10px 20px';
+            messageDiv.style.borderRadius = '4px';
+            messageDiv.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+            messageDiv.style.zIndex = '1000';
+            
+            document.body.appendChild(messageDiv);
+            
+            // Eliminar después de 3 segundos
+            setTimeout(() => {
+                messageDiv.style.opacity = '0';
+                messageDiv.style.transition = 'opacity 0.5s';
+                setTimeout(() => {
+                    document.body.removeChild(messageDiv);
+                }, 500);
+            }, 3000);
+        }
+        
+        // Función para iniciar el temporizador de autoguardado
+        function startAutoSaveTimer() {
+            // Limpiar temporizador existente si hay uno
+            if (autoSaveTimer) {
+                clearInterval(autoSaveTimer);
+            }
+            
+            // Configurar el nuevo temporizador
+            autoSaveTimer = setInterval(() => {
+                saveStateToLocalStorage();
+            }, AUTO_SAVE_INTERVAL);
+            
+            // Actualizar UI
+            updateAutoSaveInfo();
+        }
+        
+        // Función para restablecer la configuración a valores por defecto
+        function resetConfig() {
+            if (confirm(translations[currentLanguage].confirmReset)) {
+                // Borrar todos los criterios y niveles
+                document.getElementById('criteria-list').innerHTML = '';
+                document.getElementById('levels-list').innerHTML = '';
+                
+                // Borrar título de la rúbrica
+                document.getElementById('rubric-title').value = '';
+                
+                // Reiniciar contadores
+                criteriaCount = 0;
+                levelsCount = 0;
+                
+                // Borrar calificaciones de estudiantes
+                students = [];
+                currentStudentIndex = -1;
+                updateStudentSelector();
+                
+                // Limpiar datos del estudiante actual
+                resetEvaluation();
+                
+                // Eliminar datos guardados en localStorage
+                localStorage.removeItem('rubricaInteractivaState');
+                
+                // Añadir criterios y niveles por defecto
+                addCriterion();
+                addCriterion();
+                addCriterion();
+                
+                addLevel();
+                addLevel();
+                addLevel();
+                addLevel();
+                
+                // Actualizar vistas
+                updateMatrixTable();
+                updatePreview();
+            }
+        }
+        
+        // Función para resetear la evaluación actual
+        function resetEvaluation() {
+            if (confirm(translations[currentLanguage].confirmResetEval)) {
+                // Limpiar datos del formulario de estudiante
+                document.getElementById('student-name').value = '';
+                
+                // Establecer fecha actual
+                const today = new Date();
+                const formattedDate = today.toISOString().split('T')[0];
+                document.getElementById('evaluation-date').value = formattedDate;
+                
+                // Limpiar comentarios
+                document.getElementById('additional-comments').value = '';
+                
+                // Desmarcar todos los radio buttons
+                document.querySelectorAll('.level-radio').forEach(radio => {
+                    radio.checked = false;
+                });
+                
+                // Quitar clases de selección
+                document.querySelectorAll('.selected-level').forEach(cell => {
+                    cell.classList.remove('selected-level');
+                });
+                
+                // Resetear puntuación total
+                document.getElementById('total-score').textContent = '0';
+                
+                // Si hay un estudiante seleccionado, actualizar su objeto
+                if (currentStudentIndex >= 0) {
+                    students[currentStudentIndex] = {
+                        name: '',
+                        date: formattedDate,
+                        comments: '',
+                        selections: []
+                    };
+                    
+                    // Actualizar el nombre en el selector
+                    updateStudentSelector();
+                }
+                
+                // Guardar estado
+                saveStateToLocalStorage();
+            }
+        }
+        
+        // Función para añadir un nuevo estudiante
+        function addNewStudent() {
+            // Obtener fecha actual
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+            
+            // Crear objeto para el nuevo estudiante
+            const newStudent = {
+                name: '',
+                date: formattedDate,
+                comments: '',
+                selections: []
+            };
+            
+            // Añadir a la lista de estudiantes
+            students.push(newStudent);
+            currentStudentIndex = students.length - 1;
+            
+            // Actualizar selector de estudiantes
+            updateStudentSelector();
+            
+            // Cargar formulario vacío
+            loadStudentData(newStudent);
+            
+            // Guardar estado
+            saveStateToLocalStorage();
+        }
+        
+        // Función para eliminar el estudiante actual
+        function deleteCurrentStudent() {
+            if (currentStudentIndex < 0) return;
+            
+            if (confirm(translations[currentLanguage].confirmDeleteStudent)) {
+                // Eliminar estudiante de la lista
+                students.splice(currentStudentIndex, 1);
+                
+                // Actualizar índice actual
+                if (students.length > 0) {
+                    currentStudentIndex = 0;
+                } else {
+                    currentStudentIndex = -1;
+                }
+                
+                // Actualizar selector
+                updateStudentSelector();
+                
+                // Cargar datos del estudiante seleccionado o formulario vacío
+                if (currentStudentIndex >= 0) {
+                    loadStudentData(students[currentStudentIndex]);
+                } else {
+                    resetEvaluation();
+                }
+                
+                // Guardar estado
+                saveStateToLocalStorage();
+            }
+        }
+        
+        // Función para actualizar el selector de estudiantes
+        function updateStudentSelector() {
+            const select = document.getElementById('student-select');
+            select.innerHTML = '';
+            
+            if (students.length === 0) {
+                // No hay estudiantes, mostrar opción predeterminada
+                const option = document.createElement('option');
+                option.value = '';
+                option.id = 'no-students-option';
+                option.textContent = translations[currentLanguage].noStudents;
+                select.appendChild(option);
+                
+                // Deshabilitar botón de eliminar
+                document.getElementById('delete-student-btn').disabled = true;
+            } else {
+                // Añadir cada estudiante al selector
+                students.forEach((student, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = student.name || `${translations[currentLanguage].defaultStudent} ${index + 1}`;
+                    select.appendChild(option);
+                });
+                
+                // Seleccionar el estudiante actual
+                select.value = currentStudentIndex;
+                
+                // Habilitar botón de eliminar
+                document.getElementById('delete-student-btn').disabled = false;
+            }
+        }
+        
+        // Función para cargar los datos de un estudiante en el formulario
+        function loadStudentData(student) {
+            // Establecer nombre
+            document.getElementById('student-name').value = student.name || '';
+            
+            // Establecer fecha
+            document.getElementById('evaluation-date').value = student.date || '';
+            
+            // Establecer comentarios
+            document.getElementById('additional-comments').value = student.comments || '';
+            
+            // Desmarcar todos los radio buttons
+            document.querySelectorAll('.level-radio').forEach(radio => {
+                radio.checked = false;
+            });
+            
+            // Quitar clases de selección
+            document.querySelectorAll('.selected-level').forEach(cell => {
+                cell.classList.remove('selected-level');
+            });
+            
+            // Marcar selecciones guardadas
+            if (student.selections && student.selections.length > 0) {
+                student.selections.forEach(selection => {
+                    const radio = document.querySelector(`.level-radio[data-criterion-id="${selection.criterionId}"][data-level-id="${selection.levelId}"]`);
+                    if (radio) {
+                        radio.checked = true;
+                        
+                        // Marcar celda como seleccionada
+                        const label = document.querySelector(`label[for="${radio.id}"]`);
+                        if (label) {
+                            label.parentElement.classList.add('selected-level');
+                        }
+                    }
+                });
+            }
+            
+            // Actualizar puntuación total
+            updateTotalScore();
+        }
+        
+        // Función para guardar los datos del estudiante actual
+        function saveCurrentStudentData() {
+            if (currentStudentIndex < 0) return;
+            
+            // Obtener datos del formulario
+            const name = document.getElementById('student-name').value;
+            const date = document.getElementById('evaluation-date').value;
+            const comments = document.getElementById('additional-comments').value;
+            
+            // Obtener selecciones
+            const selections = [...document.querySelectorAll('.level-radio:checked')].map(radio => ({
+                criterionId: radio.dataset.criterionId,
+                levelId: radio.dataset.levelId
+            }));
+            
+            // Actualizar objeto del estudiante
+            students[currentStudentIndex] = {
+                name,
+                date,
+                comments,
+                selections
+            };
+            
+            // Actualizar selector (por si cambió el nombre)
+            updateStudentSelector();
+        }
+        
+        // Función para generar el HTML para imprimir todos los estudiantes
+        function generateAllStudentsPrintHTML() {
+            const container = document.getElementById('all-students-print-container');
+            container.innerHTML = '';
+            
+            // Obtener criterios y niveles actuales
+            const criteria = [...document.querySelectorAll('.criterion-name-input')].map(input => ({
+                id: input.dataset.id,
+                name: input.value
+            }));
+            
+            const levels = [...document.querySelectorAll('.level-name-input')].map(input => ({
+                id: input.dataset.id,
+                name: input.value,
+                score: parseInt(document.querySelector(`#${input.dataset.id} .level-score-input`).value) || 0
+            }));
+            
+            // Obtener título de la rúbrica
+            const rubricTitle = document.getElementById('rubric-title').value || translations[currentLanguage].rubricTitle;
+            
+            // Calcular puntuación máxima posible
+            const maxScores = levels.map(level => level.score);
+            const maxPossibleScore = criteria.length * (Math.max(...maxScores) || 0);
+            
+            // Generar HTML para cada estudiante
+            students.forEach((student, index) => {
+                // Crear contenedor para este estudiante
+                const studentContainer = document.createElement('div');
+                studentContainer.className = 'print-student-container';
+                if (index > 0) {
+                    studentContainer.classList.add('student-page-break');
+                }
+                
+                // Añadir título de la rúbrica
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'rubric-title';
+                titleDiv.textContent = rubricTitle;
+                studentContainer.appendChild(titleDiv);
+                
+                // Añadir información del estudiante
+                const studentInfoDiv = document.createElement('div');
+                studentInfoDiv.className = 'student-info';
+                
+                const studentNameDiv = document.createElement('div');
+                studentNameDiv.className = 'input-group';
+                const studentNameLabel = document.createElement('label');
+                studentNameLabel.textContent = translations[currentLanguage].studentName;
+                studentNameLabel.style.fontWeight = 'bold';
+                studentNameDiv.appendChild(studentNameLabel);
+                
+                const studentNameValue = document.createElement('div');
+                studentNameValue.textContent = student.name || `${translations[currentLanguage].defaultStudent} ${index + 1}`;
+                studentNameValue.style.padding = '5px 0';
+                studentNameDiv.appendChild(studentNameValue);
+                
+                const dateDiv = document.createElement('div');
+                dateDiv.className = 'input-group';
+                const dateLabel = document.createElement('label');
+                dateLabel.textContent = translations[currentLanguage].evaluationDate;
+                dateLabel.style.fontWeight = 'bold';
+                dateDiv.appendChild(dateLabel);
+                
+                const dateValue = document.createElement('div');
+                dateValue.textContent = student.date || '';
+                dateValue.style.padding = '5px 0';
+                dateDiv.appendChild(dateValue);
+                
+                studentInfoDiv.appendChild(studentNameDiv);
+                studentInfoDiv.appendChild(dateDiv);
+                studentContainer.appendChild(studentInfoDiv);
+                
+                // Calcular puntuación total del estudiante
+                let totalScore = 0;
+                if (student.selections && student.selections.length > 0) {
+                    student.selections.forEach(selection => {
+                        const level = levels.find(l => l.id === selection.levelId);
+                        if (level) {
+                            totalScore += level.score;
+                        }
+                    });
+                }
+                
+                // Añadir resumen de calificación
+                const summaryDiv = document.createElement('div');
+                summaryDiv.className = 'evaluation-summary';
+                
+                const summaryTitle = document.createElement('h3');
+                summaryTitle.textContent = translations[currentLanguage].scoreSummaryTitle;
+                summaryDiv.appendChild(summaryTitle);
+                
+                const scoreDisplay = document.createElement('div');
+                scoreDisplay.className = 'score-display';
+                
+                const totalScoreLabel = document.createElement('span');
+                totalScoreLabel.textContent = translations[currentLanguage].totalScoreLabel;
+                scoreDisplay.appendChild(totalScoreLabel);
+                
+                const totalScoreValue = document.createElement('span');
+                totalScoreValue.style.fontSize = '24px';
+                totalScoreValue.style.fontWeight = 'bold';
+                totalScoreValue.style.color = 'var(--primary-color)';
+                totalScoreValue.style.margin = '0 5px';
+                totalScoreValue.textContent = totalScore;
+                scoreDisplay.appendChild(totalScoreValue);
+                
+                const maxScoreLabel = document.createElement('span');
+                maxScoreLabel.textContent = translations[currentLanguage].maxScoreLabel;
+                scoreDisplay.appendChild(maxScoreLabel);
+                
+                const maxScoreValue = document.createElement('span');
+                maxScoreValue.textContent = maxPossibleScore;
+                maxScoreValue.style.margin = '0 5px';
+                scoreDisplay.appendChild(maxScoreValue);
+                
+                summaryDiv.appendChild(scoreDisplay);
+                studentContainer.appendChild(summaryDiv);
+                
+                // Crear tabla de evaluación
+                const tableWrapper = document.createElement('div');
+                tableWrapper.className = 'responsive-table';
+                
+                const table = document.createElement('table');
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                
+                // Añadir cabecera de criterios
+                const criteriaHeader = document.createElement('th');
+                criteriaHeader.textContent = translations[currentLanguage].criteriaColumnHeader;
+                headerRow.appendChild(criteriaHeader);
+                
+                // Añadir cabeceras de niveles
+                levels.forEach(level => {
+                    const levelHeader = document.createElement('th');
+                    levelHeader.textContent = `${level.name} (${level.score})`;
+                    headerRow.appendChild(levelHeader);
+                });
+                
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
+                
+                // Crear filas para cada criterio
+                const tbody = document.createElement('tbody');
+                
+                criteria.forEach(criterion => {
+                    const row = document.createElement('tr');
+                    
+                    // Añadir nombre del criterio
+                    const criterionCell = document.createElement('td');
+                    criterionCell.textContent = criterion.name;
+                    criterionCell.className = 'criterion-name';
+                    row.appendChild(criterionCell);
+                    
+                    // Añadir celdas para cada nivel
+                    levels.forEach(level => {
+                        const cell = document.createElement('td');
+                        const cellId = `${criterion.id}-${level.id}`;
+                        
+                        // Verificar si este nivel está seleccionado para este criterio
+                        const isSelected = student.selections && student.selections.some(
+                            s => s.criterionId === criterion.id && s.levelId === level.id
+                        );
+                        
+                        if (isSelected) {
+                            cell.className = 'selected-level';
+                        }
+                        
+                        // Obtener descripción
+                        const textarea = document.getElementById(cellId);
+                        const description = textarea ? textarea.value : '';
+                        cell.innerHTML = description.replace(/\n/g, '<br>');
+                        
+                        row.appendChild(cell);
+                    });
+                    
+                    tbody.appendChild(row);
+                });
+                
+                table.appendChild(tbody);
+                tableWrapper.appendChild(table);
+                studentContainer.appendChild(tableWrapper);
+                
+                // Añadir comentarios adicionales
+                if (student.comments) {
+                    const commentsContainer = document.createElement('div');
+                    commentsContainer.className = 'comments-container';
+                    
+                    const commentsGroup = document.createElement('div');
+                    commentsGroup.className = 'input-group';
+                    
+                    const commentsLabel = document.createElement('label');
+                    commentsLabel.textContent = translations[currentLanguage].additionalComments;
+                    commentsLabel.style.fontWeight = 'bold';
+                    commentsGroup.appendChild(commentsLabel);
+                    
+                    const commentsContent = document.createElement('div');
+                    commentsContent.className = 'comments-content';
+                    commentsContent.style.padding = '10px 0';
+                    commentsContent.innerHTML = student.comments.replace(/\n/g, '<br>');
+                    commentsGroup.appendChild(commentsContent);
+                    
+                    commentsContainer.appendChild(commentsGroup);
+                    studentContainer.appendChild(commentsContainer);
+                }
+                
+                // Añadir este estudiante al contenedor principal
+                container.appendChild(studentContainer);
+            });
+        }
+
+        // Función para inicializar la aplicación
+        function initApp() {
+            // Detectar idioma del navegador e inicializar
+            const browserLang = detectBrowserLanguage();
+            setLanguage(browserLang);
+            
+            // Agregar evento a los botones de idioma
+            document.getElementById('es-btn').addEventListener('click', () => setLanguage('es'));
+            document.getElementById('ca-btn').addEventListener('click', () => setLanguage('ca'));
+            
+            // Agregar evento al botón de añadir criterio
+            document.getElementById('add-criterion-btn').addEventListener('click', addCriterion);
+            
+            // Agregar evento al botón de añadir nivel
+            document.getElementById('add-level-btn').addEventListener('click', addLevel);
+            
+            // Agregar evento al botón de guardar rúbrica
+            document.getElementById('save-rubric-btn').addEventListener('click', saveRubricAsCSV);
+            
+            // Agregar evento al botón de abrir rúbrica
+            document.getElementById('open-rubric-btn').addEventListener('click', () => {
+                document.getElementById('rubric-file-input').click();
+            });
+            
+            // Agregar evento al input de archivo
+            document.getElementById('rubric-file-input').addEventListener('change', (event) => {
+                if (event.target.files.length > 0) {
+                    openRubricFromCSV(event.target.files[0]);
+                }
+            });
+            
+            // Agregar evento al botón de imprimir rúbrica
+            document.getElementById('print-preview-btn').addEventListener('click', () => {
+                // Marcar la pestaña de vista previa como activa para impresión
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('print-active', 'print-single-student');
+                });
+                document.getElementById('preview-tab').classList.add('print-active');
+                window.print();
+            });
+            
+            // Agregar evento al botón de imprimir evaluación
+            document.getElementById('print-evaluation-btn').addEventListener('click', () => {
+                // Verificar si se debe imprimir todos los estudiantes o solo el actual
+                const printAllStudents = document.getElementById('print-all-students').checked;
+                
+                if (printAllStudents && students.length > 0) {
+                    // Generar HTML para todos los estudiantes
+                    generateAllStudentsPrintHTML();
+                    
+                    // Marcar la pestaña de evaluación como activa para impresión de todos
+                    document.querySelectorAll('.tab-content').forEach(tab => {
+                        tab.classList.remove('print-active', 'print-single-student');
+                    });
+                    document.getElementById('evaluation-tab').classList.add('print-active');
+                } else {
+                    // Marcar la pestaña de evaluación como activa para impresión de uno solo
+                    document.querySelectorAll('.tab-content').forEach(tab => {
+                        tab.classList.remove('print-active', 'print-single-student');
+                    });
+                    document.getElementById('evaluation-tab').classList.add('print-active', 'print-single-student');
+                }
+                
+                // Imprimir
+                window.print();
+            });
+            
+            // Agregar evento al botón de restablecer configuración
+            document.getElementById('reset-config-btn').addEventListener('click', resetConfig);
+            
+            // Agregar evento al botón de restablecer evaluación
+            document.getElementById('reset-eval-btn').addEventListener('click', resetEvaluation);
+            
+            // Agregar evento al botón de añadir estudiante
+            document.getElementById('add-student-btn').addEventListener('click', addNewStudent);
+            
+            // Agregar evento al botón de eliminar estudiante
+            document.getElementById('delete-student-btn').addEventListener('click', deleteCurrentStudent);
+            
+            // Agregar evento al selector de estudiantes
+            document.getElementById('student-select').addEventListener('change', function(e) {
+                const index = parseInt(e.target.value);
+                if (!isNaN(index) && index >= 0 && index < students.length) {
+                    currentStudentIndex = index;
+                    loadStudentData(students[index]);
+                }
+            });
+            
+            // Agregar eventos a los campos del estudiante para guardar automáticamente
+            document.getElementById('student-name').addEventListener('input', function() {
+                if (currentStudentIndex >= 0) {
+                    saveCurrentStudentData();
+                }
+            });
+            
+            document.getElementById('evaluation-date').addEventListener('change', function() {
+                if (currentStudentIndex >= 0) {
+                    saveCurrentStudentData();
+                }
+            });
+            
+            document.getElementById('additional-comments').addEventListener('input', function() {
+                if (currentStudentIndex >= 0) {
+                    saveCurrentStudentData();
+                }
+            });
+            
+            // Agregar evento a los botones de pestañas
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.dataset.tab;
+                    
+                    // Desactivar todas las pestañas
+                    document.querySelectorAll('.tab-button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Activar la pestaña seleccionada
+                    button.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                    
+                    // Si es la pestaña de vista previa, actualizar
+                    if (tabId === 'preview-tab') {
+                        updatePreview();
+                    }
+                });
+            });
+            
+            // Agregar evento al cambio de título
+            document.getElementById('rubric-title').addEventListener('input', updatePreview);
+            
+            // Inicializar la fecha de evaluación con la fecha actual
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+            document.getElementById('evaluation-date').value = formattedDate;
+            
+            // Intentar cargar datos guardados previamente
+            const stateLoaded = loadStateFromLocalStorage();
+            
+            // Si no hay datos guardados, inicializar con valores predeterminados
+            if (!stateLoaded) {
+                // Inicializar con algunos criterios y niveles por defecto
+                addCriterion();
+                addCriterion();
+                addCriterion();
+                
+                addLevel();
+                addLevel();
+                addLevel();
+                addLevel();
+                
+                // Si no hay estudiantes, crear uno nuevo
+                if (students.length === 0) {
+                    addNewStudent();
+                }
+            }
+            
+            // Iniciar el temporizador de autoguardado
+            startAutoSaveTimer();
+            
+            // Guardar estado cuando el usuario sale de la página
+            window.addEventListener('beforeunload', saveStateToLocalStorage);
+            
+            // Configurar eventos para guardar al cambiar datos
+            document.addEventListener('input', function(e) {
+                // Guardar estado cuando se modifica cualquier entrada o textarea
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                    // No guardamos inmediatamente con cada cambio para no sobrecargar,
+                    // confiamos en el autoguardado periódico
+                }
+            });
+        }
+
+        // Iniciar la aplicación cuando el DOM esté cargado
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>

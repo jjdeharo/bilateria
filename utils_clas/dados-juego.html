@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lanzador de dados</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+        }
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            margin-top: 30px;
+        }
+        h1 {
+            color: #3a7bd5;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        .dice-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 40px 0;
+            min-height: 120px;
+        }
+        .dice {
+            width: 100px;
+            height: 100px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s ease;
+            cursor: pointer;
+        }
+        .dice-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            background-color: #f0f0f0;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2), inset 0 0 8px rgba(0,0,0,0.1);
+            display: grid;
+            grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+            padding: 10px;
+            box-sizing: border-box;
+            border: 3px solid #3a7bd5;
+        }
+        .dot {
+            display: block;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: #3a7bd5;
+            align-self: center;
+            justify-self: center;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        .btn {
+            background-color: #3a7bd5;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 0 10px;
+        }
+        .btn:hover {
+            background-color: #2d5e9e;
+        }
+        .btn.active {
+            background-color: #234b81;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+        }
+        .results {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin: 20px 0;
+        }
+        .shake {
+            animation: shake 0.5s;
+        }
+        .language-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .lang-btn {
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #3a7bd5;
+            border: 1px solid #3a7bd5;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .lang-btn:hover {
+            background-color: #3a7bd5;
+            color: white;
+        }
+        .lang-btn.active {
+            background-color: #3a7bd5;
+            color: white;
+            font-weight: bold;
+        }
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            10% { transform: rotate(-10deg); }
+            20% { transform: rotate(10deg); }
+            30% { transform: rotate(-10deg); }
+            40% { transform: rotate(10deg); }
+            50% { transform: rotate(-10deg); }
+            60% { transform: rotate(10deg); }
+            70% { transform: rotate(-10deg); }
+            80% { transform: rotate(10deg); }
+            90% { transform: rotate(-10deg); }
+            100% { transform: rotate(0deg); }
+        }
+        footer {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #333;
+            text-align: center;
+        }
+        a {
+            color: #3a7bd5;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-selector">
+        <button class="lang-btn" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="ca">CA</button>
+    </div>
+    
+    <div class="container">
+        <h1 id="title">Lanzador de dados</h1>
+        <div class="controls">
+            <button class="btn active" id="oneDice">1 Dado</button>
+            <button class="btn" id="twoDice">2 Dados</button>
+        </div>
+        <div class="dice-container">
+            <div class="dice" id="dice1">
+                <div class="dice-face"></div>
+            </div>
+            <div class="dice" id="dice2" style="display: none;">
+                <div class="dice-face"></div>
+            </div>
+        </div>
+        <div class="results" id="results">Lanza el dado para empezar</div>
+        <button class="btn" id="rollBtn">¡Lanzar!</button>
+        <footer>
+            <p id="attribution">Aplicación hecha por <a href="https://bilateria.org" target="_blank">Juan José de Haro</a></p>
+            <p id="license">Esta obra está bajo una licencia <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank">Creative Commons BY-SA</a></p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dice1 = document.getElementById('dice1');
+            const dice2 = document.getElementById('dice2');
+            const dice1Face = dice1.querySelector('.dice-face');
+            const dice2Face = dice2.querySelector('.dice-face');
+            const resultDisplay = document.getElementById('results');
+            const rollBtn = document.getElementById('rollBtn');
+            const oneDiceBtn = document.getElementById('oneDice');
+            const twoDiceBtn = document.getElementById('twoDice');
+            const titleElement = document.getElementById('title');
+            const licenseElement = document.getElementById('license');
+            const attributionElement = document.getElementById('attribution');
+            const langButtons = document.querySelectorAll('.lang-btn');
+            
+            let diceMode = 1; // Default: 1 dice
+            let currentLang = 'es'; // Default language
+            
+            // Translations
+            const translations = {
+                es: {
+                    title: 'Lanzador de dados',
+                    oneDice: '1 Dado',
+                    twoDice: '2 Dados',
+                    rollBtn: '¡Lanzar!',
+                    resultsSingle: 'Lanza el dado para empezar',
+                    resultsMultiple: 'Lanza los dados para empezar',
+                    resultText: 'Resultado: ',
+                    resultsText: 'Resultados: ',
+                    attribution: 'Aplicación hecha por <a href="https://bilateria.org" target="_blank">Juan José de Haro</a>',
+                    license: 'Esta obra está bajo una licencia <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank">Creative Commons BY-SA</a>'
+                },
+                ca: {
+                    title: 'Llançador de daus',
+                    oneDice: '1 Dau',
+                    twoDice: '2 Daus',
+                    rollBtn: 'Llançar!',
+                    resultsSingle: 'Llança el dau per començar',
+                    resultsMultiple: 'Llança els daus per començar',
+                    resultText: 'Resultat: ',
+                    resultsText: 'Resultats: ',
+                    attribution: 'Aplicació feta per <a href="https://bilateria.org" target="_blank">Juan José de Haro</a>',
+                    license: 'Aquesta obra està sota una llicència <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ca" target="_blank">Creative Commons BY-SA</a>'
+                }
+            };
+            
+            // Detect browser language
+            function detectLanguage() {
+                const browserLang = navigator.language || navigator.userLanguage;
+                if (browserLang.startsWith('ca')) {
+                    return 'ca';
+                }
+                return 'es'; // Default to Spanish
+            }
+            
+            // Update UI with selected language
+            function updateLanguage(lang) {
+                currentLang = lang;
+                
+                // Update UI elements
+                titleElement.textContent = translations[lang].title;
+                oneDiceBtn.textContent = translations[lang].oneDice;
+                twoDiceBtn.textContent = translations[lang].twoDice;
+                rollBtn.textContent = translations[lang].rollBtn;
+                attributionElement.innerHTML = translations[lang].attribution;
+                licenseElement.innerHTML = translations[lang].license;
+                
+                // Update result text based on current dice mode
+                if (diceMode === 1) {
+                    resultDisplay.textContent = translations[lang].resultsSingle;
+                } else {
+                    resultDisplay.textContent = translations[lang].resultsMultiple;
+                }
+                
+                // Update active language button
+                langButtons.forEach(btn => {
+                    if (btn.dataset.lang === lang) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+            
+            // Function to create dots for a dice face
+            function createDots(face, num) {
+                // Clear previous dots
+                face.innerHTML = '';
+                
+                // Define dot positions based on dice value (1-6)
+                const dotPositions = {
+                    1: [5], // Center
+                    2: [1, 9], // Top-left, Bottom-right
+                    3: [1, 5, 9], // Top-left, Center, Bottom-right
+                    4: [1, 3, 7, 9], // Four corners
+                    5: [1, 3, 5, 7, 9], // Four corners + center
+                    6: [1, 3, 4, 6, 7, 9] // Left side, right side
+                };
+                
+                const positions = dotPositions[num];
+                
+                for (let i = 1; i <= 9; i++) {
+                    const cell = document.createElement('div');
+                    cell.style.gridArea = `${Math.ceil(i / 3)} / ${(i - 1) % 3 + 1}`;
+                    
+                    if (positions.includes(i)) {
+                        const dot = document.createElement('span');
+                        dot.className = 'dot';
+                        cell.appendChild(dot);
+                    }
+                    
+                    face.appendChild(cell);
+                }
+            }
+            
+            // Function to roll the dice
+            function rollDice() {
+                dice1.classList.add('shake');
+                if (diceMode === 2) dice2.classList.add('shake');
+                
+                setTimeout(() => {
+                    dice1.classList.remove('shake');
+                    dice2.classList.remove('shake');
+                    
+                    const value1 = Math.floor(Math.random() * 6) + 1;
+                    createDots(dice1Face, value1);
+                    
+                    if (diceMode === 1) {
+                        resultDisplay.textContent = translations[currentLang].resultText + value1;
+                    } else {
+                        const value2 = Math.floor(Math.random() * 6) + 1;
+                        createDots(dice2Face, value2);
+                        const sum = value1 + value2;
+                        resultDisplay.textContent = translations[currentLang].resultsText + value1 + " + " + value2 + " = " + sum;
+                    }
+                }, 500);
+            }
+            
+            // Button event listeners
+            oneDiceBtn.addEventListener('click', function() {
+                diceMode = 1;
+                dice2.style.display = 'none';
+                oneDiceBtn.classList.add('active');
+                twoDiceBtn.classList.remove('active');
+                resultDisplay.textContent = translations[currentLang].resultsSingle;
+            });
+            
+            twoDiceBtn.addEventListener('click', function() {
+                diceMode = 2;
+                dice2.style.display = 'block';
+                twoDiceBtn.classList.add('active');
+                oneDiceBtn.classList.remove('active');
+                resultDisplay.textContent = translations[currentLang].resultsMultiple;
+            });
+            
+            rollBtn.addEventListener('click', rollDice);
+            
+            // Language buttons event listeners
+            langButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    updateLanguage(this.dataset.lang);
+                });
+            });
+            
+            // Initialize first dice with face 1
+            createDots(dice1Face, 1);
+            createDots(dice2Face, 1);
+            
+            // Initial language setup
+            const initialLang = detectLanguage();
+            updateLanguage(initialLang);
+        });
+    </script>
+</body>
+</html>

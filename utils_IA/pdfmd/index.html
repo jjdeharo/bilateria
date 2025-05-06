@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convertidor de PDF a Markdown</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        .upload-area:hover {
+            border-color: #3498db;
+        }
+        .upload-area.active {
+            border-color: #2ecc71;
+            background-color: rgba(46, 204, 113, 0.1);
+        }
+        .file-input {
+            display: none;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .btn:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        .preview-container {
+            margin-top: 20px;
+            display: none;
+        }
+        .preview-container.show {
+            display: block;
+        }
+        .preview-area {
+            width: 100%;
+            height: 300px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow: auto;
+            white-space: pre-wrap;
+            background-color: #f9f9f9;
+            font-family: monospace;
+        }
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .loading.show {
+            display: block;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .error-message {
+            color: #e74c3c;
+            text-align: center;
+            margin: 10px 0;
+            display: none;
+        }
+        .success-message {
+            color: #2ecc71;
+            text-align: center;
+            margin: 10px 0;
+            display: none;
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Convertidor de PDF a Markdown</h1>
+        
+        <div id="upload-area" class="upload-area">
+            <p>Arrastra y suelta un archivo PDF aquí o haz clic para seleccionar</p>
+            <input type="file" id="file-input" class="file-input" accept=".pdf">
+        </div>
+        
+        <div class="error-message" id="error-message"></div>
+        <div class="success-message" id="success-message"></div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Procesando el archivo PDF...</p>
+        </div>
+        
+        <div class="controls">
+            <button id="convert-btn" class="btn" disabled>Convertir a Markdown</button>
+            <button id="download-btn" class="btn" disabled>Descargar Markdown</button>
+        </div>
+        
+        <div class="preview-container" id="preview-container">
+            <h2>Vista previa del Markdown:</h2>
+            <div class="preview-area" id="preview-area"></div>
+        </div>
+        
+        <footer>
+            <p>Este convertidor funciona completamente en el navegador. No se envían archivos a ningún servidor.</p>
+        </footer>
+    </div>
+
+    <!-- Cargar scripts -->
+    <script src="https://unpkg.com/showdown/dist/showdown.min.js"></script>
+    <script src="js/pdf-extractor.js"></script>
+    <script src="js/markdown-enhancer.js"></script>
+    <script src="js/markdown-utils.js"></script>
+    <script src="js/markdown-converter.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/tests.js"></script>
+    <script src="js/advanced-tests.js"></script>
+    <script src="js/optimizations.js"></script>
+</body>
+</html>

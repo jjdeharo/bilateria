@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distribució Binomial / Distribución Binomial</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .calculator {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        .input-group {
+            margin: 10px 0;
+        }
+        label {
+            display: inline-block;
+            width: 300px;
+        }
+        input {
+            width: 100px;
+            padding: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .language-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 5px;
+        }
+        .lang-btn {
+            padding: 5px 10px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .lang-btn.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border-left: 4px solid #4CAF50;
+            background-color: #f9f9f9;
+        }
+        .example {
+            background-color: #e3f2fd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        #chart {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-buttons">
+        <button id="ca-btn" class="lang-btn">CA</button>
+        <button id="es-btn" class="lang-btn">ES</button>
+    </div>
+
+    <h1 id="main-title">Distribució binomial</h1>
+
+    <div class="calculator">
+        <h2 id="calc-title">Calculadora de probabilitat binomial</h2>
+        
+        <div class="input-group">
+            <label for="n" id="label-n">Nombre d'assajos (n):</label>
+            <input type="number" id="n" min="1" value="10" oninput="calcularProbabilitat()">
+        </div>
+        
+        <div class="input-group">
+            <label for="p" id="label-p">Probabilitat d'èxit (p):</label>
+            <input type="number" id="p" min="0" max="1" step="0.01" value="0.5" oninput="calcularProbabilitat()">
+        </div>
+        
+        <div class="input-group">
+            <label for="k" id="label-k">Nombre d'èxits (k):</label>
+            <input type="number" id="k" min="0" value="5" oninput="calcularProbabilitat()">
+        </div>
+        
+        <div id="result" class="result"></div>
+        
+        <canvas id="chart"></canvas>
+    </div>
+
+    <h2 id="formula-title">Fórmula de la distribució binomial</h2>
+    <p id="formula-desc">La probabilitat d'obtenir exactament k èxits en n assajos ve donada per:</p>
+    <div style="text-align: center;">
+        \[ P(X=k) = \binom{n}{k} p^k (1-p)^{n-k} \]
+    </div>
+
+    <div class="example">
+        <h3 id="example-title">Exemple pràctic: Llançament d'una moneda</h3>
+        <p id="example-desc">Si llancem una moneda 5 vegades, quina és la probabilitat d'obtenir exactament 3 cares?</p>
+        <ul id="example-list">
+            <li id="example-n">n = 5 (nombre de llançaments).</li>
+            <li id="example-p">p = 0.5 (probabilitat de cara).</li>
+            <li id="example-k">k = 3 (nombre de cares que volem).</li>
+        </ul>
+        <p id="example-solution">Solució:</p>
+        \[ P(X=3) = \binom{5}{3} (0.5)^3 (0.5)^2 = 10 \cdot 0.125 \cdot 0.25 = 0.3125 \]
+    </div>
+
+    <div class="footer">
+        <p>Aplicació feta per <a href="https://bilateria.org">Juan José de Haro</a></p>
+        <p><a href="https://creativecommons.org/licenses/by-sa/4.0/" id="license-link">Aquesta obra està sota una llicència Creative Commons BY-SA</a></p>
+    </div>
+
+    <script>
+        // Traducciones
+        const translations = {
+            ca: {
+                mainTitle: "Distribució binomial",
+                calcTitle: "Calculadora de probabilitat binomial",
+                labelN: "Nombre d'assajos (n):",
+                labelP: "Probabilitat d'èxit (p):",
+                labelK: "Nombre d'èxits (k):",
+                formulaTitle: "Fórmula de la distribució binomial",
+                formulaDesc: "La probabilitat d'obtenir exactament k èxits en n assajos ve donada per:",
+                exampleTitle: "Exemple pràctic: Llançament d'una moneda",
+                exampleDesc: "Si llancem una moneda 5 vegades, quina és la probabilitat d'obtenir exactament 3 cares?",
+                exampleN: "n = 5 (nombre de llançaments).",
+                exampleP: "p = 0.5 (probabilitat de cara).",
+                exampleK: "k = 3 (nombre de cares que volem).",
+                exampleSolution: "Solució:",
+                footer: "Aplicació feta per",
+                license: "Aquesta obra està sota una llicència Creative Commons BY-SA",
+                licenseLink: "https://creativecommons.org/licenses/by-sa/4.0/deed.ca",
+                errorMsg: "Error: El nombre d'èxits (k) no pot ser major que el nombre d'assajos (n)",
+                probabilityText: "La probabilitat d'obtenir exactament",
+                successText: "èxits",
+                inText: "en",
+                trialsText: "assajos",
+                withProbText: "amb una probabilitat d'èxit de",
+                isText: "és:",
+                chartTitle: "Distribució de probabilitats",
+                chartXLabel: "Nombre d'èxits (k)",
+                chartYLabel: "Probabilitat"
+            },
+            es: {
+                mainTitle: "Distribución binomial",
+                calcTitle: "Calculadora de probabilidad binomial",
+                labelN: "Número de ensayos (n):",
+                labelP: "Probabilidad de éxito (p):",
+                labelK: "Número de éxitos (k):",
+                formulaTitle: "Fórmula de la distribución binomial",
+                formulaDesc: "La probabilidad de obtener exactamente k éxitos en n ensayos viene dada por:",
+                exampleTitle: "Ejemplo práctico: Lanzamiento de una moneda",
+                exampleDesc: "Si lanzamos una moneda 5 veces, ¿cuál es la probabilidad de obtener exactamente 3 caras?",
+                exampleN: "n = 5 (número de lanzamientos).",
+                exampleP: "p = 0.5 (probabilidad de cara).",
+                exampleK: "k = 3 (número de caras que queremos).",
+                exampleSolution: "Solución:",
+                footer: "Aplicación hecha por",
+                license: "Esta obra está bajo una licencia Creative Commons BY-SA",
+                licenseLink: "https://creativecommons.org/licenses/by-sa/4.0/deed.es",
+                errorMsg: "Error: El número de éxitos (k) no puede ser mayor que el número de ensayos (n)",
+                probabilityText: "La probabilidad de obtener exactamente",
+                successText: "éxitos",
+                inText: "en",
+                trialsText: "ensayos",
+                withProbText: "con una probabilidad de éxito de",
+                isText: "es:",
+                chartTitle: "Distribución de probabilidades",
+                chartXLabel: "Número de éxitos (k)",
+                chartYLabel: "Probabilidad"
+            }
+        };
+
+        // Variables globales
+        let currentLang = 'ca'; // Idioma predeterminado
+        let myChart = null;
+
+        // Detectar idioma del navegador al cargar la página
+        window.onload = () => {
+            const browserLang = navigator.language || navigator.userLanguage;
+            if (browserLang.startsWith('ca')) {
+                currentLang = 'ca';
+            } else {
+                currentLang = 'es';
+            }
+            setLanguage(currentLang);
+            calcularProbabilitat();
+        };
+
+        // Cambiar idioma
+        function setLanguage(lang) {
+            currentLang = lang;
+            
+            // Actualizar UI con el idioma seleccionado
+            document.getElementById('main-title').textContent = translations[lang].mainTitle;
+            document.getElementById('calc-title').textContent = translations[lang].calcTitle;
+            document.getElementById('label-n').textContent = translations[lang].labelN;
+            document.getElementById('label-p').textContent = translations[lang].labelP;
+            document.getElementById('label-k').textContent = translations[lang].labelK;
+            document.getElementById('formula-title').textContent = translations[lang].formulaTitle;
+            document.getElementById('formula-desc').textContent = translations[lang].formulaDesc;
+            document.getElementById('example-title').textContent = translations[lang].exampleTitle;
+            document.getElementById('example-desc').textContent = translations[lang].exampleDesc;
+            document.getElementById('example-n').textContent = translations[lang].exampleN;
+            document.getElementById('example-p').textContent = translations[lang].exampleP;
+            document.getElementById('example-k').textContent = translations[lang].exampleK;
+            document.getElementById('example-solution').textContent = translations[lang].exampleSolution;
+            document.getElementById('license-link').textContent = translations[lang].license;
+            document.getElementById('license-link').href = translations[lang].licenseLink;
+            
+            // Actualizar botones de idioma
+            document.getElementById('ca-btn').classList.toggle('active', lang === 'ca');
+            document.getElementById('es-btn').classList.toggle('active', lang === 'es');
+            
+            // Recalcular la probabilidad para actualizar el texto del resultado
+            calcularProbabilitat();
+        }
+
+        // Funciones matemáticas
+        function factorial(n) {
+            if (n === 0 || n === 1) return 1;
+            return n * factorial(n - 1);
+        }
+
+        function coeficientBinomial(n, k) {
+            return factorial(n) / (factorial(k) * factorial(n - k));
+        }
+
+        function probabilitatBinomial(n, k, p) {
+            return coeficientBinomial(n, k) * Math.pow(p, k) * Math.pow(1 - p, n - k);
+        }
+
+        // Calcular y mostrar la probabilidad
+        function calcularProbabilitat() {
+            const n = parseInt(document.getElementById('n').value);
+            const p = parseFloat(document.getElementById('p').value);
+            const k = parseInt(document.getElementById('k').value);
+
+            if (k > n) {
+                document.getElementById('result').innerHTML = translations[currentLang].errorMsg;
+                return;
+            }
+
+            const prob = probabilitatBinomial(n, k, p);
+            document.getElementById('result').innerHTML = 
+                `${translations[currentLang].probabilityText} <span style="color: rgb(255, 87, 34); font-weight: bold">${k} ${translations[currentLang].successText}</span> ${translations[currentLang].inText} ${n} ${translations[currentLang].trialsText} ` +
+                `${translations[currentLang].withProbText} ${p} ${translations[currentLang].isText} <span style="color: rgb(255, 87, 34); font-weight: bold">${(prob * 100).toFixed(4)}%</span>`;
+
+            actualitzarGrafic(n, p, k);
+        }
+
+        // Actualizar el gráfico
+        function actualitzarGrafic(n, p, k) {
+            const valors = [];
+            const probabilitats = [];
+            const backgroundColor = [];
+            const borderColor = [];
+            
+            for (let i = 0; i <= n; i++) {
+                valors.push(i);
+                probabilitats.push(probabilitatBinomial(n, i, p));
+                if (i === k) {
+                    backgroundColor.push('rgba(255, 87, 34, 0.7)');
+                    borderColor.push('rgba(255, 87, 34, 1)');
+                } else {
+                    backgroundColor.push('rgba(76, 175, 80, 0.5)');
+                    borderColor.push('rgba(76, 175, 80, 1)');
+                }
+            }
+
+            const ctx = document.getElementById('chart').getContext('2d');
+            
+            if (myChart) {
+                myChart.destroy();
+            }
+
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: valors,
+                    datasets: [{
+                        label: translations[currentLang].chartYLabel,
+                        data: probabilitats,
+                        backgroundColor: backgroundColor,
+                        borderColor: borderColor,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: translations[currentLang].chartYLabel
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: translations[currentLang].chartXLabel
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: translations[currentLang].chartTitle
+                        }
+                    }
+                }
+            });
+        }
+
+        // Event listeners para los botones de idioma
+        document.getElementById('ca-btn').addEventListener('click', () => setLanguage('ca'));
+        document.getElementById('es-btn').addEventListener('click', () => setLanguage('es'));
+    </script>
+</body>
+</html>

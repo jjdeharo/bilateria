@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de Markdown a TiddlyWiki</title>
+    <style>
+        :root {
+            --primary-color: #5778d8;
+            --secondary-color: #f0f0f0;
+            --text-color: #333;
+            --border-color: #ccc;
+            --button-hover: #4a67b7;
+            --background-dark: #f5f5f5;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--background-dark);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .language-toggle {
+            text-align: right;
+            margin-bottom: 15px;
+        }
+        
+        .lang-btn {
+            background-color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        
+        .lang-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .conversor {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .conversor {
+                flex-direction: row;
+            }
+        }
+        
+        .input-container, .output-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .textarea-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 400px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            resize: vertical;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: space-between;
+        }
+        
+        .button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        
+        .button:hover {
+            background-color: var(--button-hover);
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-label {
+            background-color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 4px;
+            padding: 9px 15px;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .file-label:hover {
+            background-color: #e0e0e0;
+        }
+        
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .credit {
+            margin-top: 5px;
+        }
+        
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="language-toggle">
+            <button id="es-btn" class="lang-btn active">ES</button>
+            <button id="ca-btn" class="lang-btn">CA</button>
+        </div>
+        
+        <h1 id="title">Conversor de Markdown a TiddlyWiki</h1>
+        
+        <div class="conversor">
+            <div class="input-container">
+                <div class="textarea-label" id="input-label">Markdown</div>
+                <textarea id="markdown-input" placeholder="Pega aquí tu texto en formato Markdown"></textarea>
+                <div class="actions">
+                    <input type="file" id="file-input" class="file-input" accept=".md, .txt">
+                    <label for="file-input" class="file-label" id="file-label">Abrir archivo</label>
+                    <button id="clear-btn" class="button" style="background-color: #888;">Limpiar</button>
+                </div>
+            </div>
+            
+            <div class="output-container">
+                <div class="textarea-label" id="output-label">TiddlyWiki</div>
+                <textarea id="tiddlywiki-output" readonly></textarea>
+                <div class="actions">
+                    <button id="copy-btn" class="button">Copiar</button>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <div class="credit">
+                <p>Aplicación hecha por <a href="https://bilateria.org" target="_blank">Juan José de Haro</a></p>
+                <p>Esta obra está bajo una licencia <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank">Creative Commons BY-SA</a></p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Detectar idioma del navegador
+        let userLang = navigator.language || navigator.userLanguage;
+        let currentLang = userLang.startsWith('ca') ? 'ca' : 'es';
+        
+        // Textos para cada idioma
+        const texts = {
+            es: {
+                title: "Conversor de Markdown a TiddlyWiki",
+                inputLabel: "Markdown",
+                outputLabel: "TiddlyWiki",
+                placeholder: "Pega aquí tu texto en formato Markdown",
+                fileLabel: "Abrir archivo",
+                copyBtn: "Copiar",
+                clearBtn: "Limpiar",
+                copiedMsg: "¡Copiado al portapapeles!",
+                credit: "Aplicación hecha por",
+                license: "Esta obra está bajo una licencia"
+            },
+            ca: {
+                title: "Conversor de Markdown a TiddlyWiki",
+                inputLabel: "Markdown",
+                outputLabel: "TiddlyWiki",
+                placeholder: "Enganxa aquí el teu text en format Markdown",
+                fileLabel: "Obrir arxiu",
+                copyBtn: "Copiar",
+                clearBtn: "Netejar",
+                copiedMsg: "Copiat al porta-retalls!",
+                credit: "Aplicació feta per",
+                license: "Aquesta obra està sota una llicència"
+            }
+        };
+        
+        // Establecer idioma inicial
+        updateLanguage(currentLang);
+        
+        // Botones de idioma
+        document.getElementById('es-btn').addEventListener('click', () => {
+            currentLang = 'es';
+            updateLanguage('es');
+        });
+        
+        document.getElementById('ca-btn').addEventListener('click', () => {
+            currentLang = 'ca';
+            updateLanguage('ca');
+        });
+        
+        function updateLanguage(lang) {
+            document.getElementById('es-btn').classList.toggle('active', lang === 'es');
+            document.getElementById('ca-btn').classList.toggle('active', lang === 'ca');
+            
+            document.getElementById('title').textContent = texts[lang].title;
+            document.getElementById('input-label').textContent = texts[lang].inputLabel;
+            document.getElementById('output-label').textContent = texts[lang].outputLabel;
+            document.getElementById('markdown-input').placeholder = texts[lang].placeholder;
+            document.getElementById('file-label').textContent = texts[lang].fileLabel;
+            document.getElementById('copy-btn').textContent = texts[lang].copyBtn;
+            document.getElementById('clear-btn').textContent = texts[lang].clearBtn;
+            
+            document.querySelector('.credit p:first-child').innerHTML = 
+                `${texts[lang].credit} <a href="https://bilateria.org" target="_blank">Juan José de Haro</a>`;
+            document.querySelector('.credit p:last-child').innerHTML = 
+                `${texts[lang].license} <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.${lang}" target="_blank">Creative Commons BY-SA</a>`;
+        }
+        
+        // Función para convertir Markdown a TiddlyWiki
+        function convertMarkdownToTiddlyWiki(markdown) {
+            if (!markdown) return '';
+            
+            let tiddlyWiki = markdown;
+            
+            // Encabezados
+            tiddlyWiki = tiddlyWiki.replace(/^# (.*?)$/gm, '! $1');
+            tiddlyWiki = tiddlyWiki.replace(/^## (.*?)$/gm, '!! $1');
+            tiddlyWiki = tiddlyWiki.replace(/^### (.*?)$/gm, '!!! $1');
+            tiddlyWiki = tiddlyWiki.replace(/^#### (.*?)$/gm, '!!!! $1');
+            tiddlyWiki = tiddlyWiki.replace(/^##### (.*?)$/gm, '!!!!! $1');
+            tiddlyWiki = tiddlyWiki.replace(/^###### (.*?)$/gm, '!!!!!! $1');
+            
+            // Negrita y cursiva
+            tiddlyWiki = tiddlyWiki.replace(/\*\*\*(.*?)\*\*\*/g, "//''$1''//");
+            tiddlyWiki = tiddlyWiki.replace(/___(.*?)___/g, "//''$1''//");
+            
+            // Negrita
+            tiddlyWiki = tiddlyWiki.replace(/\*\*(.*?)\*\*/g, "''$1''");
+            tiddlyWiki = tiddlyWiki.replace(/__(.*?)__/g, "''$1''");
+            
+            // Cursiva
+            tiddlyWiki = tiddlyWiki.replace(/\*((?!\*).+?)\*/g, "//$1//");
+            tiddlyWiki = tiddlyWiki.replace(/_((?!_).+?)_/g, "//$1//");
+            
+            // Tachado
+            tiddlyWiki = tiddlyWiki.replace(/~~(.*?)~~/g, "~~$1~~");
+            
+            // Subrayado
+            tiddlyWiki = tiddlyWiki.replace(/<u>(.*?)<\/u>/g, "__$1__");
+            
+            // Superíndice
+            tiddlyWiki = tiddlyWiki.replace(/<sup>(.*?)<\/sup>/g, "^^$1^^");
+            
+            // Subíndice
+            tiddlyWiki = tiddlyWiki.replace(/<sub>(.*?)<\/sub>/g, ",,$1,,");
+            
+            // Código en línea (backticks)
+            tiddlyWiki = tiddlyWiki.replace(/`([^`]+)`/g, '`$1`');
+            
+            // Bloques de código
+            tiddlyWiki = tiddlyWiki.replace(/```(\w*)\n([\s\S]*?)\n```/g, (match, lang, code) => {
+                if (lang) {
+                    return `\`\`\`${lang}\n${code}\n\`\`\``;
+                } else {
+                    return `\`\`\`\n${code}\n\`\`\``;
+                }
+            });
+            
+            // Enlaces externos (formato Markdown: [descripción](url))
+            tiddlyWiki = tiddlyWiki.replace(/\[(.*?)\]\((https?:\/\/.*?)\)/g, '[[$1|$2]]');
+            
+            // Enlaces internos con texto personalizado ([descripción]([[url]]))
+            tiddlyWiki = tiddlyWiki.replace(/\[(.*?)\]\(\[\[(.*?)\]\]\)/g, '[[$1|$2]]');
+            
+            // Enlaces internos simples
+            tiddlyWiki = tiddlyWiki.replace(/\[\[(.*?)\]\]/g, '[[$1]]');
+            
+            // Imágenes en formato Markdown: ![alt](url "título opcional")
+            tiddlyWiki = tiddlyWiki.replace(/!\[(.*?)\]\((\S+)(?:\s+"(.*?)")?\)/g, (match, alt, url) => {
+                return `[img[${alt}|${url}]]`;
+            });
+            
+            // Imágenes en formato ![[descripción|url]]
+            tiddlyWiki = tiddlyWiki.replace(/!\[\[(.*?)\|(.*?)\]\]/g, (match, alt, url) => {
+                return `[img[${alt}|${url}]]`;
+            });
+            
+            // Fórmulas LaTeX en línea
+            tiddlyWiki = tiddlyWiki.replace(/\\\((.*?)\\\)/g, (match, contenido) => {
+                return '$$' + contenido + '$$';
+            });
+            
+            // Fórmulas LaTeX en bloque (capturando múltiples líneas)
+            tiddlyWiki = tiddlyWiki.replace(/\\\[([\s\S]*?)\\\]/g, (match, contenido) => {
+                return '$$' + contenido + '$$\n';
+            });
+            
+            // Listas numeradas
+            tiddlyWiki = tiddlyWiki.replace(/^(\d+)\. (.*?)$/gm, '# $2');
+            
+            // Citas
+            tiddlyWiki = tiddlyWiki.replace(/^> (.*?)$/gm, '<<<\n$1\n<<<');
+            
+            // Líneas horizontales
+            tiddlyWiki = tiddlyWiki.replace(/^---+$/gm, '---');
+            tiddlyWiki = tiddlyWiki.replace(/^\*\*\*+$/gm, '---');
+            tiddlyWiki = tiddlyWiki.replace(/^___+$/gm, '---');
+            
+            tiddlyWiki = tiddlyWiki.replace(/\\\./g, '.');
+            tiddlyWiki = tiddlyWiki.replace(/^[ \t]+$/gm, '');
+
+            
+            // Tablas simples
+            tiddlyWiki = tiddlyWiki.replace(/\|(.+)\|/g, '|$1|');
+            tiddlyWiki = tiddlyWiki.replace(/(\r?\n)\|[\s\-:|]+\|\r?\n/g, '$1');
+            
+            // Insertar línea vacía antes del primer elemento de lista si no existe
+            {
+                let lines = tiddlyWiki.split('\n');
+                for (let i = 0; i < lines.length; i++) {
+                    if (/^\s*([*#-] )/.test(lines[i])) {
+                        if (i === 0 || !/^\s*([*#-] )/.test(lines[i - 1])) {
+                            if (i === 0 || lines[i - 1].trim() !== '') {
+                                lines.splice(i, 0, '');
+                                i++;
+                            }
+                        }
+                    }
+                }
+                tiddlyWiki = lines.join('\n');
+            }
+
+            
+            // Ajuste de listas con viñetas:
+            // 1) Si el primer ítem de un bloque de lista está en nivel 2 (o más),
+            //    toda la lista se fuerza a nivel 1.
+            // 2) Si el primer ítem es nivel 1, se respeta la lógica
+            //    de no saltar más de un nivel respecto al anterior.
+            {
+                let lines = tiddlyWiki.split('\n');
+                let result = [];
+                
+                let inList = false;
+                let flattenList = false;
+                let lastBulletLevel = 0;
+                
+                for (let i = 0; i < lines.length; i++) {
+                    let line = lines[i];
+                    let match = line.match(/^( *)[-*] (.*)$/);
+                    
+                    if (match) {
+                        let indent = match[1];
+                        let content = match[2];
+                        let level = Math.floor(indent.length / 2) + 1;
+                        
+                        // Si estamos iniciando un nuevo bloque de lista
+                        if (!inList) {
+                            inList = true;
+                            // Si el primer ítem es > nivel 1, forzamos la lista entera a nivel 1
+                            flattenList = (level > 1);
+                            // Si no se aplana, al menos establecemos el nivel inicial
+                            lastBulletLevel = flattenList ? 1 : level;
+                        }
+                        
+                        if (flattenList) {
+                            // Toda la lista a nivel 1
+                            level = 1;
+                        } else {
+                            // Evitar saltar más de 1 nivel respecto al anterior
+                            if (level > lastBulletLevel + 1) {
+                                level = lastBulletLevel + 1;
+                            }
+                            lastBulletLevel = level;
+                        }
+                        
+                        let asterisks = '*'.repeat(level);
+                        result.push(`${asterisks} ${content}`);
+                    } else {
+                        // Línea fuera de la lista
+                        inList = false;
+                        flattenList = false;
+                        lastBulletLevel = 0;
+                        result.push(line);
+                    }
+                }
+                
+                tiddlyWiki = result.join('\n');
+            }
+            
+            return tiddlyWiki;
+        }
+        
+        // Event listeners
+        document.getElementById('copy-btn').addEventListener('click', function() {
+            const outputText = document.getElementById('tiddlywiki-output');
+            outputText.select();
+            document.execCommand('copy');
+            
+            const copyBtn = document.getElementById('copy-btn');
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = texts[currentLang].copiedMsg;
+            setTimeout(() => {
+                copyBtn.textContent = originalText;
+            }, 2000);
+        });
+        
+        document.getElementById('clear-btn').addEventListener('click', function() {
+            document.getElementById('markdown-input').value = '';
+            document.getElementById('tiddlywiki-output').value = '';
+        });
+        
+        document.getElementById('file-input').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('markdown-input').value = e.target.result;
+                const markdownText = e.target.result;
+                const tiddlyWikiText = convertMarkdownToTiddlyWiki(markdownText);
+                document.getElementById('tiddlywiki-output').value = tiddlyWikiText;
+            };
+            reader.readAsText(file);
+        });
+        
+        document.getElementById('markdown-input').addEventListener('input', function() {
+            const markdownText = document.getElementById('markdown-input').value;
+            const tiddlyWikiText = convertMarkdownToTiddlyWiki(markdownText);
+            document.getElementById('tiddlywiki-output').value = tiddlyWikiText;
+        });
+    </script>
+</body>
+</html>
+

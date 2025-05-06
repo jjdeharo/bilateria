@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distribució normal</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .language-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 5px;
+        }
+        .language-btn {
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #f8f8f8;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .language-btn:hover {
+            background-color: #e8e8e8;
+        }
+        .language-btn.active {
+            background-color: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+        .calculator {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        .input-group {
+            margin: 10px 0;
+        }
+        label {
+            display: inline-block;
+            width: 200px;
+        }
+        input {
+            width: 100px;
+            padding: 5px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border-left: 4px solid #4CAF50;
+            background-color: #f9f9f9;
+        }
+        .result-complementaria {
+            border-left: 4px solid #FF5722;
+        }
+        .example {
+            background-color: #e3f2fd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        #chart {
+            margin: 20px 0;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-selector">
+        <button id="btnCA" class="language-btn active">CA</button>
+        <button id="btnES" class="language-btn">ES</button>
+        <button id="btnEN" class="language-btn">EN</button>
+    </div>
+
+    <h1 id="mainTitle">Distribució normal</h1>
+
+    <div class="calculator">
+        <h2 id="parametersTitle">Paràmetres de la distribució</h2>
+        
+        <div class="input-group">
+            <label id="meanLabel" for="mitjana">Mitjana (μ):</label>
+            <input type="number" id="mitjana" value="0" step="1" oninput="actualitzarGrafic()">
+        </div>
+        
+        <div class="input-group">
+            <label id="stdLabel" for="desviacio">Desviació estàndard (σ):</label>
+            <input type="number" id="desviacio" min="0.1" value="1" step="0.1" oninput="actualitzarGrafic()">
+        </div>
+
+        <div class="input-group">
+            <label id="intervalFromLabel" for="x1">Interval: Des de</label>
+            <input type="number" id="x1" value="-1" step="0.1" oninput="actualitzarGrafic()" style="margin-right: 10px;">
+            <input type="checkbox" id="menysInf" onchange="gestionarInfinit('menysInf')" style="width: auto;">
+            <label for="menysInf" style="width: auto;">-∞</label>
+        </div>
+
+        <div class="input-group">
+            <label id="intervalToLabel" for="x2">Fins a</label>
+            <input type="number" id="x2" value="1" step="0.1" oninput="actualitzarGrafic()" style="margin-right: 10px;">
+            <input type="checkbox" id="mesInf" onchange="gestionarInfinit('mesInf')" style="width: auto;">
+            <label for="mesInf" style="width: auto;">+∞</label>
+        </div>
+
+        <div class="input-group">
+            <label id="complementLabel" for="complementaria">Mostrar probabilitat complementària</label>
+            <input type="checkbox" id="complementaria" onchange="actualitzarGrafic()" style="width: auto;">
+        </div>
+
+        <div id="result" class="result"></div>
+        <div id="result-complementaria" class="result result-complementaria"></div>
+        
+        <canvas id="chart"></canvas>
+    </div>
+
+    <h2 id="formulaTitle">Fórmula de la distribució normal</h2>
+    <p id="formulaText">La funció de densitat de probabilitat d'una distribució normal és:</p>
+    <div style="text-align: center;">
+        \[ f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2} \]
+    </div>
+
+    <div class="example">
+        <h3 id="propertiesTitle">Propietats principals</h3>
+        <ul id="propertiesList">
+            <li>És simètrica respecte a la mitjana μ.</li>
+            <li>L'àrea sota la corba és 1 (100% de probabilitat).</li>
+            <li>Aproximadament el 68% de les dades es troben a ±1σ de la mitjana.</li>
+            <li>Aproximadament el 95% de les dades es troben a ±2σ de la mitjana.</li>
+            <li>Aproximadament el 99.7% de les dades es troben a ±3σ de la mitjana.</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <p>Aplicación hecha por <a href="https://bilateria.org">Juan José de Haro</a></p>
+        <p><a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ca">Esta obra está bajo una licencia Creative Commons BY-SA</a></p>
+    </div>
+
+    <script>
+        // Definir variables y funciones antes de usarlas
+        let myChart = null;
+        let currentLang = 'ca';
+        const translations = {
+            ca: {
+                title: "Distribució normal",
+                parametersTitle: "Paràmetres de la distribució",
+                meanLabel: "Mitjana (μ):",
+                stdLabel: "Desviació estàndard (σ):",
+                intervalFrom: "Interval: Des de",
+                intervalTo: "Fins a",
+                complementaria: "Mostrar probabilitat complementària",
+                formulaTitle: "Fórmula de la distribució normal",
+                formulaText: "La funció de densitat de probabilitat d'una distribució normal és:",
+                propertiesTitle: "Propietats principals",
+                properties: [
+                    "És simètrica respecte a la mitjana μ.",
+                    "L'àrea sota la corba és 1 (100% de probabilitat).",
+                    "Aproximadament el 68% de les dades es troben a ±1σ de la mitjana.",
+                    "Aproximadament el 95% de les dades es troben a ±2σ de la mitjana.",
+                    "Aproximadament el 99.7% de les dades es troben a ±3σ de la mitjana."
+                ],
+                probability: "La probabilitat que X estigui entre",
+                probability_complement: "La probabilitat que X NO estigui entre",
+                or: "i",
+                is: "és:",
+                footer: "Aplicació feta per",
+                license: "Aquesta obra està sota una llicència Creative Commons BY-SA"
+            },
+            es: {
+                title: "Distribución normal",
+                parametersTitle: "Parámetros de la distribución",
+                meanLabel: "Media (μ):",
+                stdLabel: "Desviación estándar (σ):",
+                intervalFrom: "Intervalo: Desde",
+                intervalTo: "Hasta",
+                complementaria: "Mostrar probabilidad complementaria",
+                formulaTitle: "Fórmula de la distribución normal",
+                formulaText: "La función de densidad de probabilidad de una distribución normal es:",
+                propertiesTitle: "Propiedades principales",
+                properties: [
+                    "Es simétrica respecto a la media μ.",
+                    "El área bajo la curva es 1 (100% de probabilidad).",
+                    "Aproximadamente el 68% de los datos están dentro de ±1σ de la media.",
+                    "Aproximadamente el 95% de los datos están dentro de ±2σ de la media.",
+                    "Aproximadamente el 99.7% de los datos están dentro de ±3σ de la media."
+                ],
+                probability: "La probabilidad de que X esté entre",
+                probability_complement: "La probabilidad de que X NO esté entre",
+                or: "y",
+                is: "es:",
+                footer: "Aplicación hecha por",
+                license: "Esta obra está bajo una licencia Creative Commons BY-SA"
+            },
+            en: {
+                title: "Normal Distribution",
+                parametersTitle: "Distribution Parameters",
+                meanLabel: "Mean (μ):",
+                stdLabel: "Standard Deviation (σ):",
+                intervalFrom: "Interval: From",
+                intervalTo: "To",
+                complementaria: "Show complementary probability",
+                formulaTitle: "Normal Distribution Formula",
+                formulaText: "The probability density function of a normal distribution is:",
+                propertiesTitle: "Main Properties",
+                properties: [
+                    "It is symmetric about the mean μ.",
+                    "The area under the curve is 1 (100% probability).",
+                    "Approximately 68% of data falls within ±1σ from the mean.",
+                    "Approximately 95% of data falls within ±2σ from the mean.",
+                    "Approximately 99.7% of data falls within ±3σ from the mean."
+                ],
+                probability: "The probability that X is between",
+                probability_complement: "The probability that X is NOT between",
+                or: "and",
+                is: "is:",
+                footer: "Application created by",
+                license: "This work is licensed under a Creative Commons BY-SA license"
+            }
+        };
+
+        function detectLanguage() {
+            const browserLang = navigator.language.split('-')[0];
+            return ['es', 'en'].includes(browserLang) ? browserLang : 'ca';
+        }
+
+        function updateActiveButton(lang) {
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(`btn${lang.toUpperCase()}`).classList.add('active');
+        }
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('userLang', lang);
+            updateActiveButton(lang);
+            applyTranslations();
+            actualitzarGrafic();
+        }
+
+        function applyTranslations() {
+            const t = translations[currentLang];
+            document.documentElement.lang = currentLang;
+            document.title = t.title;
+            document.getElementById('mainTitle').textContent = t.title;
+            document.getElementById('parametersTitle').textContent = t.parametersTitle;
+            document.getElementById('meanLabel').textContent = t.meanLabel;
+            document.getElementById('stdLabel').textContent = t.stdLabel;
+            document.getElementById('intervalFromLabel').textContent = t.intervalFrom;
+            document.getElementById('intervalToLabel').textContent = t.intervalTo;
+            document.getElementById('complementLabel').textContent = t.complementaria;
+            document.getElementById('formulaTitle').textContent = t.formulaTitle;
+            document.getElementById('formulaText').textContent = t.formulaText;
+            document.getElementById('propertiesTitle').textContent = t.propertiesTitle;
+            
+            const propertiesList = document.getElementById('propertiesList');
+            propertiesList.innerHTML = t.properties.map(prop => `<li>${prop}</li>`).join('');
+            
+            document.querySelector('.footer p:first-child').innerHTML = 
+                `${t.footer} <a href="https://bilateria.org">Juan José de Haro</a>`;
+            
+            document.querySelector('.footer p:last-child').innerHTML = 
+                `<a href="https://creativecommons.org/licenses/by-sa/4.0/deed.${currentLang}">${t.license}</a>`;
+        }
+
+        function normalPDF(x, mu, sigma) {
+            return (1 / (sigma * Math.sqrt(2 * Math.PI))) * 
+                   Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2));
+        }
+
+        function erf(x) {
+            const t = 1.0 / (1.0 + 0.5 * Math.abs(x));
+            const tau = t * Math.exp(-x * x - 1.26551223 +
+                                   t * (1.00002368 +
+                                       t * (0.37409196 +
+                                           t * (0.09678418 +
+                                               t * (-0.18628806 +
+                                                   t * (0.27886807 +
+                                                       t * (-1.13520398 +
+                                                           t * (1.48851587 +
+                                                               t * (-0.82215223 +
+                                                                   t * 0.17087277)))))))))
+            return x >= 0 ? 1.0 - tau : tau - 1.0;
+        }
+
+        function calcularAreaSota(x1, x2, mu, sigma) {
+            const z1 = (x1 - mu) / (sigma * Math.sqrt(2));
+            const z2 = (x2 - mu) / (sigma * Math.sqrt(2));
+            
+            let area;
+            
+            if (document.getElementById('menysInf').checked && document.getElementById('mesInf').checked) {
+                area = 1;
+            } else if (document.getElementById('menysInf').checked) {
+                area = (1 + erf(z2)) / 2;
+            } else if (document.getElementById('mesInf').checked) {
+                area = (1 - erf(z1)) / 2;
+            } else {
+                area = (erf(z2) - erf(z1)) / 2;
+            }
+            
+            return area;
+        }
+
+        function gestionarInfinit(tipus) {
+            if (tipus === 'menysInf') {
+                const checkbox = document.getElementById('menysInf');
+                document.getElementById('x1').disabled = checkbox.checked;
+                if (checkbox.checked) {
+                    document.getElementById('x1').value = '-∞';
+                } else {
+                    document.getElementById('x1').value = '-1';
+                }
+            } else {
+                const checkbox = document.getElementById('mesInf');
+                document.getElementById('x2').disabled = checkbox.checked;
+                if (checkbox.checked) {
+                    document.getElementById('x2').value = '+∞';
+                } else {
+                    document.getElementById('x2').value = '1';
+                }
+            }
+            actualitzarGrafic();
+        }
+
+        function actualitzarGrafic() {
+            const mu = parseFloat(document.getElementById('mitjana').value);
+            const sigma = parseFloat(document.getElementById('desviacio').value);
+            const x1 = document.getElementById('menysInf').checked ? Number.NEGATIVE_INFINITY : parseFloat(document.getElementById('x1').value);
+            const x2 = document.getElementById('mesInf').checked ? Number.POSITIVE_INFINITY : parseFloat(document.getElementById('x2').value);
+            const complementaria = document.getElementById('complementaria').checked;
+
+            let x1Val = document.getElementById('menysInf').checked ? mu - 4 * sigma : x1;
+            let x2Val = document.getElementById('mesInf').checked ? mu + 4 * sigma : x2;
+            
+            const xMin = mu - 4 * sigma;
+            const xMax = mu + 4 * sigma;
+            const step = (xMax - xMin) / 100;
+            
+            const data = [];
+            for (let x = xMin; x <= xMax; x += step) {
+                const y = normalPDF(x, mu, sigma);
+                data.push({x: x, y: y});
+            }
+
+            const ctx = document.getElementById('chart').getContext('2d');
+            
+            if (myChart) {
+                myChart.destroy();
+            }
+
+            myChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            data: data,
+                            showLine: true,
+                            fill: true,
+                            borderColor: 'rgba(76, 175, 80, 1)',
+                            backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                            pointRadius: 0
+                        },
+                        {
+                            data: complementaria ? data.filter(point => point.x < x1Val) : [],
+                            showLine: true,
+                            fill: true,
+                            borderColor: 'rgba(255, 87, 34, 1)',
+                            backgroundColor: 'rgba(255, 87, 34, 0.4)',
+                            pointRadius: 0
+                        },
+                        {
+                            data: complementaria ? data.filter(point => point.x > x2Val) : [],
+                            showLine: true,
+                            fill: true,
+                            borderColor: 'rgba(255, 87, 34, 1)',
+                            backgroundColor: 'rgba(255, 87, 34, 0.4)',
+                            pointRadius: 0
+                        },
+                        {
+                            data: !complementaria ? data.filter(point => point.x >= x1Val && point.x <= x2Val) : [],
+                            showLine: true,
+                            fill: true,
+                            borderColor: 'rgba(76, 175, 80, 1)',
+                            backgroundColor: 'rgba(76, 175, 80, 0.4)',
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            title: {
+                                display: true,
+                                text: 'x'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'f(x)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Actualizar resultados
+            const area = calcularAreaSota(x1Val, x2Val, mu, sigma);
+            const areaComplementaria = 1 - area;
+            const t = translations[currentLang];
+            const x1Text = document.getElementById('menysInf').checked ? '-∞' : x1;
+            const x2Text = document.getElementById('mesInf').checked ? '+∞' : x2;
+            
+            document.getElementById('result').innerHTML = 
+                `${t.probability} ${x1Text} ${t.or} ${x2Text} ${t.is} ${(area * 100).toFixed(2)}%`;
+            
+            document.getElementById('result-complementaria').innerHTML = 
+                complementaria ? `${t.probability_complement} ${x1Text} ${t.or} ${x2Text} ${t.is} ${(areaComplementaria * 100).toFixed(2)}%` : '';
+        }
+
+        // Configurar eventos después de que se definen las funciones
+        document.addEventListener('DOMContentLoaded', function() {
+            // Agregar los event listeners a los botones
+            document.getElementById('btnCA').addEventListener('click', function() {
+                changeLanguage('ca');
+            });
+            
+            document.getElementById('btnES').addEventListener('click', function() {
+                changeLanguage('es');
+            });
+            
+            document.getElementById('btnEN').addEventListener('click', function() {
+                changeLanguage('en');
+            });
+            
+            // Inicializar
+            const savedLang = localStorage.getItem('userLang');
+            currentLang = savedLang || detectLanguage();
+            updateActiveButton(currentLang);
+            applyTranslations();
+            actualitzarGrafic();
+        });
+    </script>
+</body>
+</html>

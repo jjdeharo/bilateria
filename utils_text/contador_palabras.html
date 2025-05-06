@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contador de texto</title>
+    <style>
+        :root {
+            --color-primary: #4361ee;
+            --color-secondary: #3a0ca3;
+            --color-accent: #f72585;
+            --color-light: #f8f9fa;
+            --color-dark: #212529;
+            --color-gray: #6c757d;
+            --color-success: #4cc9f0;
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            line-height: 1.6;
+            color: var(--color-dark);
+            background-color: var(--color-light);
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            color: var(--color-primary);
+            font-size: 2rem;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .language-toggle {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .lang-btn {
+            padding: 0.5rem 0.8rem;
+            border: 2px solid var(--color-primary);
+            background-color: white;
+            color: var(--color-primary);
+            font-weight: bold;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .lang-btn:hover {
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        .lang-btn.active {
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        label {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.8rem;
+            color: var(--color-secondary);
+        }
+
+        textarea {
+            width: 100%;
+            height: 50vh;
+            font-size: 1rem;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            box-sizing: border-box;
+            margin-bottom: 1rem;
+            resize: vertical;
+            transition: var(--transition);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.3);
+        }
+
+        .stats {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 0.5rem;
+        }
+        
+        .stats div {
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+        
+        .stats div:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        button {
+            background-color: var(--color-primary);
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            flex: 1;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background-color: var(--color-secondary);
+            transform: translateY(-2px);
+        }
+
+        button.secondary {
+            background-color: var(--color-gray);
+        }
+
+        button.secondary:hover {
+            background-color: #495057;
+        }
+
+        footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: var(--color-dark);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--color-success);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        footer a:hover {
+            color: #90e0ef;
+            text-decoration: underline;
+        }
+
+        .copy-feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--color-dark);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .copy-feedback.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="main-title">Contador de caracteres, palabras y bytes</h1>
+            <div class="language-toggle">
+                <button class="lang-btn" id="es-btn">ES</button>
+                <button class="lang-btn" id="ca-btn">CA</button>
+            </div>
+        </div>
+        
+        <label for="texto" id="texto-label">Escribe tu texto:</label>
+        <textarea id="texto" placeholder="Escribe o pega tu texto aquí..."></textarea>
+        
+        <div class="stats" id="contador"></div>
+        
+        <div class="button-group">
+            <button id="copy-btn" onclick="copiarTexto()">Copiar</button>
+            <button id="save-btn" onclick="guardarArchivo()">Guardar</button>
+            <button id="clear-btn" class="secondary" onclick="borrar()">Borrar</button>
+        </div>
+    </div>
+
+    <div id="copy-feedback" class="copy-feedback">Texto copiado</div>
+
+    <footer>
+        <p id="footer-credit">Aplicación hecha por <a href="https://bilateria.org">Juan José de Haro</a></p>
+        <p id="footer-license">Esta obra está bajo una licencia <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es">Creative Commons BY-SA</a></p>
+    </footer>
+
+    <script>
+        // Traducciones
+        const translations = {
+            es: {
+                title: "Contador de caracteres, palabras y bytes",
+                textLabel: "Escribe tu texto:",
+                placeholder: "Escribe o pega tu texto aquí...",
+                copyBtn: "Copiar",
+                saveBtn: "Guardar",
+                clearBtn: "Borrar",
+                emptyStats: "Ingresa texto para ver las estadísticas.",
+                copyFeedback: "Texto copiado",
+                footerCredit: "Aplicación hecha por",
+                footerLicense: "Esta obra está bajo una licencia",
+                stats: {
+                    chars: "Caracteres:",
+                    noSpaces: "sin espacios",
+                    words: "Palabras:",
+                    paragraphs: "Párrafos:",
+                    bytes: "Bytes:",
+                    readTime: "Tiempo de lectura:",
+                    avgWordLength: "Longitud media de palabras:",
+                    characters: "caracteres",
+                    seconds: "segundos",
+                    minutes: "minutos"
+                }
+            },
+            ca: {
+                title: "Comptador de caràcters, paraules i bytes",
+                textLabel: "Escriu el teu text:",
+                placeholder: "Escriu o enganxa el teu text aquí...",
+                copyBtn: "Copiar",
+                saveBtn: "Desar",
+                clearBtn: "Esborrar",
+                emptyStats: "Introdueix text per veure les estadístiques.",
+                copyFeedback: "Text copiat",
+                footerCredit: "Aplicació feta per",
+                footerLicense: "Aquesta obra està sota una llicència",
+                stats: {
+                    chars: "Caràcters:",
+                    noSpaces: "sense espais",
+                    words: "Paraules:",
+                    paragraphs: "Paràgrafs:",
+                    bytes: "Bytes:",
+                    readTime: "Temps de lectura:",
+                    avgWordLength: "Longitud mitjana de paraules:",
+                    characters: "caràcters",
+                    seconds: "segons",
+                    minutes: "minuts"
+                }
+            }
+        };
+        
+        // Elementos DOM
+        const mainTitle = document.getElementById("main-title");
+        const textoLabel = document.getElementById("texto-label");
+        const textoArea = document.getElementById("texto");
+        const copyBtn = document.getElementById("copy-btn");
+        const saveBtn = document.getElementById("save-btn");
+        const clearBtn = document.getElementById("clear-btn");
+        const contadorElement = document.getElementById("contador");
+        const esBtn = document.getElementById("es-btn");
+        const caBtn = document.getElementById("ca-btn");
+        const footerCredit = document.getElementById("footer-credit");
+        const footerLicense = document.getElementById("footer-license");
+        const copyFeedback = document.getElementById("copy-feedback");
+        
+        // Detectar idioma del navegador
+        function detectLanguage() {
+            const browserLang = navigator.language || navigator.userLanguage;
+            return browserLang.startsWith('ca') ? 'ca' : 'es';
+        }
+        
+        // Idioma actual
+        let currentLang = detectLanguage();
+        
+        // Actualizar interfaces con el idioma actual
+        function updateLanguage(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            
+            // Actualizar textos
+            document.documentElement.lang = lang;
+            mainTitle.textContent = t.title;
+            textoLabel.textContent = t.textLabel;
+            textoArea.placeholder = t.placeholder;
+            copyBtn.textContent = t.copyBtn;
+            saveBtn.textContent = t.saveBtn;
+            clearBtn.textContent = t.clearBtn;
+            copyFeedback.textContent = t.copyFeedback;
+            
+            if (textoArea.value.trim() === '') {
+                contadorElement.innerHTML = t.emptyStats;
+            } else {
+                contar(); // Actualizar estadísticas con nuevo idioma
+            }
+            
+            // Actualizar footer
+            footerCredit.innerHTML = `${t.footerCredit} <a href="https://bilateria.org">Juan José de Haro</a>`;
+            footerLicense.innerHTML = `${t.footerLicense} <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.${lang}">Creative Commons BY-SA</a>`;
+            
+            // Actualizar botones de idioma
+            esBtn.classList.toggle('active', lang === 'es');
+            caBtn.classList.toggle('active', lang === 'ca');
+        }
+        
+        // Cambiar idioma al hacer clic en botones
+        esBtn.addEventListener('click', () => updateLanguage('es'));
+        caBtn.addEventListener('click', () => updateLanguage('ca'));
+        
+        // Inicializar contador al cargar
+        window.addEventListener("load", () => {
+            updateLanguage(currentLang);
+            contar();
+        });
+        
+        // Contar al escribir
+        textoArea.addEventListener("input", contar);
+        
+        // Función principal de conteo
+        function contar() {
+            const contenido = textoArea.value;
+            const caracteres = contenido.length;
+            const t = translations[currentLang].stats;
+            
+            // Contar palabras usando expresión regular
+            let palabras = 0;
+            const coincidencias = contenido.match(/\b\w+\b/g);
+            if (coincidencias) {
+                palabras = coincidencias.length;
+            }
+            
+            // Contar bytes
+            const bytes = new Blob([contenido]).size;
+            
+            // Contar párrafos (separados por saltos de línea)
+            const parrafos = contenido.split(/\n+/).filter(p => p.trim().length > 0).length;
+            
+            // Calcular caracteres sin espacios
+            const caracteresNoEspacios = contenido.replace(/\s+/g, '').length;
+            
+            // Calcular tiempo de lectura (basado en 225 palabras por minuto)
+            const minutosLectura = palabras / 225;
+            const tiempoLectura = minutosLectura < 1 
+                ? Math.ceil(minutosLectura * 60) + " " + t.seconds 
+                : Math.ceil(minutosLectura) + " " + t.minutes;
+            
+            // Calcular longitud media de palabras
+            const longitudMediaPalabras = palabras > 0 
+                ? (caracteresNoEspacios / palabras).toFixed(1) 
+                : 0;
+            
+            // Actualizar estadísticas
+            if (contenido.length > 0) {
+                contadorElement.innerHTML = `
+                    <div><strong>${t.chars}</strong> ${caracteres} (${caracteresNoEspacios} ${t.noSpaces})</div>
+                    <div><strong>${t.words}</strong> ${palabras}</div>
+                    <div><strong>${t.paragraphs}</strong> ${parrafos}</div>
+                    <div><strong>${t.bytes}</strong> ${bytes}</div>
+                    <div><strong>${t.readTime}</strong> ${tiempoLectura}</div>
+                    <div><strong>${t.avgWordLength}</strong> ${longitudMediaPalabras} ${t.characters}</div>
+                `;
+            } else {
+                contadorElement.innerHTML = translations[currentLang].emptyStats;
+            }
+        }
+
+        // Copiar texto
+        function copiarTexto() {
+            const contenido = textoArea.value;
+            if (contenido.trim() !== "") {
+                navigator.clipboard.writeText(contenido);
+                mostrarFeedback();
+            }
+        }
+
+        // Mostrar feedback de copiado
+        function mostrarFeedback() {
+            copyFeedback.classList.add('show');
+            setTimeout(() => {
+                copyFeedback.classList.remove('show');
+            }, 2000);
+        }
+
+        // Guardar archivo
+        function guardarArchivo() {
+            const contenido = textoArea.value;
+            if (contenido.trim() !== "") {
+                const enlace = document.createElement("a");
+                const archivo = new Blob([contenido], {type: "text/plain"});
+                enlace.href = URL.createObjectURL(archivo);
+                enlace.download = "texto.txt";
+                enlace.click();
+            }
+        }
+        
+        // Borrar texto - sin confirmación
+        function borrar() {
+            textoArea.value = "";
+            contadorElement.innerHTML = translations[currentLang].emptyStats;
+        }
+    </script>
+</body>
+</html>

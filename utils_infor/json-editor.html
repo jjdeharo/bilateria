@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor JSON</title>
+    <script>
+        // Detectar idioma del navegador
+        let userLang = navigator.language || navigator.userLanguage;
+        let currentLang = userLang.startsWith('ca') ? 'ca' : 'es';
+        
+        // Traducciones
+        const translations = {
+            ca: {
+                title: "Editor JSON",
+                saveJson: "Desar JSON",
+                saveMd: "Desar Markdown",
+                addItem: "Afegir element",
+                noFileLoaded: "Cap fitxer carregat. Si us plau, obriu un fitxer JSON.",
+                dropFileHere: "Arrossegueu un fitxer JSON aquí o feu clic per seleccionar-ne un",
+                collapseAll: "Contraure tot",
+                expandAll: "Expandir tot",
+                theme: "Tema",
+                light: "Clar",
+                dark: "Fosc",
+                validate: "Validar JSON",
+                validJson: "JSON vàlid",
+                invalidJson: "JSON no vàlid",
+                addProperty: "Afegir propietat",
+                propertyName: "Nom de la propietat",
+                propertyValue: "Valor",
+                add: "Afegir",
+                cancel: "Cancel·lar",
+                confirmDelete: "Esteu segur que voleu eliminar aquest element?",
+                yes: "Sí",
+                no: "No",
+                newArray: "Nou array",
+                newObject: "Nou objecte",
+                addToArray: "Afegir a l'array",
+                deleteItem: "Eliminar",
+                format: "Format",
+                copy: "Copiar",
+                paste: "Enganxar",
+                resetView: "Reiniciar vista",
+                fileStats: "Estadístiques del fitxer",
+                totalKeys: "Total de claus",
+                totalValues: "Total de valors",
+                maxDepth: "Profunditat màxima",
+                jsonSize: "Mida del JSON"
+            },
+            es: {
+                title: "Editor JSON",
+                saveJson: "Guardar JSON",
+                saveMd: "Guardar Markdown",
+                addItem: "Añadir elemento",
+                noFileLoaded: "Ningún archivo cargado. Por favor, abre un archivo JSON.",
+                dropFileHere: "Arrastra un archivo JSON aquí o haz clic para seleccionar uno",
+                collapseAll: "Contraer todo",
+                expandAll: "Expandir todo",
+                theme: "Tema",
+                light: "Claro",
+                dark: "Oscuro",
+                validate: "Validar JSON",
+                validJson: "JSON válido",
+                invalidJson: "JSON no válido",
+                addProperty: "Añadir propiedad",
+                propertyName: "Nombre de la propiedad",
+                propertyValue: "Valor",
+                add: "Añadir",
+                cancel: "Cancelar",
+                confirmDelete: "¿Estás seguro de que quieres eliminar este elemento?",
+                yes: "Sí",
+                no: "No",
+                newArray: "Nuevo array",
+                newObject: "Nuevo objeto",
+                addToArray: "Añadir al array",
+                deleteItem: "Eliminar",
+                format: "Formato",
+                copy: "Copiar",
+                paste: "Pegar",
+                resetView: "Reiniciar vista",
+                fileStats: "Estadísticas del archivo",
+                totalKeys: "Total de claves",
+                totalValues: "Total de valores",
+                maxDepth: "Profundidad máxima",
+                jsonSize: "Tamaño del JSON"
+            }
+        };
+        
+        // Función para cambiar el idioma
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.documentElement.lang = lang;
+            
+            // Guardar idioma en localStorage
+            localStorage.setItem('json_editor_language', lang);
+            
+            // Actualizar todos los elementos con texto traducible
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    if (el.tagName === 'INPUT' && el.type === 'button') {
+                        el.value = translations[lang][key];
+                    } else if (el.tagName === 'INPUT' && (el.type === 'text' || el.type === 'search')) {
+                        el.placeholder = translations[lang][key];
+                    } else {
+                        el.textContent = translations[lang][key];
+                    }
+                }
+            });
+            
+            // Actualizar clases en los botones de idioma
+            document.getElementById('btn-ca').className = lang === 'ca' ? 'lang-btn active' : 'lang-btn';
+            document.getElementById('btn-es').className = lang === 'es' ? 'lang-btn active' : 'lang-btn';
+        }
+        
+        // Variables globales
+        let currentJsonData = null;
+        let fileData = null;
+        let uniqueValues = {};
+        let unsavedChanges = false;
+        let darkMode = false;
+        
+        // Cargar configuración guardada
+        function loadSavedSettings() {
+            // Cargar idioma guardado
+            const savedLang = localStorage.getItem('json_editor_language');
+            if (savedLang) {
+                currentLang = savedLang;
+            }
+            
+            // Cargar tema guardado
+            const savedTheme = localStorage.getItem('json_editor_theme');
+            if (savedTheme === 'dark') {
+                darkMode = true;
+                document.body.classList.add('dark-mode');
+            }
+        }
+        
+        // Cargar archivo JSON
+        function loadJsonFile(file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(event) {
+                try {
+                    fileData = event.target.result;
+                    currentJsonData = JSON.parse(fileData);
+                    displayJson(currentJsonData);
+                    analyzeJson(currentJsonData);
+                    updateFileStats(currentJsonData);
+                    document.getElementById('json-container').style.display = 'block';
+                    document.getElementById('dropzone').style.display = 'none';
+                    unsavedChanges = false;
+                } catch (e) {
+                    alert(`Error: ${e.message}`);
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        // Analizar JSON para encontrar valores repetidos
+        function analyzeJson(data, path = '') {
+            if (data === null || data === undefined) return;
+            
+            if (Array.isArray(data)) {
+                data.forEach((item, index) => {
+                    analyzeJson(item, `${path}[${index}]`);
+                });
+            } else if (typeof data === 'object') {
+                for (const key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        analyzeJson(data[key], path ? `${path}.${key}` : key);
+                    }
+                }
+            } else if (typeof data === 'string' || typeof data === 'number' || typeof data === 'boolean') {
+                const value = String(data);
+                if (!uniqueValues[value]) {
+                    uniqueValues[value] = [];
+                }
+                uniqueValues[value].push(path);
+            }
+        }
+        
+        // Mostrar JSON en la interfaz
+        function displayJson(data, container = null, path = '') {
+            if (!container) {
+                const jsonContainer = document.getElementById('json-content');
+                jsonContainer.innerHTML = '';
+                container = jsonContainer;
+                uniqueValues = {};
+            }
+            
+            if (data === null) {
+                const nullValue = document.createElement('span');
+                nullValue.className = 'json-null';
+                nullValue.textContent = 'null';
+                container.appendChild(nullValue);
+                return;
+            }
+            
+            if (Array.isArray(data)) {
+                const arrayContainer = document.createElement('div');
+                arrayContainer.className = 'json-array';
+                
+                const header = document.createElement('div');
+                header.className = 'array-header';
+                
+                const toggle = document.createElement('span');
+                toggle.className = 'toggle-btn';
+                toggle.innerHTML = '&#9660;';
+                toggle.onclick = function() {
+                    const content = this.parentNode.nextElementSibling;
+                    if (content.style.display === 'none') {
+                        content.style.display = 'block';
+                        this.innerHTML = '&#9660;';
+                    } else {
+                        content.style.display = 'none';
+                        this.innerHTML = '&#9654;';
+                    }
+                };
+                
+                const arrayLength = document.createElement('span');
+                arrayLength.className = 'array-length';
+                arrayLength.textContent = `Array[${data.length}]`;
+                
+                const actionsSpan = document.createElement('span');
+                actionsSpan.className = 'array-actions';
+                
+                const addButton = document.createElement('button');
+                addButton.className = 'add-item-btn';
+                addButton.textContent = '+';
+                addButton.title = translations[currentLang].addToArray;
+                addButton.onclick = function() {
+                    addItemToArray(data, path, container.parentNode);
+                };
+                
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'delete-item-btn';
+                deleteButton.textContent = '×';
+                deleteButton.title = translations[currentLang].deleteItem;
+                deleteButton.onclick = function() {
+                    deleteItem(path);
+                };
+                
+                actionsSpan.appendChild(addButton);
+                if (path) {
+                    actionsSpan.appendChild(deleteButton);
+                }
+                
+                header.appendChild(toggle);
+                header.appendChild(arrayLength);
+                header.appendChild(actionsSpan);
+                
+                const content = document.createElement('div');
+                content.className = 'array-content';
+                
+                data.forEach((item, index) => {
+                    const itemContainer = document.createElement('div');
+                    itemContainer.className = 'array-item';
+                    
+                    const indexSpan = document.createElement('span');
+                    indexSpan.className = 'array-index';
+                    indexSpan.textContent = `${index}: `;
+                    
+                    const itemContent = document.createElement('div');
+                    itemContent.className = 'item-content';
+                    
+                    itemContainer.appendChild(indexSpan);
+                    itemContainer.appendChild(itemContent);
+                    content.appendChild(itemContainer);
+                    
+                    displayJson(item, itemContent, path ? `${path}[${index}]` : `[${index}]`);
+                });
+                
+                arrayContainer.appendChild(header);
+                arrayContainer.appendChild(content);
+                container.appendChild(arrayContainer);
+            } else if (typeof data === 'object') {
+                const objContainer = document.createElement('div');
+                objContainer.className = 'json-object';
+                
+                const header = document.createElement('div');
+                header.className = 'object-header';
+                
+                const toggle = document.createElement('span');
+                toggle.className = 'toggle-btn';
+                toggle.innerHTML = '&#9660;';
+                toggle.onclick = function() {
+                    const content = this.parentNode.nextElementSibling;
+                    if (content.style.display === 'none') {
+                        content.style.display = 'block';
+                        this.innerHTML = '&#9660;';
+                    } else {
+                        content.style.display = 'none';
+                        this.innerHTML = '&#9654;';
+                    }
+                };
+                
+                const objSize = document.createElement('span');
+                objSize.className = 'object-size';
+                objSize.textContent = `Object{${Object.keys(data).length}}`;
+                
+                const actionsSpan = document.createElement('span');
+                actionsSpan.className = 'object-actions';
+                
+                const addButton = document.createElement('button');
+                addButton.className = 'add-prop-btn';
+                addButton.textContent = '+';
+                addButton.title = translations[currentLang].addProperty;
+                addButton.onclick = function() {
+                    addPropertyToObject(data, path, container.parentNode);
+                };
+                
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'delete-item-btn';
+                deleteButton.textContent = '×';
+                deleteButton.title = translations[currentLang].deleteItem;
+                deleteButton.onclick = function() {
+                    deleteItem(path);
+                };
+                
+                actionsSpan.appendChild(addButton);
+                if (path) {
+                    actionsSpan.appendChild(deleteButton);
+                }
+                
+                header.appendChild(toggle);
+                header.appendChild(objSize);
+                header.appendChild(actionsSpan);
+                
+                const content = document.createElement('div');
+                content.className = 'object-content';
+                
+                for (const key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        const propertyContainer = document.createElement('div');
+                        propertyContainer.className = 'property';
+                        
+                        const keySpan = document.createElement('span');
+                        keySpan.className = 'property-key';
+                        
+                        const keyEdit = document.createElement('input');
+                        keyEdit.type = 'text';
+                        keyEdit.className = 'key-edit';
+                        keyEdit.value = key;
+                        keyEdit.onchange = function() {
+                            const newKey = this.value.trim();
+                            if (newKey && newKey !== key) {
+                                renameProperty(data, key, newKey, path);
+                                unsavedChanges = true;
+                            } else {
+                                this.value = key;
+                            }
+                        };
+                        
+                        keySpan.appendChild(keyEdit);
+                        keySpan.appendChild(document.createTextNode(': '));
+                        
+                        const deleteKeyBtn = document.createElement('button');
+                        deleteKeyBtn.className = 'delete-key-btn';
+                        deleteKeyBtn.textContent = '×';
+                        deleteKeyBtn.title = translations[currentLang].deleteItem;
+                        deleteKeyBtn.onclick = function() {
+                            deleteProperty(data, key, path, propertyContainer);
+                        };
+                        
+                        const valueContainer = document.createElement('div');
+                        valueContainer.className = 'property-value';
+                        
+                        propertyContainer.appendChild(keySpan);
+                        propertyContainer.appendChild(valueContainer);
+                        propertyContainer.appendChild(deleteKeyBtn);
+                        content.appendChild(propertyContainer);
+                        
+                        const newPath = path ? `${path}.${key}` : key;
+                        displayJson(data[key], valueContainer, newPath);
+                    }
+                }
+                
+                objContainer.appendChild(header);
+                objContainer.appendChild(content);
+                container.appendChild(objContainer);
+            } else {
+                const valueElement = document.createElement('div');
+                valueElement.className = `json-value json-${typeof data}`;
+                
+                // Para valores primitivos, mostrar un campo editable
+                if (typeof data === 'string' || typeof data === 'number' || typeof data === 'boolean') {
+                    if (isFrequentValue(data) && typeof data !== 'boolean') {
+                        const selectElement = document.createElement('select');
+                        selectElement.className = 'value-edit';
+                        
+                        // Añadir valor actual como primera opción
+                        const currentOption = document.createElement('option');
+                        currentOption.value = JSON.stringify(data);
+                        currentOption.textContent = String(data);
+                        selectElement.appendChild(currentOption);
+                        
+                        // Añadir valores frecuentes
+                        const frequentValues = Object.keys(uniqueValues).filter(val => 
+                            uniqueValues[val].length > 1 && val !== String(data)
+                        ).slice(0, 10);
+                        
+                        frequentValues.forEach(val => {
+                            const option = document.createElement('option');
+                            option.value = isNaN(val) ? JSON.stringify(val) : val;
+                            option.textContent = val;
+                            selectElement.appendChild(option);
+                        });
+                        
+                        selectElement.onchange = function() {
+                            const newValue = JSON.parse(this.value);
+                            updateJsonValue(path, newValue);
+                            unsavedChanges = true;
+                        };
+                        
+                        valueElement.appendChild(selectElement);
+                    } else {
+                        const inputElement = document.createElement(typeof data === 'string' ? 'textarea' : 'input');
+                        if (typeof data !== 'string') {
+                            inputElement.type = typeof data === 'boolean' ? 'checkbox' : 'text';
+                        }
+                        inputElement.className = 'value-edit';
+                        
+                        if (typeof data === 'boolean') {
+                            inputElement.checked = data;
+                        } else {
+                            inputElement.value = data;
+                        }
+                        
+                        inputElement.onchange = function() {
+                            let newValue;
+                            if (typeof data === 'boolean') {
+                                newValue = this.checked;
+                            } else if (typeof data === 'number') {
+                                newValue = isNaN(Number(this.value)) ? this.value : Number(this.value);
+                            } else {
+                                newValue = this.value;
+                            }
+                            
+                            updateJsonValue(path, newValue);
+                            unsavedChanges = true;
+                        };
+                        
+                        valueElement.appendChild(inputElement);
+                    }
+                } else {
+                    valueElement.textContent = String(data);
+                }
+                
+                container.appendChild(valueElement);
+            }
+        }
+        
+        // Verificar si un valor se repite frecuentemente
+        function isFrequentValue(value) {
+            const strValue = String(value);
+            return uniqueValues[strValue] && uniqueValues[strValue].length > 1;
+        }
+        
+        // Actualizar un valor en el JSON
+        function updateJsonValue(path, newValue) {
+            if (!path) return;
+            
+            let container = currentJsonData;
+            const parts = path.split('.');
+            
+            for (let i = 0; i < parts.length; i++) {
+                const part = parts[i];
+                
+                if (part.includes('[')) {
+                    const key = part.substring(0, part.indexOf('['));
+                    const indexMatch = part.match(/\[(\d+)\]/);
+                    
+                    if (indexMatch) {
+                        const index = parseInt(indexMatch[1]);
+                        
+                        if (i === parts.length - 1) {
+                            container[key][index] = newValue;
+                        } else {
+                            container = container[key][index];
+                        }
+                    }
+                } else if (part.startsWith('[') && part.endsWith(']')) {
+                    const index = parseInt(part.substring(1, part.length - 1));
+                    
+                    if (i === parts.length - 1) {
+                        container[index] = newValue;
+                    } else {
+                        container = container[index];
+                    }
+                } else {
+                    if (i === parts.length - 1) {
+                        container[part] = newValue;
+                    } else {
+                        container = container[part];
+                    }
+                }
+            }
+            
+            // Actualizar la visualización
+            displayJson(currentJsonData);
+        }
+        
+        // Añadir una nueva propiedad a un objeto
+        function addPropertyToObject(obj, path, container) {
+            const modal = document.getElementById('add-property-modal');
+            const nameInput = document.getElementById('property-name');
+            const valueInput = document.getElementById('property-value');
+            const typeSelect = document.getElementById('value-type');
+            const nameGroup = document.querySelector('.property-name-group');
+            
+            // Mostrar el campo de nombre de propiedad
+            nameGroup.style.display = 'block';
+            nameInput.required = true;
+            
+            // Limpiar campos
+            nameInput.value = '';
+            valueInput.value = '';
+            valueInput.type = 'text';
+            typeSelect.value = 'string';
+            
+            // Mostrar modal
+            modal.style.display = 'flex';
+            nameInput.focus();
+            
+            // Función para manejar cambio de tipo
+            typeSelect.addEventListener('change', function() {
+                if (this.value === 'boolean') {
+                    valueInput.type = 'checkbox';
+                    valueInput.checked = valueInput.value.toLowerCase() === 'true';
+                } else {
+                    valueInput.type = 'text';
+                }
+            });
+            
+            // Configurar el formulario
+            const form = document.getElementById('add-property-form');
+            form.onsubmit = function(e) {
+                e.preventDefault();
+                
+                const propName = nameInput.value.trim();
+                let propValue;
+                
+                // Validar que el nombre no esté vacío
+                if (!propName && nameInput.required) {
+                    return false;
+                }
+                
+                switch (typeSelect.value) {
+                    case 'string':
+                        propValue = valueInput.value;
+                        break;
+                    case 'number':
+                        propValue = isNaN(Number(valueInput.value)) ? 0 : Number(valueInput.value);
+                        break;
+                    case 'boolean':
+                        propValue = typeSelect.value === 'boolean' && valueInput.type === 'checkbox' ? 
+                            valueInput.checked : valueInput.value.toLowerCase() === 'true';
+                        break;
+                    case 'null':
+                        propValue = null;
+                        break;
+                    case 'array':
+                        propValue = [];
+                        break;
+                    case 'object':
+                        propValue = {};
+                        break;
+                }
+                
+                obj[propName] = propValue;
+                unsavedChanges = true;
+                
+                // Actualizar visualización
+                displayJson(currentJsonData);
+                modal.style.display = 'none';
+                
+                // Limpiar el event listener para evitar duplicaciones
+                typeSelect.removeEventListener('change', arguments.callee);
+                
+                return true;
+            };
+            
+            document.getElementById('cancel-add-property').onclick = function() {
+                modal.style.display = 'none';
+                // Limpiar event listener
+                typeSelect.removeEventListener('change', arguments.callee);
+            };
+        }
+        
+        // Añadir un nuevo elemento a un array
+        function addItemToArray(array, path, container) {
+            const modal = document.getElementById('add-property-modal');
+            const nameInput = document.getElementById('property-name');
+            const valueInput = document.getElementById('property-value');
+            const typeSelect = document.getElementById('value-type');
+            const nameGroup = document.querySelector('.property-name-group');
+            
+            // Ocultar campo de nombre de propiedad y quitar el required
+            nameGroup.style.display = 'none';
+            nameInput.required = false;
+            
+            // Limpiar campos
+            valueInput.value = '';
+            valueInput.type = 'text';
+            typeSelect.value = 'string';
+            
+            // Mostrar modal
+            modal.style.display = 'flex';
+            valueInput.focus();
+            
+            // Función para manejar cambio de tipo
+            typeSelect.addEventListener('change', function() {
+                if (this.value === 'boolean') {
+                    valueInput.type = 'checkbox';
+                    valueInput.checked = valueInput.value.toLowerCase() === 'true';
+                } else {
+                    valueInput.type = 'text';
+                }
+            });
+            
+            // Configurar el formulario
+            const form = document.getElementById('add-property-form');
+            form.onsubmit = function(e) {
+                e.preventDefault();
+                
+                let newValue;
+                
+                switch (typeSelect.value) {
+                    case 'string':
+                        newValue = valueInput.value;
+                        break;
+                    case 'number':
+                        newValue = isNaN(Number(valueInput.value)) ? 0 : Number(valueInput.value);
+                        break;
+                    case 'boolean':
+                        newValue = typeSelect.value === 'boolean' && valueInput.type === 'checkbox' ? 
+                            valueInput.checked : valueInput.value.toLowerCase() === 'true';
+                        break;
+                    case 'null':
+                        newValue = null;
+                        break;
+                    case 'array':
+                        newValue = [];
+                        break;
+                    case 'object':
+                        newValue = {};
+                        break;
+                }
+                
+                array.push(newValue);
+                unsavedChanges = true;
+                
+                // Actualizar visualización
+                displayJson(currentJsonData);
+                
+                modal.style.display = 'none';
+                
+                // Restaurar visualización del campo de nombre
+                nameGroup.style.display = 'block';
+                nameInput.required = true;
+                
+                // Limpiar el event listener para evitar duplicaciones
+                typeSelect.removeEventListener('change', arguments.callee);
+                
+                return true;
+            };
+            
+            document.getElementById('cancel-add-property').onclick = function() {
+                modal.style.display = 'none';
+                nameGroup.style.display = 'block';
+                nameInput.required = true;
+                // Limpiar event listener
+                typeSelect.removeEventListener('change', arguments.callee);
+            };
+        }
+        
+        // Eliminar una propiedad de un objeto
+        function deleteProperty(obj, key, path, container) {
+            if (confirm(translations[currentLang].confirmDelete)) {
+                delete obj[key];
+                container.remove();
+                unsavedChanges = true;
+                
+                // Actualizar visualización
+                displayJson(currentJsonData);
+            }
+        }
+        
+        // Eliminar un elemento según su path
+        function deleteItem(path) {
+            if (!path || !confirm(translations[currentLang].confirmDelete)) return;
+            
+            let container = currentJsonData;
+            const parts = path.split('.');
+            const lastPart = parts.pop();
+            
+            // Navegar hasta el contenedor padre
+            for (const part of parts) {
+                if (part.includes('[')) {
+                    const key = part.substring(0, part.indexOf('['));
+                    const indexMatch = part.match(/\[(\d+)\]/);
+                    
+                    if (indexMatch) {
+                        const index = parseInt(indexMatch[1]);
+                        container = container[key][index];
+                    }
+                } else if (part.startsWith('[') && part.endsWith(']')) {
+                    const index = parseInt(part.substring(1, part.length - 1));
+                    container = container[index];
+                } else {
+                    container = container[part];
+                }
+            }
+            
+            // Eliminar el elemento
+            if (lastPart.includes('[')) {
+                const key = lastPart.substring(0, lastPart.indexOf('['));
+                const indexMatch = lastPart.match(/\[(\d+)\]/);
+                
+                if (indexMatch) {
+                    const index = parseInt(indexMatch[1]);
+                    container[key].splice(index, 1);
+                }
+            } else if (lastPart.startsWith('[') && lastPart.endsWith(']')) {
+                const index = parseInt(lastPart.substring(1, lastPart.length - 1));
+                container.splice(index, 1);
+            } else {
+                delete container[lastPart];
+            }
+            
+            unsavedChanges = true;
+            
+            // Actualizar visualización
+            displayJson(currentJsonData);
+        }
+        
+        // Renombrar una propiedad
+        function renameProperty(obj, oldKey, newKey, path) {
+            if (oldKey === newKey) return;
+            
+            obj[newKey] = obj[oldKey];
+            delete obj[oldKey];
+            
+            // Actualizar visualización
+            displayJson(currentJsonData);
+        }
+        
+        // Guardar como JSON
+        function saveAsJson() {
+            if (!currentJsonData) return;
+            
+            const jsonStr = JSON.stringify(currentJsonData, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'data.json';
+            a.click();
+            
+            URL.revokeObjectURL(url);
+            unsavedChanges = false;
+        }
+        
+        // Convertir JSON a Markdown
+        function jsonToMarkdown(data, level = 0) {
+            const indent = ' '.repeat(level * 2);
+            let markdown = '';
+            
+            if (data === null) {
+                return 'null';
+            }
+            
+            if (Array.isArray(data)) {
+                if (data.length === 0) return '[]';
+                
+                markdown += '\n';
+                
+                data.forEach((item, index) => {
+                    markdown += `${indent}- ${jsonToMarkdown(item, level + 1)}\n`;
+                });
+                
+                return markdown;
+            } else if (typeof data === 'object') {
+                if (Object.keys(data).length === 0) return '{}';
+                
+                markdown += '\n';
+                
+                for (const key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        const value = data[key];
+                        
+                        if (Array.isArray(value) || (typeof value === 'object' && value !== null)) {
+                            markdown += `${indent}- **${key}**:${jsonToMarkdown(value, level + 1)}`;
+                        } else {
+                            // No poner comillas para los valores de tipo string
+                            const valueStr = value === null ? 'null' : 
+                                typeof value === 'string' ? value : String(value);
+                            markdown += `${indent}- **${key}**: ${valueStr}\n`;
+                        }
+                    }
+                }
+                
+                return markdown;
+            } else {
+                // No poner comillas para los valores de tipo string
+                return data === null ? 'null' : 
+                    typeof data === 'string' ? data : String(data);
+            }
+        }
+        
+        // Guardar como Markdown
+        function saveAsMarkdown() {
+            if (!currentJsonData) return;
+            
+            const markdown = jsonToMarkdown(currentJsonData);
+            const blob = new Blob([markdown], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'data.md';
+            a.click();
+            
+            URL.revokeObjectURL(url);
+        }
+        
+        // Buscar en el JSON
+        function searchJson() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            
+            if (!searchTerm) {
+                resetSearch();
+                return;
+            }
+            
+            // Eliminar resaltados anteriores
+            document.querySelectorAll('.highlight').forEach(el => {
+                el.classList.remove('highlight');
+            });
+            
+            // Buscar y resaltar coincidencias
+            const keyInputs = document.querySelectorAll('.key-edit');
+            const valueInputs = document.querySelectorAll('.value-edit');
+            let found = false;
+            
+            keyInputs.forEach(input => {
+                if (input.value.toLowerCase().includes(searchTerm)) {
+                    input.parentNode.classList.add('highlight');
+                    found = true;
+                }
+            });
+            
+            valueInputs.forEach(input => {
+                if ((input.type === 'text' && input.value.toLowerCase().includes(searchTerm)) ||
+                    (input.tagName === 'SELECT' && input.options[input.selectedIndex].text.toLowerCase().includes(searchTerm))) {
+                    input.parentNode.classList.add('highlight');
+                    found = true;
+                }
+            });
+            
+            // Mostrar mensaje si no se encuentran coincidencias
+            document.getElementById('search-results').textContent = found ? '' : 'No se encontraron coincidencias';
+        }
+        
+        // Resetear búsqueda
+        function resetSearch() {
+            document.querySelectorAll('.highlight').forEach(el => {
+                el.classList.remove('highlight');
+            });
+            
+            document.getElementById('search-results').textContent = '';
+        }
+        
+        // Colapsar todo
+        function collapseAll() {
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                const content = btn.parentNode.nextElementSibling;
+                content.style.display = 'none';
+                btn.innerHTML = '&#9654;';
+            });
+        }
+        
+        // Expandir todo
+        function expandAll() {
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                const content = btn.parentNode.nextElementSibling;
+                content.style.display = 'block';
+                btn.innerHTML = '&#9660;';
+            });
+        }
+        
+        // Cambiar tema
+        function toggleTheme() {
+            darkMode = !darkMode;
+            document.body.classList.toggle('dark-mode', darkMode);
+            document.getElementById('theme-btn').textContent = darkMode ? 
+                translations[currentLang].light : translations[currentLang].dark;
+                
+            // Guardar tema en localStorage
+            localStorage.setItem('json_editor_theme', darkMode ? 'dark' : 'light');
+        }
+        
+        // Validar JSON
+        function validateJson() {
+            try {
+                JSON.parse(JSON.stringify(currentJsonData));
+                alert(translations[currentLang].validJson);
+            } catch (e) {
+                alert(`${translations[currentLang].invalidJson}: ${e.message}`);
+            }
+        }
+        
+        // Actualizar estadísticas del archivo
+        function updateFileStats(data) {
+            if (!data) return;
+            
+            const stats = {
+                totalKeys: 0,
+                totalValues: 0,
+                maxDepth: 0,
+                size: JSON.stringify(data).length
+            };
+            
+            function analyzeStats(obj, depth = 0) {
+                if (depth > stats.maxDepth) {
+                    stats.maxDepth = depth;
+                }
+                
+                if (Array.isArray(obj)) {
+                    stats.totalValues += obj.length;
+                    obj.forEach(item => analyzeStats(item, depth + 1));
+                } else if (typeof obj === 'object' && obj !== null) {
+                    const keys = Object.keys(obj);
+                    stats.totalKeys += keys.length;
+                    keys.forEach(key => analyzeStats(obj[key], depth + 1));
+                } else {
+                    stats.totalValues++;
+                }
+            }
+            
+            analyzeStats(data);
+            
+            document.getElementById('total-keys').textContent = stats.totalKeys;
+            document.getElementById('total-values').textContent = stats.totalValues;
+            document.getElementById('max-depth').textContent = stats.maxDepth;
+            document.getElementById('json-size').textContent = `${(stats.size / 1024).toFixed(2)} KB`;
+        }
+        
+        // Inicializar la aplicación cuando se cargue el DOM
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar configuración guardada
+            loadSavedSettings();
+            
+            // Configurar dropzone
+            const dropzone = document.getElementById('dropzone');
+            
+            dropzone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.classList.add('dragover');
+            });
+            
+            dropzone.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.classList.remove('dragover');
+            });
+            
+            dropzone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    loadJsonFile(files[0]);
+                }
+            });
+            
+            dropzone.addEventListener('click', function() {
+                document.getElementById('file-input').click();
+            });
+            
+            // Configurar input de archivo
+            document.getElementById('file-input').addEventListener('change', function(e) {
+                if (this.files.length > 0) {
+                    loadJsonFile(this.files[0]);
+                }
+            });
+            
+            // Inicializar botones
+            document.getElementById('save-json-btn').addEventListener('click', saveAsJson);
+            document.getElementById('save-md-btn').addEventListener('click', saveAsMarkdown);
+            document.getElementById('collapse-btn').addEventListener('click', collapseAll);
+            document.getElementById('expand-btn').addEventListener('click', expandAll);
+            document.getElementById('theme-btn').addEventListener('click', toggleTheme);
+            document.getElementById('validate-btn').addEventListener('click', validateJson);
+            
+            // Cambio de idioma
+            document.getElementById('btn-ca').addEventListener('click', function() {
+                setLanguage('ca');
+            });
+            
+            document.getElementById('btn-es').addEventListener('click', function() {
+                setLanguage('es');
+            });
+            
+            // Detectar cambios sin guardar antes de cerrar la página
+            window.addEventListener('beforeunload', function(e) {
+                if (unsavedChanges) {
+                    const message = 'Hay cambios sin guardar. ¿Seguro que quieres salir?';
+                    e.returnValue = message;
+                    return message;
+                }
+            });
+            
+            // Establecer idioma inicial
+            setLanguage(currentLang);
+            
+            // Actualizar el botón de tema según el modo actual
+            document.getElementById('theme-btn').textContent = darkMode ? 
+                translations[currentLang].light : translations[currentLang].dark;
+            
+            // Ejemplo de datos JSON para empezar si no hay archivo cargado
+            // Descomentar para activar
+            /*
+            currentJsonData = {
+                "persona": {
+                    "nombre": "Juan",
+                    "edad": 30,
+                    "email": "juan@ejemplo.com",
+                    "activo": true,
+                    "hobbies": ["lectura", "deportes", "música"]
+                },
+                "configuracion": {
+                    "tema": "claro",
+                    "notificaciones": true,
+                    "idioma": "es"
+                }
+            };
+            displayJson(currentJsonData);
+            analyzeJson(currentJsonData);
+            updateFileStats(currentJsonData);
+            document.getElementById('json-container').style.display = 'block';
+            document.getElementById('dropzone').style.display = 'none';
+            */
+        });
+    </script>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --border-color: #dddddd;
+            --highlight-color: #f0f7ff;
+            --header-color: #f5f5f5;
+            --button-color: #3498db;
+            --button-hover: #2980b9;
+            --button-text: #ffffff;
+            --success-color: #2ecc71;
+            --warning-color: #e74c3c;
+            --toggle-color: #9e9e9e;
+            --modal-bg: rgba(0, 0, 0, 0.5);
+        }
+        
+        body.dark-mode {
+            --bg-color: #1e1e1e;
+            --text-color: #e0e0e0;
+            --border-color: #444444;
+            --highlight-color: #2d3748;
+            --header-color: #2d2d2d;
+            --button-color: #3182ce;
+            --button-hover: #4299e1;
+            --button-text: #ffffff;
+            --success-color: #38a169;
+            --warning-color: #e53e3e;
+            --toggle-color: #a0aec0;
+            --modal-bg: rgba(0, 0, 0, 0.7);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin: 0;
+        }
+        
+        .language-switcher {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .lang-btn {
+            padding: 5px 10px;
+            background-color: var(--button-color);
+            color: var(--button-text);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            opacity: 0.7;
+            min-width: 40px;
+        }
+        
+        .lang-btn.active {
+            opacity: 1;
+            font-weight: bold;
+        }
+        
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .button {
+            padding: 8px 15px;
+            background-color: var(--button-color);
+            color: var(--button-text);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            min-width: 120px;
+        }
+        
+        .button:hover {
+            background-color: var(--button-hover);
+        }
+        
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .search-bar input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-width: 200px;
+        }
+        
+        .search-results {
+            color: var(--warning-color);
+            font-style: italic;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        #dropzone {
+            border: 2px dashed var(--border-color);
+            border-radius: 6px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease;
+        }
+        
+        #dropzone.dragover {
+            background-color: var(--highlight-color);
+        }
+        
+        #json-container {
+            display: none;
+            margin-bottom: 20px;
+        }
+        
+        .json-content {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 20px;
+            overflow-x: auto;
+            font-family: monospace;
+            max-height: 70vh;
+            overflow-y: auto;
+            width: 100%;
+        }
+        
+        .json-array, .json-object {
+            margin: 5px 0;
+            border-left: 1px solid var(--border-color);
+            width: 100%;
+        }
+        
+        .array-header, .object-header {
+            padding: 5px;
+            background-color: var(--header-color);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .toggle-btn {
+            cursor: pointer;
+            margin-right: 5px;
+            color: var(--toggle-color);
+            flex-shrink: 0;
+        }
+        
+        .array-length, .object-size {
+            font-weight: bold;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .array-actions, .object-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 5px;
+        }
+        
+        .add-item-btn, .add-prop-btn, .delete-item-btn {
+            border: none;
+            background-color: var(--button-color);
+            color: var(--button-text);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        
+        .delete-item-btn, .delete-key-btn {
+            background-color: var(--warning-color);
+        }
+        
+        .delete-key-btn {
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            border: none;
+            color: var(--button-text);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 5px;
+        }
+        
+        .array-content, .object-content {
+            padding-left: 20px;
+            width: 100%;
+        }
+        
+        .property {
+            margin: 5px 0;
+            display: flex;
+            align-items: flex-start;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+        
+        .property-key {
+            font-weight: bold;
+            margin-right: 5px;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            min-width: 80px;
+            max-width: 150px;
+        }
+        
+        .property-value {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            min-width: 300px;
+            max-width: calc(100% - 160px);
+            overflow: visible;
+        }
+        
+        .delete-key-btn {
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            border: none;
+            color: var(--button-text);
+            background-color: var(--warning-color);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 5px;
+            flex-shrink: 0;
+        }
+        
+        .json-value {
+            margin: 2px 0;
+        }
+        
+        .json-string {
+            color: green;
+        }
+        
+        .json-number {
+            color: blue;
+        }
+        
+        .json-boolean {
+            color: darkorange;
+        }
+        
+        .json-null {
+            color: red;
+            font-style: italic;
+        }
+        
+        .value-edit, .key-edit {
+            padding: 3px;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: monospace;
+            width: auto;
+            min-width: 150px;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .key-edit {
+            margin-right: 2px;
+            min-width: 80px;
+            max-width: 140px;
+        }
+        
+        textarea.value-edit {
+            min-width: 300px;
+            width: 100%;
+            min-height: 60px;
+            resize: vertical;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        input[type="checkbox"].value-edit {
+            width: auto;
+            min-width: unset;
+        }
+        
+        select.value-edit {
+            min-width: 300px;
+            max-width: 100%;
+            width: auto;
+        }
+        
+        .json-value {
+            margin: 2px 0;
+            max-width: 100%;
+            width: 100%;
+            overflow: visible;
+        }
+        
+        .highlight {
+            background-color: yellow;
+            color: black;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--modal-bg);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: var(--bg-color);
+            padding: 20px;
+            border-radius: 6px;
+            width: 90%;
+            max-width: 500px;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .modal-body {
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 10px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        #file-input {
+            display: none;
+        }
+        
+        .stats-container {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+        
+        .stats-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--toggle-color);
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+            font-size: 0.9rem;
+        }
+        
+        footer a {
+            color: var(--button-color);
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .toolbar {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .button {
+                width: 100%;
+            }
+            
+            .search-bar {
+                flex-direction: column;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .property-key {
+                max-width: 100%;
+                margin-bottom: 2px;
+            }
+            
+            .property-value {
+                max-width: 100%;
+            }
+            
+            .property, .array-item {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 data-i18n="title">Editor JSON</h1>
+            <div class="language-switcher">
+                <button id="btn-ca" class="lang-btn">CA</button>
+                <button id="btn-es" class="lang-btn active">ES</button>
+            </div>
+        </header>
+        
+        <div class="toolbar">
+            <button id="save-json-btn" class="button" data-i18n="saveJson">Guardar JSON</button>
+            <button id="save-md-btn" class="button" data-i18n="saveMd">Guardar Markdown</button>
+            <button id="collapse-btn" class="button" data-i18n="collapseAll">Contraer todo</button>
+            <button id="expand-btn" class="button" data-i18n="expandAll">Expandir todo</button>
+            <button id="theme-btn" class="button" data-i18n="theme">Tema</button>
+            <button id="validate-btn" class="button" data-i18n="validate">Validar JSON</button>
+        </div>
+        
+        <div id="dropzone" data-i18n="dropFileHere">
+            Arrastra un archivo JSON aquí o haz clic para seleccionar uno
+        </div>
+        
+        <div id="json-container">
+            <div id="json-content" class="json-content"></div>
+            
+            <div class="stats-container">
+                <div class="stats-title" data-i18n="fileStats">Estadísticas del archivo</div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label" data-i18n="totalKeys">Total de claves</span>
+                        <span id="total-keys" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label" data-i18n="totalValues">Total de valores</span>
+                        <span id="total-values" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label" data-i18n="maxDepth">Profundidad máxima</span>
+                        <span id="max-depth" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label" data-i18n="jsonSize">Tamaño del JSON</span>
+                        <span id="json-size" class="stat-value">0 KB</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <input type="file" id="file-input" accept=".json">
+        
+        <div id="add-property-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" data-i18n="addProperty">Añadir propiedad</h3>
+                </div>
+                <div class="modal-body">
+                    <form id="add-property-form">
+                        <div class="form-group property-name-group">
+                            <label for="property-name" data-i18n="propertyName">Nombre de la propiedad</label>
+                            <input type="text" id="property-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="value-type">Tipo</label>
+                            <select id="value-type">
+                                <option value="string">String</option>
+                                <option value="number">Number</option>
+                                <option value="boolean">Boolean</option>
+                                <option value="null">Null</option>
+                                <option value="array">Array</option>
+                                <option value="object">Object</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="property-value" data-i18n="propertyValue">Valor</label>
+                            <input type="text" id="property-value">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="button" data-i18n="add">Añadir</button>
+                            <button type="button" id="cancel-add-property" class="button" data-i18n="cancel">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <div>
+                <a href="https://labia.tiddlyhost.com" target="_blank">Laboratorio de aplicaciones educativas</a>
+            </div>
+            <div>
+                <a href="https://bilateria.org" target="_blank">Aplicación hecha por Juan José de Haro</a>
+            </div>
+            <div>
+                <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank">Esta obra está bajo una licencia Creative Commons BY-SA</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

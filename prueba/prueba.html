@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hoja de proceso - trazado, corte y conformado</title>
+  <!-- Se usa la versión 7.5.0 de docx desde jsdelivr -->
+  <script src="https://cdn.jsdelivr.net/npm/docx@7.5.0/build/index.js"></script>
+  <!-- Librería para convertir DOCX a texto -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
+  <style>
+    /* (Se conserva el estilo original) */
+    :root {
+      --color-primario: #2c3e50;
+      --color-secundario: #e74c3c;
+      --color-exito: #27ae60;
+      --color-fondo: #f5f7fa;
+      --color-texto: #333;
+      --color-borde: #ddd;
+      --color-seccion-1: #e8f4f8;
+      --color-seccion-2: #f0e8f8;
+    }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { margin: 0; padding: 20px; background-color: var(--color-fondo); color: var(--color-texto); line-height: 1.6; }
+    .container {
+      max-width: 1200px; margin: 0 auto; background: white;
+      padding: 20px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    h1, h2 { color: var(--color-primario); text-align: center; }
+    h1 { margin-bottom: 5px; }
+    h2 { margin-top: 0; font-size: 1.2rem; border-bottom: 2px solid var(--color-secundario); padding-bottom: 10px; }
+    .form-header { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;
+      background-color: var(--color-seccion-1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--color-primario);
+    }
+    .producto-section {
+      background-color: var(--color-seccion-2); padding: 15px; border-radius: 8px;
+      margin-bottom: 20px; border-left: 4px solid #8e44ad;
+    }
+    .operacion-section {
+      padding: 15px; border-radius: 8px; margin-bottom: 20px;
+      border-left: 4px solid #e67e22; transition: all 0.3s ease; animation: fadeIn 0.5s ease-out;
+    }
+    .operacion-section:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+    .operacion-section:nth-child(odd) { background-color: #fff9e6; }
+    .operacion-section:nth-child(even) { background-color: #e6f9ff; }
+    .form-group { margin-bottom: 15px; flex: 1; min-width: 200px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; color: var(--color-primario); }
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--color-borde); border-radius: 4px; font-size: 16px; }
+    textarea { min-height: 100px; resize: vertical; }
+    .file-upload {
+      border: 2px dashed var(--color-borde); padding: 20px; text-align: center;
+      border-radius: 4px; margin-bottom: 20px; transition: all 0.3s; background-color: white;
+    }
+    .file-upload:hover { border-color: var(--color-primario); box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1); }
+    .file-upload input { display: none; }
+    .file-upload label { cursor: pointer; color: var(--color-primario); font-weight: bold; display: block; }
+    .file-upload label:hover { color: var(--color-secundario); }
+    .file-preview { margin-top: 15px; display: flex; flex-wrap: wrap; gap: 15px; }
+    .file-preview img, .file-preview video {
+      max-width: 120px; max-height: 120px; border-radius: 4px; border: 1px solid var(--color-borde);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.3s;
+    }
+    .file-preview img:hover, .file-preview video:hover { transform: scale(1.05); z-index: 1; }
+    .dropdown-container { position: relative; margin-bottom: 15px; }
+    .dropdown-button {
+      width: 100%; padding: 12px; background-color: white; border: 1px solid var(--color-borde);
+      border-radius: 4px; text-align: left; cursor: pointer; display: flex;
+      justify-content: space-between; align-items: center; font-weight: bold; position: relative; padding-right: 40px;
+    }
+    .dropdown-button::after {
+      content: "▼"; font-size: 12px; transition: transform 0.3s;
+      position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+    }
+    .dropdown-button.active::after { transform: translateY(-50%) rotate(180deg); }
+    .dropdown-button .selected-count {
+      position: absolute; right: 35px; top: 50%; transform: translateY(-50%);
+      background-color: var(--color-secundario); color: white; border-radius: 50%;
+      width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px;
+    }
+    .dropdown-content {
+      display: none; position: relative; background-color: white; border: 1px solid var(--color-borde);
+      border-radius: 0 0 4px 4px; border-top: none; padding: 15px; z-index: 1; margin-top: -4px;
+      max-height: 300px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--color-primario) #f1f1f1;
+    }
+    .dropdown-content::-webkit-scrollbar { width: 8px; }
+    .dropdown-content::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+    .dropdown-content::-webkit-scrollbar-thumb { background-color: var(--color-primario); border-radius: 4px; }
+    .dropdown-content.show { display: block; }
+    .checkbox-option {
+      display: flex; align-items: center; padding: 8px 0; margin-left: 5px; transition: background-color 0.2s;
+    }
+    .checkbox-option:hover { background-color: #f5f5f5; border-radius: 4px; }
+    .checkbox-option input { width: 18px; height: 18px; margin-right: 12px; flex-shrink: 0; }
+    .checkbox-option label { margin-bottom: 0; font-weight: normal; cursor: pointer; flex-grow: 1; }
+    .checkbox-option input:checked + label { color: var(--color-primario); font-weight: bold; }
+    .checkbox-option input:checked + label::before { content: "✓ "; color: var(--color-exito); }
+    .selected-options-container {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; padding: 10px;
+      background-color: #f8f9fa; border-radius: 4px; border: 1px dashed #dee2e6; min-height: 40px;
+    }
+    .selected-option {
+      background-color: #d4edda; color: #000; padding: 6px 12px; border-radius: 20px;
+      font-size: 0.85rem; display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); transition: all 0.2s;
+    }
+    .selected-option:hover { background-color: #c3e6cb; transform: translateY(-1px); }
+    .selected-option .remove-option {
+      cursor: pointer; font-size: 1rem; color: #000; opacity: 0.7; transition: opacity 0.2s; font-weight: bold;
+      padding: 2px; margin-left: 4px;
+    }
+    .selected-option .remove-option:hover { opacity: 1; color: var(--color-secundario); }
+    .btn {
+      padding: 12px 25px; border: none; border-radius: 4px; font-size: 16px;
+      cursor: pointer; transition: all 0.3s; font-weight: bold; margin: 0 5px;
+    }
+    .btn-guardar { background-color: var(--color-primario); color: white; }
+    .btn-reset { background-color: var(--color-secundario); color: white; }
+    .btn:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+    .form-footer { margin-top: 30px; text-align: center; }
+    .tiempo-input {
+      display: flex; align-items: center; background-color: white; padding: 10px;
+      border-radius: 4px; border: 1px solid var(--color-borde);
+    }
+    .tiempo-input input { flex: 1; max-width: 100px; border: none; padding: 0; }
+    .tiempo-input span { margin-left: 5px; font-weight: bold; color: var(--color-primario); }
+    .operacion-title {
+      font-size: 1.1rem; color: var(--color-primario); margin-bottom: 15px;
+      padding-bottom: 5px; border-bottom: 1px solid var(--color-borde); font-weight: bold;
+    }
+    .total-time-section {
+      background-color: var(--color-primario); padding: 15px; border-radius: 8px;
+      margin-bottom: 20px; color: white;
+    }
+    .tiempo-total {
+      display: flex; align-items: center; justify-content: space-between; transition: all 0.3s ease;
+    }
+    .tiempo-total:hover { transform: translateX(5px); }
+    .tiempo-total label { color: white; font-size: 1.2rem; margin-bottom: 0; }
+    .tiempo-input.total { background-color: white; padding: 10px 15px; border-radius: 4px; }
+    .tiempo-input.total input { font-size: 1.2rem; font-weight: bold; color: var(--color-primario); text-align: right; max-width: 120px; }
+    .tiempo-input.total span { color: var(--color-primario); font-weight: bold; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+    @media (max-width: 768px) {
+      .form-header, .producto-section, .operacion-section { flex-direction: column; gap: 10px; }
+      .form-group { min-width: 100%; }
+      .tiempo-input input { max-width: 100%; }
+      .btn { width: 100%; margin-bottom: 10px; }
+      .tiempo-total { flex-direction: column; align-items: flex-start; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Hoja de proceso</h1>
+    <h2>Módulo: trazado, corte y conformado</h2>
+    
+    <div class="form-header">
+      <div class="form-group">
+        <label for="nombre">Nombre del alumno:</label>
+        <input type="text" id="nombre">
+      </div>
+      <div class="form-group">
+        <label for="grupo">Grupo:</label>
+        <select id="grupo">
+          <option value="">Seleccione...</option>
+          <option value="1SCA">1SCA</option>
+          <option value="1SCB">1SCB</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="fecha">Fecha:</label>
+        <input type="date" id="fecha">
+      </div>
+    </div>
+    
+    <div class="producto-section">
+      <div class="form-group">
+        <label for="producto-num">Producto Nº:</label>
+        <select id="producto-num">
+          <option value="">Seleccione...</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="producto">Producto:</label>
+        <select id="producto">
+          <option value="">Seleccione...</option>
+          <option value="Plantilla">Plantilla</option>
+          <option value="Virola cilíndrica">Virola cilíndrica</option>
+          <option value="Virola cilíndrica truncada">Virola cilíndrica truncada</option>
+          <option value="Transformador de sección">Transformador de sección</option>
+          <option value="Tronco de cono recto">Tronco de cono recto</option>
+          <option value="Tronco de cono oblicuo">Tronco de cono oblicuo</option>
+          <option value="Injerto de tubos a 90º">Injerto de tubos a 90º</option>
+          <option value="Pantalón">Pantalón</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Croquis, plano, plantilla, medidas:</label>
+        <div class="file-upload">
+          <input type="file" id="plano" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" capture="environment">
+          <label for="plano">📌 Subir archivo (foto, PDF o documentos)</label>
+          <div class="file-preview" id="plano-preview"></div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="operaciones-container"></div>
+    
+    <div class="total-time-section">
+      <div class="tiempo-total">
+        <label>Tiempo total:</label>
+        <div class="tiempo-input total">
+          <input type="text" id="tiempo-total" readonly>
+          <span>minutos</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="observaciones">Observaciones:</label>
+      <textarea id="observaciones"></textarea>
+    </div>
+    
+    <div class="form-footer">
+      <button class="btn btn-reset" id="reset-btn">Borrar todo</button>
+      <button class="btn btn-guardar" id="guardar-btn">Guardar</button>
+      <button class="btn" id="abrir-docx-btn">Abrir docx</button>
+      <!-- Input oculto para cargar DOCX -->
+      <input type="file" id="docx-input" accept=".docx" style="display:none">
+    </div>
+  </div>
+
+  <script>
+    // Función para leer archivos como ArrayBuffer
+    function readFileAsArrayBuffer(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(file);
+      });
+    }
+
+    const operaciones = [
+      "Realizado del desarrollo en papel",
+      "Medición",
+      "Corte mecánico con cizalla",
+      "Corte mecánico con amoladora",
+      "Corte térmico por plasma",
+      "Corte térmico por oxicorte",
+      "Trazado",
+      "Curvado",
+      "Plegado",
+      "Conformado manual",
+      "Refrentado de bocas",
+      "Limar rebabas",
+      "Punteado"
+    ];
+    const herramientas = [
+      "Flexómetro",
+      "Calibre",
+      "Gramil",
+      "Cizalla",
+      "Amoladora",
+      "Sierra de arco",
+      "Plasma",
+      "Oxicorte",
+      "Granete",
+      "Rayador",
+      "Lima",
+      "Curvadora",
+      "Plegadora hidráulica",
+      "Plegadora manual",
+      "Martillo de goma",
+      "Martillo calderero",
+      "Equipo de soldadura SMAW",
+      "Equipo de soldadura GMAW",
+      "Escuadras"
+    ];
+    const sujeciones = [
+      "Tornillo de banco",
+      "Sargentos",
+      "Marmol de trazado",
+      "Alicates de presión"
+    ];
+    const medidas = [
+      "Platilla",
+      "Flexómetro",
+      "Calibre",
+      "Gramil",
+      "Marmol",
+      "Nivel",
+      "Goniómetro",
+      "Escuadras"
+    ];
+
+    function setupFileUpload(inputId, previewId) {
+      const input = document.getElementById(inputId);
+      const preview = document.getElementById(previewId);
+      if (!input || !preview) return;
+      input.addEventListener('change', function() {
+        preview.innerHTML = '';
+        if (this.files && this.files.length > 0) {
+          for (let i = 0; i < this.files.length; i++) {
+            const file = this.files[i];
+            const fileType = file.type.split('/')[0];
+            if (fileType === 'image') {
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                preview.appendChild(img);
+                const info = document.createElement('div');
+                info.textContent = `${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`;
+                info.style.fontSize = '0.8em';
+                info.style.color = '#666';
+                preview.appendChild(info);
+              }
+              reader.readAsDataURL(file);
+            } else if (file.type === 'application/pdf') {
+              const fileElement = document.createElement('div');
+              fileElement.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                  <span style="font-size: 1.5em;">📄</span>
+                  <div>
+                    <div>${file.name}</div>
+                    <div style="font-size: 0.8em; color: #666;">${(file.size / (1024 * 1024)).toFixed(2)} MB</div>
+                  </div>
+                </div>
+              `;
+              preview.appendChild(fileElement);
+            } else {
+              const fileElement = document.createElement('div');
+              fileElement.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                  <span style="font-size: 1.5em;">📝</span>
+                  <div>
+                    <div>${file.name}</div>
+                    <div style="font-size: 0.8em; color: #666;">${(file.size / (1024 * 1024)).toFixed(2)} MB</div>
+                  </div>
+                </div>
+              `;
+              preview.appendChild(fileElement);
+            }
+          }
+        }
+      });
+    }
+
+    function updateSelectedOptionsDisplay(container, selectedOptions, type) {
+      const displayContainer = container.querySelector('.selected-options-container') ||
+                                document.createElement('div');
+      if (!container.querySelector('.selected-options-container')) {
+        displayContainer.className = 'selected-options-container';
+        container.appendChild(displayContainer);
+      }
+      displayContainer.innerHTML = '';
+      selectedOptions.forEach(option => {
+        const optionElement = document.createElement('div');
+        optionElement.className = 'selected-option';
+        optionElement.innerHTML = `
+          ${option}
+          <span class="remove-option" data-type="${type}" data-value="${option}">×</span>
+        `;
+        displayContainer.appendChild(optionElement);
+      });
+      displayContainer.querySelectorAll('.remove-option').forEach(removeBtn => {
+        removeBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const value = this.getAttribute('data-value');
+          const checkbox = container.querySelector(`input[type="checkbox"][value="${value}"]`);
+          if (checkbox) {
+            checkbox.checked = false;
+            const event = new Event('change');
+            checkbox.dispatchEvent(event);
+          }
+          this.parentElement.remove();
+          const countSpan = container.querySelector('.selected-count');
+          if (countSpan) {
+            const currentCount = parseInt(countSpan.textContent);
+            countSpan.textContent = currentCount - 1;
+            if (currentCount - 1 === 0) {
+              countSpan.style.display = 'none';
+            }
+          }
+        });
+      });
+    }
+
+    function crearDropdown(container, titulo, opciones, type) {
+      const dropdownId = `${titulo.replace(/\s+/g, '-').toLowerCase()}-dropdown`;
+      const dropdownHTML = `
+        <div class="dropdown-container">
+          <button type="button" class="dropdown-button">
+            ${titulo}
+            <span class="selected-count" style="display: none">0</span>
+          </button>
+          <div class="dropdown-content" id="${dropdownId}">
+            ${opciones.map(opcion => `
+              <div class="checkbox-option">
+                <input type="checkbox" id="${dropdownId}-${opcion.replace(/\s+/g, '-').toLowerCase()}" value="${opcion}" data-type="${type}">
+                <label for="${dropdownId}-${opcion.replace(/\s+/g, '-').toLowerCase()}">${opcion}</label>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', dropdownHTML);
+      const button = container.querySelector('.dropdown-button');
+      const content = container.querySelector('.dropdown-content');
+      const countSpan = container.querySelector('.selected-count');
+      button.addEventListener('click', function() {
+        this.classList.toggle('active');
+        content.classList.toggle('show');
+      });
+      content.addEventListener('change', function(e) {
+        if (e.target.type === 'checkbox') {
+          const checkedOptions = Array.from(content.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+          updateSelectedOptionsDisplay(container, checkedOptions, type);
+          countSpan.textContent = checkedOptions.length;
+          countSpan.style.display = checkedOptions.length > 0 ? 'flex' : 'none';
+          const buttonText = button.textContent.trim().split(' ')[0];
+          button.innerHTML = `${buttonText} <span class="selected-count">${checkedOptions.length}</span>`;
+        }
+      });
+      const checkedOptions = Array.from(content.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+      updateSelectedOptionsDisplay(container, checkedOptions, type);
+      countSpan.textContent = checkedOptions.length;
+      countSpan.style.display = checkedOptions.length > 0 ? 'flex' : 'none';
+    }
+
+    function crearOperacion(index) {
+      const operacionDiv = document.createElement('div');
+      operacionDiv.className = 'operacion-section';
+      operacionDiv.id = `operacion-section-${index}`;
+      operacionDiv.innerHTML = `
+        <div class="operacion-title">Operación Nº${index}</div>
+        <div class="form-group" id="operacion-${index}-dropdown-container"></div>
+        <div class="form-group" id="herramienta-${index}-dropdown-container"></div>
+        <div class="form-group" id="sujecion-${index}-dropdown-container"></div>
+        <div class="form-group" id="medida-${index}-dropdown-container"></div>
+        <div class="form-group">
+          <label for="tiempo-${index}">Tiempo:</label>
+          <div class="tiempo-input">
+            <input type="number" id="tiempo-${index}" min="1" max="999">
+            <span>minutos</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Evidencia:</label>
+          <div class="file-upload">
+            <input type="file" id="evidencia-${index}" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" capture="environment">
+            <label for="evidencia-${index}">📷 Subir evidencia (foto, PDF o documentos)</label>
+            <div class="file-preview" id="evidencia-preview-${index}"></div>
+          </div>
+        </div>
+      `;
+      return operacionDiv;
+    }
+
+    function calcularTiempoTotal() {
+      let total = 0;
+      for (let i = 1; i <= 10; i++) {
+        const tiempoInput = document.getElementById(`tiempo-${i}`);
+        if (tiempoInput && tiempoInput.value) {
+          total += parseInt(tiempoInput.value) || 0;
+        }
+      }
+      document.getElementById('tiempo-total').value = total;
+    }
+
+    const operacionesContainer = document.getElementById('operaciones-container');
+    for (let i = 1; i <= 10; i++) {
+      const operacion = crearOperacion(i);
+      operacionesContainer.appendChild(operacion);
+      const opContainer = document.getElementById(`operacion-${i}-dropdown-container`);
+      const herrContainer = document.getElementById(`herramienta-${i}-dropdown-container`);
+      const sujContainer = document.getElementById(`sujecion-${i}-dropdown-container`);
+      const medContainer = document.getElementById(`medida-${i}-dropdown-container`);
+      crearDropdown(opContainer, "Operación", operaciones, 'operacion');
+      crearDropdown(herrContainer, "Herramienta y máquina", herramientas, 'herramienta');
+      crearDropdown(sujContainer, "Herramienta de sujeción, mesa, varios", sujeciones, 'sujecion');
+      crearDropdown(medContainer, "Medida y comprobación", medidas, 'medida');
+      setupFileUpload(`evidencia-${i}`, `evidencia-preview-${i}`);
+      const tiempoInput = document.getElementById(`tiempo-${i}`);
+      tiempoInput.addEventListener('change', calcularTiempoTotal);
+      tiempoInput.addEventListener('input', calcularTiempoTotal);
+    }
+
+    setupFileUpload('plano', 'plano-preview');
+    const fechaInput = document.getElementById('fecha');
+    const today = new Date();
+    fechaInput.value = today.toISOString().substr(0, 10);
+    calcularTiempoTotal();
+
+    document.getElementById('reset-btn').addEventListener('click', function() {
+      if (confirm('¿Estás seguro de que quieres borrar todos los datos?')) {
+        document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], textarea').forEach(el => { el.value = ''; });
+        document.querySelectorAll('select').forEach(el => { el.selectedIndex = 0; });
+        document.querySelectorAll('input[type="checkbox"]').forEach(el => { el.checked = false; });
+        document.querySelectorAll('.dropdown-button').forEach(el => {
+          el.classList.remove('active');
+          el.nextElementSibling.classList.remove('show');
+          const countSpan = el.querySelector('.selected-count');
+          if (countSpan) { countSpan.textContent = '0'; countSpan.style.display = 'none'; }
+        });
+        document.querySelectorAll('.file-preview').forEach(el => { el.innerHTML = ''; });
+        document.querySelectorAll('input[type="file"]').forEach(el => { el.value = ''; });
+        document.querySelectorAll('.selected-options-container').forEach(el => { el.innerHTML = ''; });
+        document.getElementById('tiempo-total').value = '';
+      }
+    });
+
+    // Guardar datos y generar el DOCX con formato agradable e imágenes
+    document.getElementById('guardar-btn').addEventListener('click', async function() {
+      const formData = {
+        nombre: document.getElementById('nombre').value,
+        grupo: document.getElementById('grupo').value,
+        fecha: document.getElementById('fecha').value,
+        productoNum: document.getElementById('producto-num').value,
+        producto: document.getElementById('producto').value,
+        observaciones: document.getElementById('observaciones').value,
+        tiempoTotal: document.getElementById('tiempo-total').value || 0,
+        operaciones: []
+      };
+      for (let i = 1; i <= 10; i++) {
+        const operacion = {
+          num: i,
+          operaciones: Array.from(document.querySelectorAll(`#operacion-${i}-dropdown-container input[type="checkbox"]:checked`)).map(cb => cb.value),
+          herramientas: Array.from(document.querySelectorAll(`#herramienta-${i}-dropdown-container input[type="checkbox"]:checked`)).map(cb => cb.value),
+          sujeciones: Array.from(document.querySelectorAll(`#sujecion-${i}-dropdown-container input[type="checkbox"]:checked`)).map(cb => cb.value),
+          medidas: Array.from(document.querySelectorAll(`#medida-${i}-dropdown-container input[type="checkbox"]:checked`)).map(cb => cb.value),
+          tiempo: document.getElementById(`tiempo-${i}`).value || 0,
+          evidencias: document.getElementById(`evidencia-${i}`).files.length
+        };
+        formData.operaciones.push(operacion);
+      }
+      
+      const { Document, Packer, Paragraph, TextRun, ImageRun, HeadingLevel } = window.docx;
+      const paragraphs = [];
+      
+      // Título principal
+      paragraphs.push(new Paragraph({
+        text: "Hoja de proceso",
+        heading: HeadingLevel.HEADING_1,
+        spacing: { after: 200 }
+      }));
+      
+      // Datos del alumno
+      paragraphs.push(new Paragraph({
+        children: [
+          new TextRun({ text: "Nombre: ", bold: true }),
+          new TextRun(formData.nombre)
+        ]
+      }));
+      paragraphs.push(new Paragraph({
+        children: [
+          new TextRun({ text: "Grupo: ", bold: true }),
+          new TextRun(formData.grupo)
+        ]
+      }));
+      paragraphs.push(new Paragraph({
+        children: [
+          new TextRun({ text: "Fecha: ", bold: true }),
+          new TextRun(formData.fecha)
+        ]
+      }));
+      paragraphs.push(new Paragraph({
+        children: [
+          new TextRun({ text: "Producto Nº: ", bold: true }),
+          new TextRun(formData.productoNum)
+        ]
+      }));
+      paragraphs.push(new Paragraph({
+        children: [
+          new TextRun({ text: "Producto: ", bold: true }),
+          new TextRun(formData.producto)
+        ]
+      }));
+      paragraphs.push(new Paragraph({
+        children: [
+          new TextRun({ text: "Observaciones: ", bold: true }),
+          new TextRun(formData.observaciones)
+        ]
+      }));
+      paragraphs.push(new Paragraph({
+        children: [
+          new TextRun({ text: "Tiempo total: ", bold: true }),
+          new TextRun(formData.tiempoTotal + " minutos")
+        ]
+      }));
+      
+      // Incluir imagen del plano si existe y es una imagen
+      const planoInput = document.getElementById('plano');
+      if (planoInput.files && planoInput.files[0] && planoInput.files[0].type.startsWith("image/")) {
+        try {
+          const arrayBuffer = await readFileAsArrayBuffer(planoInput.files[0]);
+          paragraphs.push(new Paragraph({ text: "Plano:", spacing: { before: 200 } }));
+          paragraphs.push(new Paragraph({
+            children: [
+              new ImageRun({
+                data: arrayBuffer,
+                transformation: { width: 400, height: 300 }
+              })
+            ]
+          }));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      
+      // Separador
+      paragraphs.push(new Paragraph({ text: "", spacing: { after: 200 } }));
+      
+      // Sección de operaciones
+      paragraphs.push(new Paragraph({
+        text: "Operaciones:",
+        heading: HeadingLevel.HEADING_2,
+        spacing: { before: 200, after: 200 }
+      }));
+      
+      // Para cada operación
+      for (let i = 0; i < formData.operaciones.length; i++) {
+        const op = formData.operaciones[i];
+        paragraphs.push(new Paragraph({
+          text: `Operación Nº${op.num}`,
+          heading: HeadingLevel.HEADING_3,
+          spacing: { before: 200, after: 100 }
+        }));
+        const detalles = [
+          { label: "Operaciones", value: op.operaciones.join(', ') || "N/A" },
+          { label: "Herramientas", value: op.herramientas.join(', ') || "N/A" },
+          { label: "Sujeciones", value: op.sujeciones.join(', ') || "N/A" },
+          { label: "Medidas", value: op.medidas.join(', ') || "N/A" },
+          { label: "Tiempo", value: op.tiempo + " minutos" },
+          { label: "Evidencias", value: op.evidencias }
+        ];
+        detalles.forEach(det => {
+          paragraphs.push(new Paragraph({
+            children: [
+              new TextRun({ text: det.label + ": ", bold: true }),
+              new TextRun(det.value)
+            ]
+          }));
+        });
+        // Incluir imagen de evidencia si existe y es imagen
+        const evidenciaInput = document.getElementById(`evidencia-${op.num}`);
+        if (evidenciaInput && evidenciaInput.files && evidenciaInput.files[0] && evidenciaInput.files[0].type.startsWith("image/")) {
+          try {
+            const arrayBuffer = await readFileAsArrayBuffer(evidenciaInput.files[0]);
+            paragraphs.push(new Paragraph({ text: "Evidencia:", spacing: { before: 100 } }));
+            paragraphs.push(new Paragraph({
+              children: [
+                new ImageRun({
+                  data: arrayBuffer,
+                  transformation: { width: 300, height: 200 }
+                })
+              ]
+            }));
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      }
+      
+      const doc = new Document({ sections: [{ children: paragraphs }] });
+      Packer.toBlob(doc).then(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `hoja-proceso-${formData.nombre || 'sin-nombre'}-${new Date().toISOString().slice(0,10)}.docx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+      });
+    });
+
+    // Cargar datos desde un DOCX exportado
+    function loadDocxData(text) {
+      const lines = text.split('\n').map(line => line.trim()).filter(line => line !== "");
+      let inOperations = false;
+      for (let line of lines) {
+        if (line.startsWith("Operaciones:")) { 
+          inOperations = true;
+          continue;
+        }
+        if (!inOperations) {
+          if (line.startsWith("Nombre:")) {
+            document.getElementById('nombre').value = line.substring("Nombre:".length).trim();
+          } else if (line.startsWith("Grupo:")) {
+            document.getElementById('grupo').value = line.substring("Grupo:".length).trim();
+          } else if (line.startsWith("Fecha:")) {
+            document.getElementById('fecha').value = line.substring("Fecha:".length).trim();
+          } else if (line.startsWith("Producto Nº:")) {
+            document.getElementById('producto-num').value = line.substring("Producto Nº:".length).trim();
+          } else if (line.startsWith("Producto:")) {
+            document.getElementById('producto').value = line.substring("Producto:".length).trim();
+          } else if (line.startsWith("Observaciones:")) {
+            document.getElementById('observaciones').value = line.substring("Observaciones:".length).trim();
+          }
+        } else {
+          if (line.startsWith("Operación Nº")) {
+            const opMatch = line.match(/^Operación Nº(\d+):\s*(.*)$/);
+            if (!opMatch) continue;
+            const opNum = opMatch[1];
+            const rest = opMatch[2];
+            const parts = rest.split(" | ");
+            let opData = {};
+            parts.forEach(part => {
+              const [key, ...valueParts] = part.split(": ");
+              opData[key.toLowerCase()] = valueParts.join(": ").trim();
+            });
+            opData["operaciones"] = (opData["operaciones"] && opData["operaciones"] !== "N/A") ? opData["operaciones"].split(",").map(s => s.trim()) : [];
+            opData["herramientas"] = (opData["herramientas"] && opData["herramientas"] !== "N/A") ? opData["herramientas"].split(",").map(s => s.trim()) : [];
+            opData["sujeciones"] = (opData["sujeciones"] && opData["sujeciones"] !== "N/A") ? opData["sujeciones"].split(",").map(s => s.trim()) : [];
+            opData["medidas"] = (opData["medidas"] && opData["medidas"] !== "N/A") ? opData["medidas"].split(",").map(s => s.trim()) : [];
+            if (opData["tiempo"]) {
+              opData["tiempo"] = opData["tiempo"].replace(" minutos", "").trim();
+            }
+            function checkOptions(containerId, options) {
+              const container = document.getElementById(containerId);
+              if (container) {
+                const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(chk => {
+                  if (options.includes(chk.value)) {
+                    chk.checked = true;
+                    chk.dispatchEvent(new Event('change'));
+                  } else {
+                    chk.checked = false;
+                  }
+                });
+              }
+            }
+            checkOptions(`operacion-${opNum}-dropdown-container`, opData["operaciones"] || []);
+            checkOptions(`herramienta-${opNum}-dropdown-container`, opData["herramientas"] || []);
+            checkOptions(`sujecion-${opNum}-dropdown-container`, opData["sujeciones"] || []);
+            checkOptions(`medida-${opNum}-dropdown-container`, opData["medidas"] || []);
+            const tiempoInput = document.getElementById(`tiempo-${opNum}`);
+            if (tiempoInput && opData["tiempo"]) {
+              tiempoInput.value = opData["tiempo"];
+              tiempoInput.dispatchEvent(new Event('input'));
+            }
+          }
+        }
+      }
+      calcularTiempoTotal();
+
+    }
+
+    // Configurar botón e input para cargar DOCX
+    document.getElementById('abrir-docx-btn').addEventListener('click', function() {
+      document.getElementById('docx-input').click();
+    });
+    
+    document.getElementById('docx-input').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const arrayBuffer = e.target.result;
+        mammoth.extractRawText({ arrayBuffer: arrayBuffer })
+          .then(function(result) {
+            loadDocxData(result.value);
+          })
+          .catch(function(err) {
+            console.error(err);
+            alert('Error al cargar el archivo DOCX');
+          });
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  </script>
+</body>
+</html>
+

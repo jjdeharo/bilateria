@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de poemas</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            flex: 1;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .radio-group {
+            display: flex;
+            gap: 15px;
+        }
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .button-group {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4285f4;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #3367d6;
+        }
+        .result {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            min-height: 200px;
+            display: none;
+        }
+        .language-switcher {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+            gap: 5px;
+        }
+        .lang-button {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #ececec;
+            color: #333;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .lang-button.active {
+            background-color: #4285f4;
+            color: white;
+            border-color: #4285f4;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+        .footer a {
+            color: #4285f4;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .prompt-copy {
+            width: 100%;
+            height: 100px;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: none;
+        }
+        
+        .copy-button {
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 12px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+        
+        .copy-button:hover {
+            background-color: #3367d6;
+        }
+        
+        .chatbot-warning {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="language-switcher">
+            <button class="lang-button" id="ca-button">CA</button>
+            <button class="lang-button active" id="es-button">ES</button>
+        </div>
+        
+        <h1 id="title">Generador de poemas</h1>
+        
+        <div class="form-group">
+            <label for="word" id="word-label">Palabra para el poema:</label>
+            <input type="text" id="word" placeholder="" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="poem-type" id="poem-type-label">Tipo de poema:</label>
+            <select id="poem-type">
+                <option value="libre" id="type-libre">Verso libre</option>
+                <option value="soneto" id="type-soneto">Soneto</option>
+                <option value="haiku" id="type-haiku">Haiku</option>
+                <option value="romance" id="type-romance">Romance</option>
+                <option value="acrostico" id="type-acrostico">Acróstico</option>
+                <option value="decima" id="type-decima">Décima</option>
+                <option value="limerick" id="type-limerick">Limerick</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label id="chatbot-label">Selecciona el chatbot:</label>
+            <div class="radio-group">
+                <div class="radio-option">
+                    <input type="radio" id="chatgpt" name="chatbot" value="chatgpt" checked>
+                    <label for="chatgpt">ChatGPT</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="grok" name="chatbot" value="grok">
+                    <label for="grok">Grok</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="lechat" name="chatbot" value="lechat">
+                    <label for="lechat">Le Chat</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="copilot" name="chatbot" value="copilot">
+                    <label for="copilot">Microsoft Copilot</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="perplexity" name="chatbot" value="perplexity">
+                    <label for="perplexity">Perplexity</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="claude" name="chatbot" value="claude">
+                    <label for="claude">Claude</label>
+                </div>
+            </div>
+            <p class="chatbot-warning" id="login-warning"></p>
+        </div>
+        
+        <div class="form-group">
+            <label id="window-type-label">Abrir en:</label>
+            <div class="radio-group">
+                <div class="radio-option">
+                    <input type="radio" id="new-tab" name="window-type" value="tab">
+                    <label for="new-tab" id="new-tab-label">Nueva pestaña</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="new-window" name="window-type" value="window" checked>
+                    <label for="new-window" id="new-window-label">Nueva ventana</label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button id="popup-button">Generar poema</button>
+        </div>
+        
+        <div class="result" id="result">
+            <div id="info-text"></div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p><a href="https://labia.tiddlyhost.com" target="_blank">Laboratorio de aplicaciones educativas</a></p>
+        <p><a href="https://bilateria.org" target="_blank">Aplicación hecha por Juan José de Haro</a></p>
+        <p><a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank">Esta obra está bajo una licencia Creative Commons BY-SA</a></p>
+    </div>
+    
+    <script>
+        // Objeto con las traducciones
+        const translations = {
+            'es': {
+                'title': 'Generador de poemas',
+                'word-label': 'Palabra para el poema:',
+                'word-placeholder': 'Escribe una palabra',
+                'poem-type-label': 'Tipo de poema:',
+                'type-libre': 'Verso libre',
+                'type-soneto': 'Soneto',
+                'type-haiku': 'Haiku',
+                'type-romance': 'Romance',
+                'type-acrostico': 'Acróstico',
+                'type-decima': 'Décima',
+                'type-limerick': 'Limerick',
+                'chatbot-label': 'Selecciona el chatbot:',
+                'window-type-label': 'Abrir en:',
+                'new-tab-label': 'Nueva pestaña',
+                'new-window-label': 'Nueva ventana',
+                'popup-button': 'Generar poema',
+                'login-warning': 'Nota: Debes haber iniciado sesión previamente en el chatbot seleccionado para que funcione correctamente.',
+                'poem-prompts': {
+                    'libre': 'Escribe un poema en verso libre que trate sobre la palabra "{0}". No utilices rima ni métrica fija.',
+                    'soneto': 'Escribe un soneto sobre la palabra "{0}". Debe tener 14 versos endecasílabos distribuidos en dos cuartetos y dos tercetos con rima ABBA ABBA CDC DCD.',
+                    'haiku': 'Escribe un haiku sobre la palabra "{0}". Debe tener tres versos con estructura silábica 5-7-5 y transmitir una imagen sensorial o momento de percepción.',
+                    'romance': 'Escribe un romance sobre la palabra "{0}". Debe tener versos octosílabos con rima asonante en los versos pares y los impares sueltos.',
+                    'acrostico': 'Escribe un poema acróstico usando la palabra "{0}". El acróstico debe formarse con las primeras letras de cada verso que juntas formen la palabra "{0}".',
+                    'decima': 'Escribe una décima sobre la palabra "{0}". Debe tener 10 versos octosílabos con el esquema de rima abbaaccddc.',
+                    'limerick': 'Escribe un limerick sobre la palabra "{0}". Debe ser un poema humorístico de cinco versos con rima AABBA donde los versos A son más largos que los B.'
+                }
+            },
+            'ca': {
+                'title': 'Generador de poemes',
+                'word-label': 'Paraula per al poema:',
+                'word-placeholder': 'Escriu una paraula',
+                'poem-type-label': 'Tipus de poema:',
+                'type-libre': 'Vers lliure',
+                'type-soneto': 'Sonet',
+                'type-haiku': 'Haiku',
+                'type-romance': 'Romanç',
+                'type-acrostico': 'Acròstic',
+                'type-decima': 'Dècima',
+                'type-limerick': 'Limerick',
+                'chatbot-label': 'Selecciona el chatbot:',
+                'window-type-label': 'Obrir en:',
+                'new-tab-label': 'Nova pestanya',
+                'new-window-label': 'Nova finestra',
+                'popup-button': 'Generar poema',
+                'login-warning': 'Nota: Has d\'haver iniciat sessió prèviament al chatbot seleccionat perquè funcioni correctament.',
+                'poem-prompts': {
+                    'libre': 'Escriu un poema en vers lliure que tracti sobre la paraula "{0}". No utilitzis rima ni mètrica fixa.',
+                    'soneto': 'Escriu un sonet sobre la paraula "{0}". Ha de tenir 14 versos hendecasíl·labs distribuïts en dos quartets i dos tercets amb rima ABBA ABBA CDC DCD.',
+                    'haiku': 'Escriu un haiku sobre la paraula "{0}". Ha de tenir tres versos amb estructura sil·làbica 5-7-5 i transmetre una imatge sensorial o moment de percepció.',
+                    'romance': 'Escriu un romanç sobre la paraula "{0}". Ha de tenir versos octosíl·labs amb rima assonant als versos parells i els senars lliures.',
+                    'acrostico': 'Escriu un poema acròstic utilitzant la paraula "{0}". L\'acròstic s\'ha de formar amb les primeres lletres de cada vers que juntes formin la paraula "{0}".',
+                    'decima': 'Escriu una dècima sobre la paraula "{0}". Ha de tenir 10 versos octosíl·labs amb l\'esquema de rima abbaaccddc.',
+                    'limerick': 'Escriu un limerick sobre la paraula "{0}". Ha de ser un poema humorístic de cinc versos amb rima AABBA on els versos A són més llargs que els B.'
+                }
+            }
+        };
+        
+        // Map de los tipos de poema (valor interno a texto mostrado)
+        const poemTypeMap = {
+            'libre': {
+                'es': 'verso libre',
+                'ca': 'vers lliure'
+            },
+            'soneto': {
+                'es': 'soneto',
+                'ca': 'sonet'
+            },
+            'haiku': {
+                'es': 'haiku',
+                'ca': 'haiku'
+            },
+            'romance': {
+                'es': 'romance',
+                'ca': 'romanç'
+            },
+            'acrostico': {
+                'es': 'acróstico',
+                'ca': 'acròstic'
+            },
+            'decima': {
+                'es': 'décima',
+                'ca': 'dècima'
+            },
+            'limerick': {
+                'es': 'limerick',
+                'ca': 'limerick'
+            }
+        };
+        
+        // Función para cambiar el idioma
+        function setLanguage(lang) {
+            document.querySelectorAll('[id$="-button"]').forEach(button => {
+                if (button.id === 'ca-button' || button.id === 'es-button') {
+                    button.classList.remove('active');
+                }
+            });
+            
+            document.getElementById(lang + '-button').classList.add('active');
+            
+            document.getElementById('title').textContent = translations[lang]['title'];
+            document.getElementById('word-label').textContent = translations[lang]['word-label'];
+            document.getElementById('word').placeholder = translations[lang]['word-placeholder'];
+            document.getElementById('poem-type-label').textContent = translations[lang]['poem-type-label'];
+            
+            // Actualizar las opciones del tipo de poema
+            for (const type in poemTypeMap) {
+                document.getElementById('type-' + type).textContent = translations[lang]['type-' + type];
+            }
+            
+            document.getElementById('chatbot-label').textContent = translations[lang]['chatbot-label'];
+            document.getElementById('window-type-label').textContent = translations[lang]['window-type-label'];
+            document.getElementById('new-tab-label').textContent = translations[lang]['new-tab-label'];
+            document.getElementById('new-window-label').textContent = translations[lang]['new-window-label'];
+            document.getElementById('popup-button').textContent = translations[lang]['popup-button'];
+            document.getElementById('login-warning').textContent = translations[lang]['login-warning'];
+            
+            document.documentElement.lang = lang;
+        }
+        
+        // Detectar idioma del navegador
+        function detectBrowserLanguage() {
+            const browserLang = navigator.language || navigator.userLanguage;
+            if (browserLang.startsWith('ca')) {
+                return 'ca';
+            }
+            return 'es';
+        }
+        
+        // Inicializar con el idioma del navegador
+        window.onload = function() {
+            const lang = detectBrowserLanguage();
+            setLanguage(lang);
+            
+            // Event listeners para cambiar idioma
+            document.getElementById('ca-button').addEventListener('click', () => setLanguage('ca'));
+            document.getElementById('es-button').addEventListener('click', () => setLanguage('es'));
+            
+            // Función común para obtener la URL
+            function getPromptUrl() {
+                const word = document.getElementById('word').value.trim();
+                if (!word) {
+                    alert(document.documentElement.lang === 'ca' ? 'Si us plau, introdueix una paraula.' : 'Por favor, introduce una palabra.');
+                    return null;
+                }
+                
+                const chatbot = document.querySelector('input[name="chatbot"]:checked').value;
+                const poemType = document.getElementById('poem-type').value;
+                const currentLang = document.documentElement.lang;
+                
+                // Obtener el prompt base según el tipo de poema y el idioma actual
+                let promptTemplate = translations[currentLang]['poem-prompts'][poemType];
+                
+                // Realizar el reemplazo de manera explícita
+                let prompt = promptTemplate.replace(/\{0\}/g, word);
+                
+                // Para depuración
+                console.log("Palabra:", word);
+                console.log("Plantilla:", promptTemplate);
+                console.log("Prompt final:", prompt);
+                
+                // Determinar la URL correcta según el chatbot seleccionado
+                let url;
+                if (chatbot === 'chatgpt') {
+                    url = `https://chatgpt.com/?q=${encodeURIComponent(prompt)}`;
+                } else if (chatbot === 'grok') {
+                    url = `https://grok.com/?q=${encodeURIComponent(prompt)}`;
+                } else if (chatbot === 'lechat') {
+                    url = `https://chat.mistral.ai/chat/?q=${encodeURIComponent(prompt)}`;
+                } else if (chatbot === 'copilot') {
+                    url = `https://copilot.microsoft.com/?q=${encodeURIComponent(prompt)}`;
+                } else if (chatbot === 'perplexity') {
+                    url = `https://www.perplexity.ai/?q=${encodeURIComponent(prompt)}`;
+                } else if (chatbot === 'claude') {
+                    url = `https://claude.ai/new?q=${encodeURIComponent(prompt)}`;
+                }
+                
+                return url;
+            }
+            
+            // Abrir el poema
+            document.getElementById('popup-button').addEventListener('click', function() {
+                const url = getPromptUrl();
+                if (!url) return;
+                
+                // Obtener el tipo de ventana seleccionado
+                const windowType = document.querySelector('input[name="window-type"]:checked').value;
+                
+                if (windowType === 'tab') {
+                    // Abrir en nueva pestaña
+                    window.open(url, '_blank');
+                    
+                    // Mostrar información
+                    document.getElementById('result').style.display = 'block';
+                    document.getElementById('info-text').innerHTML = document.documentElement.lang === 'ca'
+                        ? 'S\'ha obert una nova pestanya amb el poema.'
+                        : 'Se ha abierto una nueva pestaña con el poema.';
+                } else {
+                    // Abrir en nueva ventana
+                    const width = 800;
+                    const height = 600;
+                    const left = (window.innerWidth - width) / 2;
+                    const top = (window.innerHeight - height) / 2;
+                    
+                    // Configuración simple para ventana emergente
+                    window.open(
+                        url,
+                        'poemPopup',
+                        `width=${width},height=${height},left=${left},top=${top}`
+                    );
+                    
+                    // Mostrar información
+                    document.getElementById('result').style.display = 'block';
+                    document.getElementById('info-text').innerHTML = document.documentElement.lang === 'ca'
+                        ? 'S\'ha obert una nova finestra amb el poema. Si no la veus, comprova que el navegador no l\'hagi bloquejada.'
+                        : 'Se ha abierto una nueva ventana con el poema. Si no la ves, comprueba que el navegador no la haya bloqueado.';
+                }
+            });
+        };
+    </script>
+</body>
+</html>

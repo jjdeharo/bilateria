@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprobador de localStorage y memoria persistente</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button small {
+            font-size: 0.8em;
+            font-weight: normal;
+            opacity: 0.8;
+        }
+        .language-selector {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        .language-btn {
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ccc;
+            padding: 5px 10px;
+            margin-left: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .language-btn.active {
+            background-color: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+        .download-section {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .download-btn {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 0;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .download-btn:hover {
+            background-color: #5a6268;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-selector">
+        <button id="es-btn" class="language-btn active">ES</button>
+        <button id="ca-btn" class="language-btn">CA</button>
+    </div>
+
+    <div id="content-es">
+        <h1>Comprobador de localStorage y memoria persistente</h1>
+        
+        <div class="container">
+            <div id="embedded-warning" class="message warning" style="display: none;">
+                <strong>Atención:</strong> Esta página está incrustada en un marco (iframe). Si al pulsar "Reiniciar página" la ventana queda en blanco, significa que localStorage NO funciona correctamente en este contexto debido a restricciones de seguridad de los navegadores con iframes. Esto es normal y esperado cuando una página está incrustada en otra.
+            </div>
+            
+            <div id="test-result" class="message info">
+                Comprobando si localStorage funciona en tu navegador...
+            </div>
+            
+            <div id="restart-info" class="message info" style="display: none;">
+                Se ha guardado información en localStorage. Reinicia la página para verificar si se mantiene.
+            </div>
+            
+            <button id="restart-btn" style="display: none;">Reiniciar página</button>
+        </div>
+    </div>
+
+    <div id="content-ca" style="display: none;">
+        <h1>Comprovador de localStorage i memòria persistent</h1>
+        
+        <div class="container">
+            <div id="embedded-warning-ca" class="message warning" style="display: none;">
+                <strong>Atenció:</strong> Aquesta pàgina està incrustada en un marc (iframe). Si en prémer "Reiniciar pàgina" la finestra queda en blanc, significa que localStorage NO funciona correctament en aquest context a causa de restriccions de seguretat dels navegadors amb iframes. Això és normal i esperat quan una pàgina està incrustada en una altra.
+            </div>
+            
+            <div id="test-result-ca" class="message info">
+                Comprovant si localStorage funciona al teu navegador...
+            </div>
+            
+            <div id="restart-info-ca" class="message info" style="display: none;">
+                S'ha guardat informació al localStorage. Reinicia la pàgina per verificar si es manté.
+            </div>
+            
+            <button id="restart-btn-ca" style="display: none;">Reiniciar pàgina</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div id="download-section" class="download-section" style="display: none;">
+            <button id="download-btn" class="download-btn">Descargar código HTML</button>
+            <button id="copy-btn" class="download-btn">Copiar código HTML</button>
+            <div id="copy-message" style="display: none; margin-top: 5px; color: #155724;"></div>
+            <button id="download-btn-ca" class="download-btn" style="display: none;">Descarregar codi HTML</button>
+            <button id="copy-btn-ca" class="download-btn" style="display: none;">Copiar codi HTML</button>
+            <div id="copy-message-ca" style="display: none; margin-top: 5px; color: #155724;"></div>
+        </div>
+        <p>Laboratorio de aplicaciones educativas (<a href="https://labia.tiddlyhost.com">https://labia.tiddlyhost.com</a>)</p>
+        <p>Aplicación hecha por <a href="https://bilateria.org">Juan José de Haro</a></p>
+        <p>Esta obra está bajo una licencia <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es">Creative Commons BY-SA</a></p>
+    </div>
+
+    <script>
+        // Detectar el idioma del navegador
+        function detectLanguage() {
+            // Comprobar si hay una preferencia guardada en localStorage
+            let savedLang;
+            try {
+                savedLang = localStorage.getItem('preferredLanguage');
+                if (savedLang) {
+                    return savedLang;
+                }
+            } catch (e) {
+                // Si falla localStorage, no hacemos nada
+            }
+            
+            // Detectar el idioma del navegador
+            const userLang = navigator.language || navigator.userLanguage;
+            return userLang.startsWith('ca') ? 'ca' : 'es';
+        }
+
+        // Cambiar el idioma de la interfaz
+        function setLanguage(lang) {
+            if (lang === 'ca') {
+                document.getElementById('content-ca').style.display = 'block';
+                document.getElementById('content-es').style.display = 'none';
+                document.getElementById('ca-btn').classList.add('active');
+                document.getElementById('es-btn').classList.remove('active');
+                document.getElementById('download-btn').style.display = 'none';
+                document.getElementById('copy-btn').style.display = 'none';
+                document.getElementById('download-btn-ca').style.display = 'inline-block';
+                document.getElementById('copy-btn-ca').style.display = 'inline-block';
+            } else {
+                document.getElementById('content-es').style.display = 'block';
+                document.getElementById('content-ca').style.display = 'none';
+                document.getElementById('es-btn').classList.add('active');
+                document.getElementById('ca-btn').classList.remove('active');
+                document.getElementById('download-btn').style.display = 'inline-block';
+                document.getElementById('copy-btn').style.display = 'inline-block';
+                document.getElementById('download-btn-ca').style.display = 'none';
+                document.getElementById('copy-btn-ca').style.display = 'none';
+            }
+            // Guardar preferencia
+            try {
+                localStorage.setItem('preferredLanguage', lang);
+            } catch (e) {
+                // Si falla localStorage, no hacemos nada
+            }
+        }
+
+        // Prueba de localStorage
+        function testLocalStorage() {
+            const testKey = 'localStorage-test';
+            const testValue = 'test-' + Date.now();
+            
+            // Comprobar si la página se acaba de reiniciar
+            const urlParams = new URLSearchParams(window.location.search);
+            const isRestarted = urlParams.get('restarted') === 'true';
+            
+            // Detectar si estamos en un iframe
+            const isInIframe = window !== window.top;
+            
+            // Si estamos en un iframe y se ha reiniciado, mostrar mensaje específico
+            if (isInIframe && isRestarted) {
+                // Si llegamos aquí después de reiniciar dentro de un iframe, es una buena señal
+                showSuccess(
+                    'La página se ha reiniciado correctamente dentro del iframe. El localStorage parece funcionar en este contexto.',
+                    'La pàgina s\'ha reiniciat correctament dins de l\'iframe. El localStorage sembla funcionar en aquest context.'
+                );
+                
+                // Limpiar localStorage después de unos segundos y mostrar botón para repetir
+                setTimeout(function() {
+                    try {
+                        localStorage.removeItem(testKey);
+                        showResetComplete();
+                    } catch (e) {
+                        console.error('Error al limpiar localStorage:', e);
+                    }
+                }, 2000);
+                
+                return;
+            }
+            
+            // Si estamos en un iframe, mostrar mensaje adicional en el botón de reinicio
+            if (isInIframe) {
+                document.getElementById('restart-btn').innerHTML = 'Reiniciar página <br><small>(Si la página queda en blanco después, es porque localStorage NO funciona en este entorno)</small>';
+                document.getElementById('restart-btn-ca').innerHTML = 'Reiniciar pàgina <br><small>(Si la pàgina queda en blanc després, és perquè localStorage NO funciona en aquest entorn)</small>';
+            }
+            
+            if (isInIframe && isRestarted) {
+                return;
+            }
+            
+            if (isRestarted) {
+                // La página se ha reiniciado, comprobar si localStorage funcionó
+                try {
+                    const savedValue = localStorage.getItem(testKey);
+                    
+                    if (savedValue) {
+                        showSuccess('Se ha encontrado información en localStorage. La funcionalidad de localStorage está operativa en tu navegador. Has completado exitosamente la segunda fase de la prueba. Esto confirma que las aplicaciones web pueden guardar datos en tu dispositivo para usar entre sesiones.', 'S\'ha trobat informació al localStorage. La funcionalitat de localStorage està operativa al teu navegador. Has completat amb èxit la segona fase de la prova. Això confirma que les aplicacions web poden guardar dades al teu dispositiu per utilitzar entre sessions.');
+                        
+                        // Mostrar botones de descarga/copia
+                        document.getElementById('download-section').style.display = 'block';
+                        
+                        // Limpiar localStorage después de una prueba exitosa
+                        setTimeout(function() {
+                            try {
+                                localStorage.removeItem(testKey);
+                                showResetComplete();
+                            } catch (e) {
+                                console.error('Error al limpiar localStorage:', e);
+                            }
+                        }, 2000);
+                    } else {
+                        showError('No se ha encontrado información en localStorage. Si la página se acaba de reiniciar, esto indica que la segunda fase de la prueba ha fallado. localStorage no funciona correctamente en tu navegador. Puede que esté desactivado o que estés en modo incógnito/privado.', 'No s\'ha trobat informació al localStorage. Si la pàgina s\'acaba de reiniciar, això indica que la segona fase de la prova ha fallat. localStorage no funciona correctament al teu navegador. Pot ser que estigui desactivat o que estiguis en mode incògnit/privat.');
+                    }
+                } catch (e) {
+                    showError('Error al intentar leer de localStorage: ' + e.message + '. Esto indica que la segunda fase de la prueba ha fallado. localStorage no está disponible en tu navegador.', 'Error en intentar llegir de localStorage: ' + e.message + '. Això indica que la segona fase de la prova ha fallat. localStorage no està disponible al teu navegador.');
+                }
+            } else {
+                // Primera carga, intentar escribir en localStorage
+                try {
+                    localStorage.setItem(testKey, testValue);
+                    const readValue = localStorage.getItem(testKey);
+                    
+                    if (readValue === testValue) {
+                        showRestartOption();
+                    } else {
+                        showError('Error de verificación: el valor leído no coincide con el valor escrito. localStorage puede estar corrupto.', 'Error de verificació: el valor llegit no coincideix amb el valor escrit. localStorage pot estar corrupte.');
+                    }
+                } catch (e) {
+                    showError('Error al intentar escribir en localStorage: ' + e.message + '. Esto puede deberse a que localStorage está desactivado, estás en modo privado, o el almacenamiento está lleno.', 'Error en intentar escriure al localStorage: ' + e.message + '. Això pot ser degut a què localStorage està desactivat, estàs en mode privat, o l\'emmagatzematge està ple.');
+                }
+            }
+        }
+
+        function showSuccess(messageEs, messageCa) {
+            document.getElementById('test-result').className = 'message success';
+            document.getElementById('test-result').textContent = messageEs;
+            document.getElementById('test-result-ca').className = 'message success';
+            document.getElementById('test-result-ca').textContent = messageCa;
+        }
+        
+        function showResetComplete() {
+            const resetMsgEs = document.getElementById('test-result').textContent + ' Se ha limpiado localStorage para permitir repetir la prueba.';
+            const resetMsgCa = document.getElementById('test-result-ca').textContent + ' S\'ha netejat localStorage per permetre repetir la prova.';
+            
+            document.getElementById('test-result').textContent = resetMsgEs;
+            document.getElementById('test-result-ca').textContent = resetMsgCa;
+            
+            // Solo añadimos el botón si estamos en la fase final (después de la prueba completa)
+            const urlParams = new URLSearchParams(window.location.search);
+            const isRestarted = urlParams.get('restarted') === 'true';
+            
+            if (isRestarted) {
+                // Añadir enlace para repetir la prueba
+                const repeatBtnEs = document.createElement('button');
+                repeatBtnEs.textContent = 'Repetir prueba';
+                repeatBtnEs.style.marginTop = '15px';
+                repeatBtnEs.onclick = function() { 
+                    window.location.href = window.location.href.split('?')[0]; 
+                };
+                document.getElementById('test-result').parentNode.appendChild(repeatBtnEs);
+                
+                const repeatBtnCa = document.createElement('button');
+                repeatBtnCa.textContent = 'Repetir prova';
+                repeatBtnCa.style.marginTop = '15px';
+                repeatBtnCa.onclick = function() { 
+                    window.location.href = window.location.href.split('?')[0]; 
+                };
+                document.getElementById('test-result-ca').parentNode.appendChild(repeatBtnCa);
+            }
+        }
+
+        function showError(messageEs, messageCa) {
+            document.getElementById('test-result').className = 'message error';
+            document.getElementById('test-result').textContent = messageEs;
+            document.getElementById('test-result-ca').className = 'message error';
+            document.getElementById('test-result-ca').textContent = messageCa;
+            
+            // Si estamos en la primera carga (no hay parámetro restarted), mostrar la URL actual
+            const isRestarted = new URLSearchParams(window.location.search).get('restarted') === 'true';
+            if (!isRestarted) {
+                // Crear elemento para mostrar la URL actual (español)
+                const urlDisplayEs = document.createElement('div');
+                urlDisplayEs.className = 'message info';
+                urlDisplayEs.style.marginTop = '10px';
+                urlDisplayEs.style.marginBottom = '10px';
+                urlDisplayEs.innerHTML = '<strong>URL actual:</strong> ' + window.location.href.split('?')[0];
+                
+                // Insertar el elemento después del mensaje de error
+                document.getElementById('test-result').parentNode.insertBefore(urlDisplayEs, document.getElementById('test-result').nextSibling);
+                
+                // Lo mismo para catalán
+                const urlDisplayCa = document.createElement('div');
+                urlDisplayCa.className = 'message info';
+                urlDisplayCa.style.marginTop = '10px';
+                urlDisplayCa.style.marginBottom = '10px';
+                urlDisplayCa.innerHTML = '<strong>URL actual:</strong> ' + window.location.href.split('?')[0];
+                
+                document.getElementById('test-result-ca').parentNode.insertBefore(urlDisplayCa, document.getElementById('test-result-ca').nextSibling);
+            }
+        }
+
+        function showRestartOption() {
+            // Mostrar mensaje de éxito de la primera fase
+            document.getElementById('test-result').className = 'message success';
+            document.getElementById('test-result').textContent = 'Prueba inicial exitosa: localStorage puede escribir y leer datos. Has completado la primera fase de la prueba.';
+            
+            // Mostrar instrucciones para la segunda fase
+            document.getElementById('restart-info').style.display = 'block';
+            document.getElementById('restart-info').innerHTML = 'Se ha guardado información en localStorage. <strong>Segunda fase:</strong> Ahora reiniciaremos la página para verificar si los datos persisten después de cerrar y volver a abrir la página. Esto comprobará la función de memoria persistente.';
+            
+            // Crear elemento para mostrar la URL actual
+            const urlDisplayEs = document.createElement('div');
+            urlDisplayEs.className = 'message info';
+            urlDisplayEs.style.marginTop = '10px';
+            urlDisplayEs.style.marginBottom = '10px';
+            urlDisplayEs.innerHTML = '<strong>URL actual:</strong> ' + window.location.href.split('?')[0];
+            
+            // Insertar el elemento antes del botón
+            document.getElementById('restart-info').parentNode.insertBefore(urlDisplayEs, document.getElementById('restart-info').nextSibling);
+            
+            // Mostrar botón de reinicio
+            document.getElementById('restart-btn').style.display = 'inline-block';
+            
+            // Mismo proceso para el catalán
+            document.getElementById('test-result-ca').className = 'message success';
+            document.getElementById('test-result-ca').textContent = 'Prova inicial exitosa: localStorage pot escriure i llegir dades. Has completat la primera fase de la prova.';
+            
+            document.getElementById('restart-info-ca').style.display = 'block';
+            document.getElementById('restart-info-ca').innerHTML = 'S\'ha guardat informació al localStorage. <strong>Segona fase:</strong> Ara reiniciarem la pàgina per verificar si les dades persisteixen després de tancar i tornar a obrir la pàgina. Això comprovarà la funció de memòria persistent.';
+            
+            const urlDisplayCa = document.createElement('div');
+            urlDisplayCa.className = 'message info';
+            urlDisplayCa.style.marginTop = '10px';
+            urlDisplayCa.style.marginBottom = '10px';
+            urlDisplayCa.innerHTML = '<strong>URL actual:</strong> ' + window.location.href.split('?')[0];
+            
+            document.getElementById('restart-info-ca').parentNode.insertBefore(urlDisplayCa, document.getElementById('restart-info-ca').nextSibling);
+            
+            document.getElementById('restart-btn-ca').style.display = 'inline-block';
+        }
+
+        // Inicializar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Detectar si estamos en un iframe
+            const isInIframe = window !== window.top;
+            // Comprobar si la página se acaba de reiniciar
+            const urlParams = new URLSearchParams(window.location.search);
+            const isRestarted = urlParams.get('restarted') === 'true';
+            
+            // Solo mostrar la advertencia en la primera fase (no después de reiniciar)
+            if (isInIframe && !isRestarted) {
+                if (document.getElementById('embedded-warning')) {
+                    document.getElementById('embedded-warning').style.display = 'block';
+                }
+                if (document.getElementById('embedded-warning-ca')) {
+                    document.getElementById('embedded-warning-ca').style.display = 'block';
+                }
+            }
+            
+            // Configurar botones de idioma
+            document.getElementById('es-btn').addEventListener('click', function() {
+                setLanguage('es');
+            });
+            
+            document.getElementById('ca-btn').addEventListener('click', function() {
+                setLanguage('ca');
+            });
+
+            // Configurar botones de reinicio
+            document.getElementById('restart-btn').addEventListener('click', function() {
+                window.location.href = window.location.href.split('?')[0] + '?restarted=true';
+            });
+            
+            document.getElementById('restart-btn-ca').addEventListener('click', function() {
+                window.location.href = window.location.href.split('?')[0] + '?restarted=true';
+            });
+
+            // Función para mostrar u ocultar los botones de descarga/copia según la fase de la prueba
+            function updateDownloadButtons() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const isRestarted = urlParams.get('restarted') === 'true';
+                
+                // Solo mostramos los botones en la fase final (después de la prueba completa)
+                if (isRestarted) {
+                    document.getElementById('download-section').style.display = 'block';
+                } else {
+                    document.getElementById('download-section').style.display = 'none';
+                }
+            }
+            
+            // Función para descargar el código HTML
+            function downloadHTML() {
+                // Obtener el código HTML completo de la página
+                const htmlContent = document.documentElement.outerHTML;
+                
+                // Crear un objeto Blob con el contenido
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                
+                // Crear un enlace temporal para la descarga
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'localStorage-tester.html';
+                
+                // Simular clic en el enlace para iniciar la descarga
+                document.body.appendChild(a);
+                a.click();
+                
+                // Limpiar
+                document.body.removeChild(a);
+                URL.revokeObjectURL(a.href);
+            }
+
+            // Función para copiar el código HTML al portapapeles
+            function copyHTML() {
+                // Obtener el código HTML completo de la página
+                const htmlContent = document.documentElement.outerHTML;
+                
+                // Usar la API del portapapeles para copiar el texto
+                navigator.clipboard.writeText(htmlContent)
+                    .then(() => {
+                        // Mostrar mensaje de éxito según el idioma actual
+                        const currentLang = document.getElementById('content-ca').style.display === 'block' ? 'ca' : 'es';
+                        
+                        if (currentLang === 'ca') {
+                            document.getElementById('copy-message-ca').textContent = 'Codi HTML copiat al portapapers.';
+                            document.getElementById('copy-message-ca').style.display = 'block';
+                            
+                            // Ocultar el mensaje después de 3 segundos
+                            setTimeout(() => {
+                                document.getElementById('copy-message-ca').style.display = 'none';
+                            }, 3000);
+                        } else {
+                            document.getElementById('copy-message').textContent = 'Código HTML copiado al portapapeles.';
+                            document.getElementById('copy-message').style.display = 'block';
+                            
+                            // Ocultar el mensaje después de 3 segundos
+                            setTimeout(() => {
+                                document.getElementById('copy-message').style.display = 'none';
+                            }, 3000);
+                        }
+                    })
+                    .catch(err => {
+                        // Manejar errores
+                        console.error('Error al copiar al portapapeles:', err);
+                        alert(currentLang === 'ca' ? 
+                            'Error al copiar el codi. El teu navegador pot no suportar aquesta funció.' : 
+                            'Error al copiar el código. Tu navegador puede no soportar esta función.');
+                    });
+            }
+
+            // Añadir event listeners a los botones de descarga y copia
+            document.getElementById('download-btn').addEventListener('click', downloadHTML);
+            document.getElementById('copy-btn').addEventListener('click', copyHTML);
+            document.getElementById('download-btn-ca').addEventListener('click', downloadHTML);
+            document.getElementById('copy-btn-ca').addEventListener('click', copyHTML);
+
+            // Inicializar con el idioma detectado
+            setLanguage(detectLanguage());
+            
+            // Actualizar botones de descarga según la fase de la prueba
+            updateDownloadButtons();
+            
+            // Ejecutar la prueba
+            testLocalStorage();
+        });
+    </script>
+</body>
+</html>

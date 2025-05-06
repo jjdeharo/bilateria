@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de pan</title>
+    <style>
+        :root {
+            --primary-color: #8b5a2b;
+            --secondary-color: #d4a76a;
+            --background-color: #f9f3e6;
+            --text-color: #3a3a3a;
+            --border-color: #d4a76a;
+            --button-color: #8b5a2b;
+            --button-text: #fff;
+            --slider-thumb: #8b5a2b;
+            --slider-track: #d4a76a;
+            --danger-color: #d9534f;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .language-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .language-btn {
+            padding: 5px 10px;
+            background-color: #e0e0e0;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .language-btn.active {
+            background-color: var(--secondary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .calculator-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+        }
+
+        .input-section, .results-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .recommendation {
+            font-size: 14px;
+            color: var(--primary-color);
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .notification {
+            padding: 10px;
+            background-color: #f5f5dc;
+            border-left: 4px solid var(--primary-color);
+            margin-bottom: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            background-image: linear-gradient(var(--slider-track), var(--slider-track));
+            background-repeat: no-repeat;
+        }
+
+        input[type="range"]::-webkit-slider-thumb, input[type="range"]::-moz-range-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: var(--slider-thumb);
+            cursor: pointer;
+            border: none;
+        }
+
+        output {
+            display: inline-block;
+            width: 40px;
+            text-align: right;
+            margin-left: 10px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            justify-content: center; /* Center the radio options */
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer; /* Add cursor pointer */
+            padding: 10px 15px; /* Add padding */
+            border: 1px solid var(--border-color); /* Add border */
+            border-radius: 4px; /* Add border radius */
+            transition: background-color 0.3s, border-color 0.3s; /* Add transition */
+        }
+
+        .radio-option input[type="radio"] {
+            width: auto; /* Adjust width for radio button */
+            margin-right: 5px; /* Add some space */
+        }
+
+        .radio-option:hover {
+            background-color: #f0e0cc; /* Lighten background on hover */
+            border-color: var(--primary-color); /* Change border color on hover */
+        }
+
+        .radio-option input[type="radio"]:checked + label {
+            font-weight: bold; /* Bold text for checked option */
+            color: var(--primary-color); /* Change text color for checked option */
+        }
+
+
+        button {
+            background-color: var(--button-color);
+            color: var(--button-text);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #6d4522;
+        }
+
+        button.danger-btn {
+            background-color: var(--danger-color);
+        }
+
+        button.danger-btn:hover {
+            background-color: #c9302c;
+        }
+
+        button.small-btn {
+            padding: 8px 12px;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .results-section h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 5px;
+        }
+
+        .result-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+
+        .recipe-name {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .tips-section {
+            margin-top: 20px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tips-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 5px;
+        }
+
+        .tip-item {
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .tip-item:before {
+            content: "•";
+            position: absolute;
+            left: 5px;
+            color: var(--primary-color);
+        }
+
+        .buttons-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .buttons-container button {
+            flex: 1;
+        }
+
+        .saved-recipes-container {
+            margin-top: 15px;
+        }
+
+        .saved-recipes-container .input-group {
+            margin-bottom: 5px;
+        }
+
+        .recipe-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .recipe-actions button {
+            flex: 1;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-container {
+                flex-direction: column;
+            }
+            .language-selector {
+                position: static;
+                justify-content: center;
+                margin-bottom: 15px;
+            }
+            .buttons-container {
+                flex-direction: column;
+            }
+            .recipe-actions {
+                flex-direction: column;
+            }
+            .radio-group {
+                flex-direction: column; /* Stack radio options vertically on small screens */
+                align-items: center; /* Center items in the column */
+            }
+            .radio-option {
+                width: 80%; /* Make radio options take more width */
+                justify-content: center; /* Center content inside radio option */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-selector">
+        <button class="language-btn" id="btn-es">ES</button>
+        <button class="language-btn" id="btn-ca">CA</button>
+    </div>
+
+    <header>
+        <h1 id="main-title">Calculadora de pan</h1>
+        <p id="subtitle">Calcula las cantidades exactas para hornear el pan perfecto</p>
+    </header>
+
+    <div class="calculator-container">
+        <div class="input-section">
+
+           <div id="notification" class="notification"></div>
+
+            <div class="radio-group">
+                <div class="radio-option">
+                    <input type="radio" id="input-harina" name="input-method" value="harina" checked>
+                    <label for="input-harina" id="label-input-harina">Partiendo de harina</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="input-peso-final" name="input-method" value="peso-final">
+                    <label for="input-peso-final" id="label-input-peso-final">Partiendo de peso final</label>
+                </div>
+            </div>
+
+            <div class="input-group" id="harina-group">
+                <label for="cantidad-harina" id="label-cantidad-harina">Cantidad de harina (g):</label>
+                <input type="number" id="cantidad-harina" min="100" max="2000" value="500">
+            </div>
+
+            <div class="input-group" id="peso-final-group" style="display: none;">
+                <label for="peso-final" id="label-peso-final">Peso final deseado del pan (g):</label>
+                <input type="number" id="peso-final" min="250" max="1300" value="660">
+            </div>
+
+            <div class="input-group">
+                <label for="proteina" id="label-proteina">% de proteína en la harina:</label>
+                <input type="number" id="proteina" min="8" max="14" step="0.1" value="10" oninput="updateHidratacionRecomendada()">
+            </div>
+
+            <div class="input-group">
+                <label for="hidratacion" id="label-hidratacion">% de hidratación (agua):</label>
+                <input type="number" id="hidratacion" min="50" max="90" value="65">
+                <div id="hidratacion-recomendada" class="recommendation"></div>
+            </div>
+
+            <div class="input-group">
+                <label for="harina-integral" id="label-harina-integral">% de harina integral:</label>
+                <input type="range" id="harina-integral" min="0" max="100" value="0" step="5" oninput="mostrarTipoHarinaIntegral()">
+                <output for="harina-integral" id="valor-harina-integral">0%</output>
+            </div>
+
+
+            <div class="input-group" id="tipo-harina-integral-group" style="display: none;">
+                <label for="tipo-harina-integral" id="label-tipo-harina-integral">Tipo de harina integral:</label>
+                <select id="tipo-harina-integral">
+                    <option value="T80">T80 (Integral fina)</option>
+                    <option value="T110">T110 (Integral media)</option>
+                    <option value="T150" selected>T150 (Integral gruesa)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="temperatura-ambiente" id="label-temperatura-ambiente">Temperatura ambiente (°C):</label>
+                <input type="number" id="temperatura-ambiente" min="10" max="40" value="22">
+            </div>
+
+            <div class="input-group">
+                <label for="tipo-horno" id="label-tipo-horno">Tipo de horno:</label>
+                <select id="tipo-horno">
+                    <option value="normal">Normal</option>
+                    <option value="aire">De aire</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="rendimiento-horno" id="label-rendimiento-horno">Rendimiento del horno:</label>
+                <select id="rendimiento-horno">
+                    <option value="normal" selected>Normal</option>
+                    <option value="lento">Lento</option>
+                    <option value="potente">Potente</option>
+                </select>
+            </div>
+
+            <div class="buttons-container">
+                <button id="btn-calcular">Calcular</button>
+                <button id="btn-guardar">Guardar receta</button>
+            </div>
+
+            <div class="saved-recipes-container">
+                <div class="input-group">
+                    <label for="saved-recipes" id="label-saved-recipes">Recetas guardadas:</label>
+                    <select id="saved-recipes">
+                        <option value="" id="option-select-recipe">Seleccionar receta</option>
+                    </select>
+                </div>
+                <div class="recipe-actions">
+                    <button id="btn-borrar-recipe" class="small-btn danger-btn">Borrar receta</button>
+                    <button id="btn-borrar-todas" class="small-btn danger-btn">Borrar todas</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <h2 id="results-title">Resultados</h2>
+            <div id="results-content">
+                <p id="results-message">Introduce los datos y pulsa calcular para ver los resultados.</p>
+            </div>
+            <button id="btn-copiar-receta" class="small-btn" style="display:none;">Copiar receta</button>
+        </div>
+    </div>
+
+    <div class="tips-section">
+        <h3 id="tips-title">Consejos para hornear el pan perfecto</h3>
+        <div id="tips-content">
+            <div class="tip-item" id="tip-1">Todos los ingredientes deben estar a temperatura ambiente (salvo que se indique lo contrario) y deben pesarse con precisión.</div>
+            <div class="tip-item" id="tip-2">El orden de los ingredientes es importante: primero líquidos, luego sal, azúcar, harina, ingredientes sólidos específicos y finalmente la levadura.</div>
+            <div class="tip-item" id="tip-3">La levadura no debe entrar en contacto directo con la sal o líquidos muy fríos/calientes.</div>
+            <div class="tip-item" id="tip-4">La preparación del pan es sensible a las condiciones de temperatura y humedad. Ajusta los tiempos si es necesario.</div>
+            <div class="tip-item" id="tip-5">En días calurosos, usa líquidos más fríos para controlar la fermentación.</div>
+            <div class="tip-item" id="tip-6">El peso final es una estimación. La pérdida de agua (merma) durante el horneado puede variar (aquí se estima un 12.5%).</div>
+        </div>
+    </div>
+
+    <footer>
+        <div><a href="https://labia.tiddlyhost.com" target="_blank">Laboratorio de aplicaciones educativas</a></div>
+        <div><a href="https://bilateria.org" target="_blank">Aplicación hecha por Juan José de Haro</a></div>
+        <div><a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank">Esta obra está bajo una licencia Creative Commons BY‑SA</a></div>
+    </footer>
+
+    <script>
+        const translations = {
+            es: {
+                'main-title': 'Calculadora de pan',
+                'subtitle': 'Calcula las cantidades exactas para hornear el pan perfecto',
+                'label-input-harina': 'Partiendo de harina',
+                'label-input-peso-final': 'Partiendo de peso final deseado',
+                'label-cantidad-harina': 'Cantidad de harina (g):',
+                'label-peso-final': 'Peso final deseado del pan (g):',
+                'label-proteina': '% de proteína en la harina:',
+                'label-hidratacion': '% de hidratación (agua):',
+                'label-harina-integral': '% de harina integral:',
+                'label-tipo-harina-integral': 'Tipo de harina integral:',
+                'label-temperatura-ambiente': 'Temperatura ambiente (°C):',
+                'label-tipo-horno': 'Tipo de horno:',
+                'label-rendimiento-horno': 'Rendimiento del horno:',
+                'rendimiento-normal': 'Normal',
+                'rendimiento-lento': 'Lento',
+                'rendimiento-potente': 'Potente',
+                'label-saved-recipes': 'Recetas guardadas:',
+                'option-select-recipe': 'Seleccionar receta',
+                'btn-calcular': 'Calcular',
+                'btn-guardar': 'Guardar receta',
+                'btn-borrar-recipe': 'Borrar receta',
+                'btn-borrar-todas': 'Borrar todas',
+                'btn-copiar-receta': 'Copiar receta',
+                'results-title': 'Resultados',
+                'results-message': 'Introduce los datos y pulsa calcular para ver los resultados.',
+                'tips-title': 'Consejos para hornear el pan perfecto',
+                'tip-1': 'Todos los ingredientes deben estar a temperatura ambiente (salvo que se indique lo contrario) y deben pesarse con precisión.',
+                'tip-2': 'El orden de los ingredientes es importante: primero líquidos, luego sal, azúcar, harina, ingredientes sólidos específicos y finalmente la levadura.',
+                'tip-3': 'La levadura no debe entrar en contacto directo con la sal o líquidos muy fríos/calientes.',
+                'tip-4': 'La preparación del pan es sensible a las condiciones de temperatura y humedad. Ajusta los tiempos si es necesario.',
+                'tip-5': 'En días calurosos, usa líquidos más fríos para controlar la fermentación.',
+                'tip-6': 'El peso final es una estimación. La pérdida de agua (merma) durante el horneado puede variar (aquí se estima un 12.5%).',
+                'harina-normal': 'Harina normal',
+                'harina-integral': 'Harina integral',
+                'harina-total': 'Harina total',
+                'agua': 'Agua',
+                'levadura': 'Levadura seca de panadero',
+                'sal': 'Sal',
+                'azucar': 'Azúcar',
+                // 'peso-masa-inicial': 'Peso masa inicial', // Eliminada
+                'peso-final-estimado': 'Peso final estimado',
+                'tiempo-primera-fermentacion': 'Tiempo de 1ª fermentación',
+                'tiempo-fermentacion': 'Tiempo de 2ª fermentación',
+                'temperatura-horno': 'Temperatura del horno',
+                'tiempo-coccion': 'Tiempo de cocción',
+                'tiempo-total': 'Tiempo total estimado',
+                'gramos': 'g',
+                'mililitros': 'ml',
+                'minutos': 'minutos',
+                'horas': 'horas',
+                'grados': '°C',
+                'cucharadita': 'cucharadita',
+                'cucharada': 'cucharada',
+                'recipe-guardada': 'Receta guardada correctamente',
+                'recipe-cargada': 'Receta cargada',
+                'recipe-borrada': 'Receta eliminada',
+                'recipe-copiada': 'Receta copiada al portapapeles',
+                'todas-recipe-borradas': 'Todas las recetas eliminadas',
+                'confirmar-borrar': '¿Estás seguro de que deseas eliminar esta receta?',
+                'confirmar-borrar-todas': '¿Estás seguro de que deseas eliminar TODAS las recetas guardadas?',
+                'no-recipe-selected': 'No hay ninguna receta seleccionada',
+                'tipo-horno-normal': 'Normal',
+                'tipo-horno-aire': 'De aire',
+                'hidratacion-recomendada-baja': 'Recomendado: 55-60% para harina de baja proteína',
+                'hidratacion-recomendada-media': 'Recomendado: 60-65% para harina de proteína media',
+                'hidratacion-recomendada-alta': 'Recomendado: 65-75% para harina de alta proteína',
+                'hidratacion-recomendada': 'Recomendado',
+                'tipo-harina-integral-t80': 'T80 (Integral fina)',
+                'tipo-harina-integral-t110': 'T110 (Integral media)',
+                'tipo-harina-integral-t150': 'T150 (Integral gruesa)',
+                'nombre-recipe': 'Introduce un nombre para la receta:',
+                'nombre-recipe-default': 'Mi receta',
+                'max-harina-error': 'La cantidad máxima de harina permitida es 2000g. Se ha ajustado el cálculo.'
+            },
+            ca: {
+                'main-title': 'Calculadora de pa',
+                'subtitle': 'Calcula les quantitats exactes per fornejar el pa perfecte',
+                'label-input-harina': 'Partint de farina',
+                'label-input-peso-final': 'Partint de pes final desitjat',
+                'label-cantidad-harina': 'Quantitat de farina (g):',
+                'label-peso-final': 'Pes final desitjat del pa (g):',
+                'label-proteina': '% de proteïna a la farina:',
+                'label-hidratacion': '% d\'hidratació (aigua):',
+                'label-harina-integral': '% de farina integral:',
+                'label-tipo-harina-integral': 'Tipus de farina integral:',
+                'label-temperatura-ambiente': 'Temperatura ambient (°C):',
+                'label-tipo-horno': 'Tipus de forn:',
+                'label-rendimiento-horno': 'Rendiment del forn:',
+                'rendimiento-normal': 'Normal',
+                'rendimiento-lento': 'Lent',
+                'rendimiento-potente': 'Potent',
+                'label-saved-recipes': 'Receptes desades:',
+                'option-select-recipe': 'Seleccionar recepta',
+                'btn-calcular': 'Calcular',
+                'btn-guardar': 'Desar recepta',
+                'btn-borrar-recipe': 'Esborrar recepta',
+                'btn-borrar-todas': 'Esborrar totes',
+                'btn-copiar-receta': 'Copiar recepta',
+                'results-title': 'Resultats',
+                'results-message': 'Introdueix les dades i prem calcular per veure els resultats.',
+                'tips-title': 'Consells per fornejar el pa perfecte',
+                'tip-1': 'Tots els ingredients han d\'estar a temperatura ambient (tret que s\'indiqui el contrari) i s\'han de pesar amb precisió.',
+                'tip-2': 'L\'ordre dels ingredients és important: primer líquids, després sal, sucre, farina, ingredients sòlids específics i finalment el llevat.',
+                'tip-3': 'El llevat no ha d\'entrar en contacte directe amb la sal o líquids molt freds/calents.',
+                'tip-4': 'La preparació del pa és sensible a les condicions de temperatura i humitat. Ajusta els temps si és necessari.',
+                'tip-5': 'En dies calorosos, fes servir líquids més freds per controlar la fermentació.',
+                'tip-6': 'El pes final és una estimació. La pèrdua d\'aigua (minva) durant l\'enfornat pot variar (aquí s\'estima un 12,5%).',
+                'harina-normal': 'Farina normal',
+                'harina-integral': 'Farina integral',
+                'harina-total': 'Farina total',
+                'agua': 'Aigua',
+                'levadura': 'Llevat sec de forner',
+                'sal': 'Sal',
+                'azucar': 'Sucre',
+                // 'peso-masa-inicial': 'Pes massa inicial', // Eliminada
+                'peso-final-estimado': 'Pes final estimat',
+                'tiempo-primera-fermentacion': 'Temps de 1a fermentació',
+                'tiempo-fermentacion': 'Temps de 2a fermentació',
+                'temperatura-horno': 'Temperatura del forn',
+                'tiempo-coccion': 'Temps de cocció',
+                'tiempo-total': 'Temps total estimat',
+                'gramos': 'g',
+                'mililitros': 'ml',
+                'minutos': 'minuts',
+                'horas': 'hores',
+                'grados': '°C',
+                'cucharadita': 'culleradeta',
+                'cucharada': 'cullerada',
+                'recipe-guardada': 'Recepta desada correctament',
+                'recipe-cargada': 'Recepta carregada',
+                'recipe-borrada': 'Recepta eliminada',
+                'recipe-copiada': 'Recepta copiada al portapapers',
+                'todas-recipe-borradas': 'Totes les receptes eliminades',
+                'confirmar-borrar': 'Estàs segur que vols eliminar aquesta recepta?',
+                'confirmar-borrar-todas': 'Estàs segur que vols eliminar TOTES les receptes desades?',
+                'no-recipe-selected': 'No hi ha cap recepta seleccionada',
+                'tipo-horno-normal': 'Normal',
+                'tipo-horno-aire': 'D\'aire',
+                'hidratacion-recomendada-baja': 'Recomanat: 55-60% per farina de baixa proteïna',
+                'hidratacion-recomendada-media': 'Recomanat: 60-65% per farina de proteïna mitjana',
+                'hidratacion-recomendada-alta': 'Recomanat: 65-75% per farina d\'alta proteïna',
+                'hidratacion-recomendada': 'Recomanat',
+                'tipo-harina-integral-t80': 'T80 (Integral fina)',
+                'tipo-harina-integral-t110': 'T110 (Integral mitjana)',
+                'tipo-harina-integral-t150': 'T150 (Integral gruixuda)',
+                'nombre-recipe': 'Introdueix un nom per a la recepta:',
+                'nombre-recipe-default': 'La meva recepta',
+                'max-harina-error': 'La quantitat màxima de farina permesa és 2000g. S\'ha ajustat el càlcul.'
+            }
+        };
+        let currentLang = 'es';
+        const RECETA_ACTUAL_KEY = 'panRecetaActual';
+        const RECETAS_KEY = 'panRecetas';
+        const MERMA_FACTOR = 0.125; // Factor de merma (pérdida de peso) por horneado (12.5%)
+
+        // Función para mostrar notificaciones temporales
+        function mostrarNotificacion(mensaje, duracion = 3000) {
+            const notificacion = document.getElementById('notification');
+            notificacion.textContent = mensaje;
+            notificacion.style.display = 'block';
+
+            setTimeout(() => {
+                notificacion.style.display = 'none';
+            }, duracion);
+        }
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.documentElement.lang = lang; // Set html lang attribute
+            document.getElementById('btn-es').classList.toggle('active', lang === 'es');
+            document.getElementById('btn-ca').classList.toggle('active', lang === 'ca');
+
+            for (const [key, value] of Object.entries(translations[lang])) {
+                const el = document.getElementById(key);
+                if (!el) {
+                    // console.warn(`Element with ID "${key}" not found for translation.`);
+                    continue;
+                }
+                 if (key.startsWith('tip-')) { // Handle tip translations
+                    el.textContent = value;
+                 } else if (el.tagName === 'INPUT' && (el.type === 'button' || el.type === 'submit')) {
+                    el.value = value;
+                } else if (el.tagName === 'BUTTON') {
+                    el.textContent = value;
+                } else {
+                    el.textContent = value;
+                }
+            }
+
+            const slider = document.getElementById('harina-integral');
+            document.getElementById('valor-harina-integral').textContent = slider.value + '%';
+            const pct = (slider.value - slider.min) * 100 / (slider.max - slider.min);
+            slider.style.backgroundSize = pct + '% 100%';
+
+            // Update selects with translated options
+            document.getElementById('tipo-horno').innerHTML = `
+                <option value="normal">${translations[lang]['tipo-horno-normal']}</option>
+                <option value="aire">${translations[lang]['tipo-horno-aire']}</option>
+            `;
+            document.getElementById('tipo-harina-integral').innerHTML = `
+                <option value="T80">${translations[lang]['tipo-harina-integral-t80']}</option>
+                <option value="T110">${translations[lang]['tipo-harina-integral-t110']}</option>
+                <option value="T150">${translations[lang]['tipo-harina-integral-t150']}</option>
+            `;
+             document.getElementById('rendimiento-horno').innerHTML = `
+                <option value="normal">${translations[lang]['rendimiento-normal']}</option>
+                <option value="lento">${translations[lang]['rendimiento-lento']}</option>
+                <option value="potente">${translations[lang]['rendimiento-potente']}</option>
+            `;
+
+            // Reload saved state to apply language if necessary
+            const recetaActualJSON = localStorage.getItem(RECETA_ACTUAL_KEY);
+            if (recetaActualJSON) {
+                 const recetaActual = JSON.parse(recetaActualJSON);
+                 // Re-apply current values to ensure selects are correct
+                 if (recetaActual.tipoHorno) document.getElementById('tipo-horno').value = recetaActual.tipoHorno;
+                 if (recetaActual.tipoHarinaIntegral) document.getElementById('tipo-harina-integral').value = recetaActual.tipoHarinaIntegral;
+                 if (recetaActual.rendimientoHorno) document.getElementById('rendimiento-horno').value = recetaActual.rendimientoHorno;
+            }
+
+            updateHidratacionRecomendada();
+            mostrarTipoHarinaIntegral();
+            cargarListaRecetas(); // Update saved recipes dropdown translations
+            // Refresh calculation results with new language
+            calcular();
+            // Save current state with new language
+            guardarRecetaActual();
+        }
+
+
+        function updateHidratacionRecomendada() {
+            const t = translations[currentLang];
+            const proteina = parseFloat(document.getElementById('proteina').value);
+            const porcentajeHarinaIntegral = parseInt(document.getElementById('harina-integral').value);
+            let tipoHarinaIntegral = 'T150'; // Valor por defecto
+
+            if (porcentajeHarinaIntegral > 0) {
+                tipoHarinaIntegral = document.getElementById('tipo-harina-integral').value;
+            }
+
+            // Rangos base según proteína
+            let rangoMin, rangoMax;
+            if (proteina < 9) {
+                rangoMin = 55;
+                rangoMax = 60;
+            } else if (proteina < 12) {
+                rangoMin = 60;
+                rangoMax = 65;
+            } else {
+                rangoMin = 65;
+                rangoMax = 75;
+            }
+
+            // Ajuste según porcentaje de harina integral
+            if (porcentajeHarinaIntegral > 0) {
+                // Factor según tipo de harina integral
+                let factorAjuste;
+                switch (tipoHarinaIntegral) {
+                    case 'T80': factorAjuste = 0.05; break; // 5% más de agua por cada 100% de harina T80
+                    case 'T110': factorAjuste = 0.10; break; // 10% más de agua por cada 100% de harina T110
+                    case 'T150': factorAjuste = 0.15; break; // 15% más de agua por cada 100% de harina T150
+                    default: factorAjuste = 0.10;
+                }
+
+                // Aplicar el ajuste proporcional al % de harina integral
+                const ajuste = Math.round(factorAjuste * porcentajeHarinaIntegral);
+                rangoMin += ajuste;
+                rangoMax += ajuste;
+            }
+
+            // Limitar valores máximos
+            rangoMin = Math.min(rangoMin, 85);
+            rangoMax = Math.min(rangoMax, 90);
+
+            // Construir el mensaje de recomendación
+            let mensaje;
+            if (porcentajeHarinaIntegral === 0) {
+                if (proteina < 9) mensaje = t['hidratacion-recomendada-baja'];
+                else if (proteina < 12) mensaje = t['hidratacion-recomendada-media'];
+                else mensaje = t['hidratacion-recomendada-alta'];
+            } else {
+                // Mensaje personalizado con los rangos calculados
+                mensaje = `${t['hidratacion-recomendada']}: ${rangoMin}-${rangoMax}%`;
+                // Añadir información del tipo de harina (solo si hay harina integral)
+                const tipoHarinaKey = `tipo-harina-integral-${tipoHarinaIntegral.toLowerCase()}`;
+                 const tipoHarinaTexto = t[tipoHarinaKey] || tipoHarinaIntegral; // Fallback to value if key not found
+                mensaje += ` [${porcentajeHarinaIntegral}% ${tipoHarinaTexto}]`;
+            }
+
+            document.getElementById('hidratacion-recomendada').textContent = mensaje;
+        }
+
+        // Función para copiar la receta al portapapeles
+        function copiarReceta() {
+            const t = translations[currentLang];
+            const resultsContent = document.getElementById('results-content');
+
+            // Comprobar si hay resultados para copiar
+            if (resultsContent.querySelector('.result-item') === null) {
+                mostrarNotificacion(t['results-message']);
+                return;
+            }
+
+            // Crear una versión en texto plano de los resultados
+            let recetaTexto = '';
+            recetaTexto += `=== ${t['main-title']} ===\n\n`;
+            // Obtener todos los items de resultado
+            const items = resultsContent.querySelectorAll('.result-item');
+            items.forEach(item => {
+                const nombreRecetaElement = item.querySelector('.recipe-name');
+                 if (nombreRecetaElement) { // Ensure the element exists
+                    const nombreReceta = nombreRecetaElement.textContent;
+                     // Quitar los dos puntos del final del nombre si existen
+                     const nombre = nombreReceta.endsWith(':') ? nombreReceta.substring(0, nombreReceta.length - 1) : nombreReceta;
+                     // El resto del texto sin el nombre
+                     const contenido = item.textContent.substring(nombreReceta.length);
+                     recetaTexto += `${nombre}: ${contenido.trim()}\n`;
+                 } else if (!item.querySelector('hr')) { // Don't copy separators
+                     recetaTexto += `${item.textContent.trim()}\n`; // Copy other potential lines
+                 }
+            });
+            recetaTexto += `\n${t['tip-6']}\n`; // Add the disclaimer about estimation
+
+            // Usar el API de portapapeles para copiar el texto
+            navigator.clipboard.writeText(recetaTexto)
+                .then(() => {
+                    mostrarNotificacion(t['recipe-copiada']);
+                })
+                .catch(err => {
+                    console.error('Error al copiar la receta: ', err);
+                    // Método alternativo de copia (menos seguro)
+                    const textarea = document.createElement('textarea');
+                    textarea.value = recetaTexto;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    mostrarNotificacion(t['recipe-copiada']);
+                });
+        }
+
+        function mostrarTipoHarinaIntegral() {
+            const porcentajeHarinaIntegral = parseInt(document.getElementById('harina-integral').value);
+            const tipoHarinaIntegralGroup = document.getElementById('tipo-harina-integral-group');
+
+            if (porcentajeHarinaIntegral > 0) {
+                tipoHarinaIntegralGroup.style.display = 'block';
+            } else {
+                tipoHarinaIntegralGroup.style.display = 'none';
+            }
+            // Actualizar la recomendación de hidratación ya que depende del tipo de harina
+            updateHidratacionRecomendada();
+             // Recalcular al cambiar el tipo de harina
+            calcular();
+            // Guardar la receta actual
+            guardarRecetaActual();
+        }
+
+        function calcularFactorLevadura(porcentajeProteina, porcentajeHarinaIntegral, tipoHarinaIntegral) {
+             let factorLevadura = 0.012; // 1,2% base
+
+            // Ajuste por proteína (más proteína = menos levadura)
+            if (porcentajeProteina > 12) factorLevadura = 0.009;
+            else if (porcentajeProteina < 9) factorLevadura = 0.015;
+
+            // Ajuste por harina integral
+            if (porcentajeHarinaIntegral > 0) {
+                let factorExtra;
+                switch (tipoHarinaIntegral) {
+                    case 'T80': factorExtra = 0.1; break;
+                    case 'T110': factorExtra = 0.2; break;
+                    case 'T150': factorExtra = 0.3; break;
+                    default: factorExtra = 0.1;
+                }
+                factorLevadura *= 1 + (porcentajeHarinaIntegral / 100) * factorExtra;
+            }
+
+            // Limitar entre 0.005 (0.5%) y 0.02 (2%)
+            factorLevadura = Math.min(Math.max(factorLevadura, 0.005), 0.02);
+            return factorLevadura;
+        }
+
+
+        function calcular() {
+            const t = translations[currentLang];
+            const inputMethod = document.querySelector('input[name="input-method"]:checked').value;
+
+            // --- Read Inputs ---
+            const porcentajeProteina = parseFloat(document.getElementById('proteina').value);
+            const porcentajeHidratacion = parseFloat(document.getElementById('hidratacion').value);
+            const porcentajeHarinaIntegral = parseInt(document.getElementById('harina-integral').value);
+            const tipoHarinaIntegral = porcentajeHarinaIntegral > 0 ? document.getElementById('tipo-harina-integral').value : null;
+            const temperaturaAmbiente = parseFloat(document.getElementById('temperatura-ambiente').value);
+            const tipoHorno = document.getElementById('tipo-horno').value;
+            const rendimientoHorno = document.getElementById('rendimiento-horno').value;
+
+            let cantidadHarina = 0;
+            let pesoFinalEstimado = 0;
+            let pesoMasaInicial = 0;
+
+             // --- Calculate Yeast Factor ---
+            const factorLevadura = calcularFactorLevadura(porcentajeProteina, porcentajeHarinaIntegral, tipoHarinaIntegral);
+
+            // --- Determine Flour Amount ---
+            if (inputMethod === 'harina') {
+                cantidadHarina = parseFloat(document.getElementById('cantidad-harina').value);
+                if (cantidadHarina > 2000) {
+                    cantidadHarina = 2000;
+                    document.getElementById('cantidad-harina').value = 2000;
+                    mostrarNotificacion(t['max-harina-error']);
+                } else if (cantidadHarina < 100) {
+                    cantidadHarina = 100;
+                    document.getElementById('cantidad-harina').value = 100;
+                }
+            } else { // inputMethod === 'peso-final'
+                let pesoFinalDeseado = parseFloat(document.getElementById('peso-final').value);
+                 const pesoMin = 250;
+                 const pesoMax = 1300;
+                 if (pesoFinalDeseado < pesoMin) {
+                    document.getElementById('peso-final').value = pesoMin;
+                     pesoFinalDeseado = pesoMin;
+                 } else if (pesoFinalDeseado > pesoMax) {
+                    document.getElementById('peso-final').value = pesoMax;
+                     pesoFinalDeseado = pesoMax;
+                 }
+
+                // Estimar la harina necesaria
+                const pesoMasaInicialEstimada = pesoFinalDeseado / (1 - MERMA_FACTOR);
+                const factorTotal = 1 + (porcentajeHidratacion / 100) + 0.02 /*sal*/ + factorLevadura + 0.01 /*azucar*/;
+                cantidadHarina = pesoMasaInicialEstimada / factorTotal;
+
+                // Check max flour constraint and adjust if needed
+                if (cantidadHarina > 2000) {
+                    cantidadHarina = 2000;
+                    // Recalculate ingredients based on max flour
+                    const cantidadAguaAjustada = Math.round(cantidadHarina * porcentajeHidratacion / 100);
+                    const cantidadSalAjustada = Math.round(cantidadHarina * 0.02);
+                    const cantidadLevaduraAjustada = Math.round(cantidadHarina * factorLevadura * 10) / 10;
+                    const cantidadAzucarAjustada = Math.round(cantidadHarina * 0.01);
+                    const pesoMasaInicialAjustada = cantidadHarina + cantidadAguaAjustada + cantidadSalAjustada + cantidadLevaduraAjustada + cantidadAzucarAjustada;
+                    const pesoFinalReajustado = pesoMasaInicialAjustada * (1 - MERMA_FACTOR);
+                    document.getElementById('peso-final').value = Math.round(pesoFinalReajustado); // Update input field
+                    mostrarNotificacion(t['max-harina-error']);
+                 } else if (cantidadHarina < 100) {
+                    cantidadHarina = 100;
+                     // Recalculate ingredients based on min flour
+                    const cantidadAguaAjustada = Math.round(cantidadHarina * porcentajeHidratacion / 100);
+                    const cantidadSalAjustada = Math.round(cantidadHarina * 0.02);
+                    const cantidadLevaduraAjustada = Math.round(cantidadHarina * factorLevadura * 10) / 10;
+                    const cantidadAzucarAjustada = Math.round(cantidadHarina * 0.01);
+                    const pesoMasaInicialAjustada = cantidadHarina + cantidadAguaAjustada + cantidadSalAjustada + cantidadLevaduraAjustada + cantidadAzucarAjustada;
+                    const pesoFinalReajustado = pesoMasaInicialAjustada * (1 - MERMA_FACTOR);
+                    document.getElementById('peso-final').value = Math.round(pesoFinalReajustado);
+                 }
+            }
+
+            cantidadHarina = Math.round(cantidadHarina);
+
+            // --- Calculate Ingredients ---
+            const cantidadAgua = Math.round(cantidadHarina * porcentajeHidratacion / 100);
+            const cantidadSal = Math.round(cantidadHarina * 0.02);
+            const cantidadLevadura = Math.round(cantidadHarina * factorLevadura * 10) / 10; // Round to one decimal place
+            const cantidadLevaduraCucharaditas = (cantidadLevadura / 3.5).toFixed(1); // Approx. 3.5g per tsp
+            const cantidadAzucar = Math.round(cantidadHarina * 0.01);
+            const cantidadHarinaIntegral = Math.round(cantidadHarina * porcentajeHarinaIntegral/100);
+            const cantidadHarinaNormal = cantidadHarina - cantidadHarinaIntegral;
+
+            // --- Calculate Weights ---
+            pesoMasaInicial = cantidadHarina + cantidadAgua + cantidadSal + cantidadLevadura + cantidadAzucar;
+            pesoFinalEstimado = pesoMasaInicial * (1 - MERMA_FACTOR);
+
+
+            // --- Calculate Times & Temperatures ---
+            // 1st Fermentation
+            let tiempoPrimeraFermentacion = temperaturaAmbiente < 20 ? 2.5 : temperaturaAmbiente > 25 ? 1 : 1.5; // Base hours
+            if (porcentajeProteina > 12) tiempoPrimeraFermentacion *= 1.2;
+            else if (porcentajeProteina < 9) tiempoPrimeraFermentacion *= 0.8;
+            // Adjust for integral flour type
+            let factorTiempoIntegral1 = 0.3;
+            if (porcentajeHarinaIntegral > 0) {
+                switch(tipoHarinaIntegral) {
+                    case 'T80': factorTiempoIntegral1 = 0.2; break;
+                    case 'T110': factorTiempoIntegral1 = 0.3; break;
+                    case 'T150': factorTiempoIntegral1 = 0.5; break;
+                }
+                tiempoPrimeraFermentacion *= 1 + porcentajeHarinaIntegral/100 * factorTiempoIntegral1;
+            }
+            tiempoPrimeraFermentacion = Math.round(tiempoPrimeraFermentacion * 10)/10; // Round to one decimal place (hours)
+
+             // 2nd Fermentation
+            let tiempoFermentacion = temperaturaAmbiente < 20 ? 75 : temperaturaAmbiente > 25 ? 45 : 60; // Base minutes
+            if (porcentajeProteina > 12) tiempoFermentacion *= 1.2;
+            else if (porcentajeProteina < 9) tiempoFermentacion *= 0.8;
+            // Adjust for integral flour type
+            let factorTiempoIntegral2 = 0.4;
+             if (porcentajeHarinaIntegral > 0) {
+                switch(tipoHarinaIntegral) {
+                    case 'T80': factorTiempoIntegral2 = 0.3; break;
+                    case 'T110': factorTiempoIntegral2 = 0.4; break;
+                    case 'T150': factorTiempoIntegral2 = 0.6; break;
+                }
+                tiempoFermentacion *= 1 + porcentajeHarinaIntegral/100 * factorTiempoIntegral2;
+            }
+            tiempoFermentacion = Math.round(tiempoFermentacion); // Round to nearest minute
+
+
+            // Oven Temperature
+            let temperaturaHornoCalc = tipoHorno === 'aire' ? 200 : 220;
+            if (porcentajeHarinaIntegral > 50 && tipoHarinaIntegral) {
+                 switch(tipoHarinaIntegral) {
+                    case 'T80': temperaturaHornoCalc -= 5; break;
+                    case 'T110': temperaturaHornoCalc -= 10; break;
+                    case 'T150': temperaturaHornoCalc -= 15; break;
+                }
+            }
+             // Adjust for oven performance
+            switch (rendimientoHorno) {
+                case 'lento': temperaturaHornoCalc += 10; break;
+                case 'potente': temperaturaHornoCalc -= 10; break;
+            }
+
+
+            // Baking Time
+            let tiempoCoccion;
+            const pesoRef = Math.round(pesoFinalEstimado); // Use estimated final weight for time calculation
+            if (tipoHorno === 'aire') {
+                if (pesoRef < 600) tiempoCoccion = 40;
+                else if (pesoRef > 900) tiempoCoccion = 60;
+                else tiempoCoccion = 50;
+            } else { // Normal oven
+                if (pesoRef < 600) tiempoCoccion = 45;
+                else if (pesoRef > 900) tiempoCoccion = 65;
+                else tiempoCoccion = 55;
+            }
+             // Adjust for integral flour type
+             if (porcentajeHarinaIntegral > 50 && tipoHarinaIntegral) {
+                 switch(tipoHarinaIntegral) {
+                    case 'T80': tiempoCoccion += 5; break;
+                    case 'T110': tiempoCoccion += 8; break;
+                    case 'T150': tiempoCoccion += 10; break;
+                }
+            }
+             // Adjust for oven performance
+            switch (rendimientoHorno) {
+                case 'lento': tiempoCoccion += 5; break;
+                case 'potente': tiempoCoccion -= 5; break;
+            }
+            tiempoCoccion = Math.max(30, tiempoCoccion); // Ensure minimum baking time
+
+
+             // Total Time
+            const tiempoTotalMinutos = (tiempoPrimeraFermentacion * 60) + tiempoFermentacion + tiempoCoccion;
+            const tiempoTotalHoras = Math.floor(tiempoTotalMinutos / 60);
+            const tiempoTotalMinutosRestantes = Math.round(tiempoTotalMinutos % 60);
+
+
+            // --- Display Results ---
+            let resultHTML = '';
+            resultHTML += `<div class="result-item"><span class="recipe-name">${t['harina-normal']}:</span> ${cantidadHarinaNormal} ${t['gramos']}</div>`;
+            if (porcentajeHarinaIntegral > 0 && tipoHarinaIntegral) {
+                 const tipoHarinaKey = `tipo-harina-integral-${tipoHarinaIntegral.toLowerCase()}`;
+                 const tipoHarinaTexto = t[tipoHarinaKey] || tipoHarinaIntegral;
+                 resultHTML += `<div class="result-item"><span class="recipe-name">${t['harina-integral']} (${tipoHarinaTexto}):</span> ${cantidadHarinaIntegral} ${t['gramos']}</div>`;
+            }
+            resultHTML += `<div class="result-item"><span class="recipe-name">${t['harina-total']}:</span> ${cantidadHarina} ${t['gramos']}</div>`;
+            resultHTML += `<div class="result-item"><span class="recipe-name">${t['agua']} (${porcentajeHidratacion}%):</span> ${cantidadAgua} ${t['mililitros']}</div>`;
+            resultHTML += `<div class="result-item"><span class="recipe-name">${t['levadura']}:</span> ${cantidadLevadura} ${t['gramos']} (~${cantidadLevaduraCucharaditas} ${t['cucharadita']})</div>`;
+            resultHTML += `<div class="result-item"><span class="recipe-name">${t['sal']}:</span> ${cantidadSal} ${t['gramos']}</div>`;
+            if (cantidadAzucar > 0) {
+                resultHTML += `<div class="result-item"><span class="recipe-name">${t['azucar']}:</span> ${cantidadAzucar} ${t['gramos']}</div>`;
+            }
+            // Línea eliminada -> resultHTML += `<div class="result-item"><span class="recipe-name">${t['peso-masa-inicial']}:</span> ${Math.round(pesoMasaInicial)} ${t['gramos']}</div>`;
+            resultHTML += `<div class="result-item"><span class="recipe-name">${t['peso-final-estimado']}:</span> ${Math.round(pesoFinalEstimado)} ${t['gramos']}</div>`;
+            resultHTML += `<hr style="border: none; border-top: 1px dashed var(--secondary-color); margin: 10px 0;">`;
+            resultHTML += `<div class="result-item"><span class="recipe-name">${t['tiempo-primera-fermentacion']}:</span> ${tiempoPrimeraFermentacion} ${t['horas']}</div>`;
+            resultHTML += `<div class="result-item"><span class="recipe-name">${t['tiempo-fermentacion']}:</span> ${tiempoFermentacion} ${t['minutos']}</div>`;
+            resultHTML += `<div class="result-item"><span class="recipe-name">${t['temperatura-horno']}:</span> ${temperaturaHornoCalc} ${t['grados']}</div>`;
+            resultHTML += `<div class="result-item"><span class="recipe-name">${t['tiempo-coccion']}:</span> ${tiempoCoccion} ${t['minutos']}</div>`;
+            resultHTML += `<div class="result-item"><span class="recipe-name">${t['tiempo-total']}:</span> ${tiempoTotalHoras} ${t['horas']} ${tiempoTotalMinutosRestantes > 0 ? `${tiempoTotalMinutosRestantes} ${t['minutos']}` : ''}</div>`;
+
+            document.getElementById('results-content').innerHTML = resultHTML;
+            document.getElementById('btn-copiar-receta').style.display = 'block';
+            // Guardar la receta actual después de calcular
+            guardarRecetaActual();
+        }
+
+
+        // Función para guardar automáticamente la receta actual
+        function guardarRecetaActual() {
+             const recetaActual = {
+                inputMethod: document.querySelector('input[name="input-method"]:checked').value,
+                cantidadHarina: document.getElementById('cantidad-harina').value,
+                pesoFinal: document.getElementById('peso-final').value,
+                proteina: document.getElementById('proteina').value,
+                hidratacion: document.getElementById('hidratacion').value,
+                harinaIntegral: document.getElementById('harina-integral').value,
+                tipoHarinaIntegral: document.getElementById('tipo-harina-integral').value,
+                temperaturaAmbiente: document.getElementById('temperatura-ambiente').value,
+                tipoHorno: document.getElementById('tipo-horno').value,
+                rendimientoHorno: document.getElementById('rendimiento-horno').value,
+                idioma: currentLang
+            };
+            localStorage.setItem(RECETA_ACTUAL_KEY, JSON.stringify(recetaActual));
+        }
+
+        function guardarReceta() {
+            const t = translations[currentLang];
+            const nombreDefault = t['nombre-recipe-default'];
+            const nombreReceta = prompt(t['nombre-recipe'], nombreDefault);
+
+            if (!nombreReceta) return; // Si el usuario cancela
+
+            const receta = {
+                nombre: nombreReceta,
+                inputMethod: document.querySelector('input[name="input-method"]:checked').value,
+                cantidadHarina: document.getElementById('cantidad-harina').value,
+                pesoFinal: document.getElementById('peso-final').value,
+                proteina: document.getElementById('proteina').value,
+                hidratacion: document.getElementById('hidratacion').value,
+                harinaIntegral: document.getElementById('harina-integral').value,
+                tipoHarinaIntegral: document.getElementById('tipo-harina-integral').value,
+                temperaturaAmbiente: document.getElementById('temperatura-ambiente').value,
+                tipoHorno: document.getElementById('tipo-horno').value,
+                rendimientoHorno: document.getElementById('rendimiento-horno').value,
+                idioma: currentLang // Guardar idioma actual con la receta
+            };
+            // Obtener recetas existentes o inicializar un array vacío
+            let recetas = JSON.parse(localStorage.getItem(RECETAS_KEY) || '[]');
+            // Comprobar si ya existe una receta con ese nombre
+            const indiceExistente = recetas.findIndex(r => r.nombre === nombreReceta);
+            if (indiceExistente >= 0) {
+                recetas[indiceExistente] = receta; // Sobreescribir la existente
+            } else {
+                recetas.push(receta); // Añadir una nueva
+            }
+
+            // Guardar en localStorage
+            localStorage.setItem(RECETAS_KEY, JSON.stringify(recetas));
+            // Actualizar la lista desplegable
+            cargarListaRecetas();
+            // Seleccionar la receta recién guardada/actualizada
+            document.getElementById('saved-recipes').value = nombreReceta;
+            // Mostrar notificación
+            mostrarNotificacion(t['recipe-guardada']);
+        }
+
+        function cargarListaRecetas() {
+            const t = translations[currentLang];
+            const select = document.getElementById('saved-recipes');
+            const valorActual = select.value; // Guardar el valor seleccionado actualmente
+
+            // Limpiar opciones existentes y añadir opción predeterminada
+            select.innerHTML = `<option value="">${t['option-select-recipe']}</option>`;
+            // Obtener recetas guardadas
+            const recetas = JSON.parse(localStorage.getItem(RECETAS_KEY) || '[]');
+            // Añadir cada receta al select
+            for (const receta of recetas) {
+                const option = document.createElement('option');
+                option.value = receta.nombre;
+                option.textContent = receta.nombre;
+                select.appendChild(option);
+            }
+
+            // Restaurar el valor seleccionado si aún existe
+             if (recetas.some(r => r.nombre === valorActual)) {
+                select.value = valorActual;
+            }
+
+            // Mostrar/ocultar botones según si hay recetas
+            const botonesBorrar = document.querySelectorAll('.recipe-actions button');
+            botonesBorrar.forEach(btn => {
+                btn.style.display = recetas.length > 0 ? 'block' : 'none';
+            });
+        }
+
+        function cargarReceta(nombreReceta) {
+            if (!nombreReceta) return;
+            const t = translations[currentLang];
+            const recetas = JSON.parse(localStorage.getItem(RECETAS_KEY) || '[]');
+            const receta = recetas.find(r => r.nombre === nombreReceta);
+            if (!receta) return;
+
+            // Cambiar idioma si la receta guardada tiene uno diferente
+            if (receta.idioma && receta.idioma !== currentLang) {
+                changeLanguage(receta.idioma); // Esto aplicará la receta y recalculará
+             } else {
+                 aplicarReceta(receta); // Aplicar valores y recalcular
+            }
+
+            // Mostrar notificación
+            mostrarNotificacion(t['recipe-cargada']);
+        }
+
+         function cargarRecetaActual() {
+            const recetaActualJSON = localStorage.getItem(RECETA_ACTUAL_KEY);
+            if (!recetaActualJSON) return false; // No hay receta guardada
+
+            try {
+                const recetaActual = JSON.parse(recetaActualJSON);
+
+                // Establecer idioma ANTES de aplicar valores
+                const langToSet = recetaActual.idioma || (navigator.language.startsWith('ca') ? 'ca' : 'es');
+                 if (langToSet !== currentLang) {
+                    changeLanguage(langToSet); // changeLanguage llamará a aplicarReceta internamente
+                 } else {
+                     aplicarReceta(recetaActual); // Aplicar si el idioma ya es correcto
+                 }
+                return true;
+            } catch (e) {
+                console.error("Error al cargar la receta actual:", e);
+                localStorage.removeItem(RECETA_ACTUAL_KEY); // Eliminar receta corrupta
+                return false;
+            }
+        }
+
+
+        function aplicarReceta(receta) {
+            // Aplicar Método de entrada y mostrar/ocultar campos
+            if (receta.inputMethod) {
+                document.querySelectorAll('input[name="input-method"]').forEach(r => {
+                    r.checked = r.value === receta.inputMethod;
+                });
+                document.getElementById('harina-group').style.display = receta.inputMethod === 'harina' ? 'block' : 'none';
+                document.getElementById('peso-final-group').style.display = receta.inputMethod === 'peso-final' ? 'block' : 'none';
+            }
+
+            // Aplicar valores numéricos y de texto
+            if (receta.cantidadHarina) document.getElementById('cantidad-harina').value = receta.cantidadHarina;
+            if (receta.pesoFinal) document.getElementById('peso-final').value = receta.pesoFinal;
+            if (receta.proteina) document.getElementById('proteina').value = receta.proteina;
+            if (receta.hidratacion) document.getElementById('hidratacion').value = receta.hidratacion;
+            if (receta.temperaturaAmbiente) document.getElementById('temperatura-ambiente').value = receta.temperaturaAmbiente;
+
+            // Aplicar valor del slider
+            if (receta.harinaIntegral !== undefined) { // Check for undefined to handle 0%
+                const slider = document.getElementById('harina-integral');
+                slider.value = receta.harinaIntegral;
+                document.getElementById('valor-harina-integral').textContent = slider.value + '%';
+                const pct = (slider.value - slider.min) * 100 / (slider.max - slider.min);
+                slider.style.backgroundSize = pct + '% 100%';
+             }
+
+            // Aplicar valores de selects
+            if (receta.tipoHarinaIntegral) document.getElementById('tipo-harina-integral').value = receta.tipoHarinaIntegral;
+            if (receta.tipoHorno) document.getElementById('tipo-horno').value = receta.tipoHorno;
+            if (receta.rendimientoHorno) document.getElementById('rendimiento-horno').value = receta.rendimientoHorno;
+
+
+            // Actualizar UI dependiente y recalcular
+            updateHidratacionRecomendada();
+            mostrarTipoHarinaIntegral(); // Asegura que el select de tipo integral se muestre/oculte correctamente
+            calcular(); // Calcular resultados con los valores aplicados
+        }
+
+
+        function borrarReceta() {
+            const t = translations[currentLang];
+            const select = document.getElementById('saved-recipes');
+            const nombreReceta = select.value;
+
+            if (!nombreReceta) {
+                mostrarNotificacion(t['no-recipe-selected']);
+                return;
+            }
+
+            // Confirmar antes de borrar
+            if (!confirm(t['confirmar-borrar'])) return;
+            // Obtener recetas actuales
+            let recetas = JSON.parse(localStorage.getItem(RECETAS_KEY) || '[]');
+            // Filtrar la receta a eliminar
+            recetas = recetas.filter(r => r.nombre !== nombreReceta);
+            // Guardar el array actualizado
+            localStorage.setItem(RECETAS_KEY, JSON.stringify(recetas));
+            // Actualizar la lista de recetas
+            cargarListaRecetas();
+            // Restablecer el select
+            select.value = '';
+            // Mostrar notificación
+            mostrarNotificacion(t['recipe-borrada']);
+        }
+
+        function borrarTodasRecetas() {
+            const t = translations[currentLang];
+            // Confirmar antes de borrar todo
+            if (!confirm(t['confirmar-borrar-todas'])) return;
+            // Eliminar las recetas del localStorage
+            localStorage.removeItem(RECETAS_KEY);
+            // También eliminar la receta actual si se confirma borrar todo
+            localStorage.removeItem(RECETA_ACTUAL_KEY);
+
+             // Restaurar valores por defecto
+            document.getElementById('input-harina').checked = true; // Default input method
+            document.getElementById('harina-group').style.display = 'block';
+            document.getElementById('peso-final-group').style.display = 'none';
+            document.getElementById('cantidad-harina').value = 500;
+            document.getElementById('peso-final').value = 660; // Default adjusted final weight
+            document.getElementById('proteina').value = 10;
+            document.getElementById('hidratacion').value = 65;
+            document.getElementById('harina-integral').value = 0;
+            document.getElementById('temperatura-ambiente').value = 22;
+            document.getElementById('tipo-horno').value = 'normal';
+            document.getElementById('rendimiento-horno').value = 'normal';
+
+            // Actualizar la interfaz del slider
+            const slider = document.getElementById('harina-integral');
+            document.getElementById('valor-harina-integral').textContent = slider.value + '%';
+            const pct = (slider.value - slider.min) * 100 / (slider.max - slider.min);
+            slider.style.backgroundSize = pct + '% 100%';
+
+
+             // Actualizar la lista de recetas (ahora estará vacía)
+            cargarListaRecetas();
+             // Ocultar tipo de harina integral y actualizar recomendación
+            mostrarTipoHarinaIntegral(); // This calls updateHidratacionRecomendada and calcular
+
+            // Mostrar notificación
+            mostrarNotificacion(t['todas-recipe-borradas']);
+        }
+
+        // --- Initialization ---
+        window.onload = function() {
+             // Intentar cargar la receta actual; si falla o no existe, configurar idioma por defecto
+            if (!cargarRecetaActual()) {
+                const userLang = navigator.language.split('-')[0];
+                const initialLang = userLang === 'ca' ? 'ca' : 'es';
+                changeLanguage(initialLang); // Esto también llamará a calcular con valores por defecto
+            }
+            // Cargar lista de recetas guardadas después de establecer el idioma
+            cargarListaRecetas();
+            // Configurar el slider de harina integral visualmente
+            const slider = document.getElementById('harina-integral');
+            document.getElementById('valor-harina-integral').textContent = slider.value + '%';
+            const pct = (slider.value - slider.min) * 100 / (slider.max - slider.min);
+            slider.style.backgroundSize = pct + '% 100%';
+             // Añadir listener para el botón de copiar receta
+            document.getElementById('btn-copiar-receta').addEventListener('click', copiarReceta);
+        };
+
+
+        // --- Event Listeners ---
+        const inputElements = [
+            'cantidad-harina', 'peso-final', 'proteina', 'hidratacion',
+            'temperatura-ambiente', 'tipo-horno', 'tipo-harina-integral', 'rendimiento-horno'
+        ];
+        inputElements.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                // Recalcular y guardar al cambiar el valor final (change)
+                 element.addEventListener('change', () => {
+                    calcular(); // Calcular primero para asegurar que los valores sean válidos
+                    guardarRecetaActual(); // Guardar estado válido
+                });
+                // Guardar al introducir valores (input) para inputs numéricos y selects
+                if (element.type === 'number' || element.tagName === 'SELECT') {
+                    element.addEventListener('input', guardarRecetaActual);
+                 }
+            }
+        });
+
+        // Listener para slider de harina integral
+        document.getElementById('harina-integral').addEventListener('input', function() {
+            document.getElementById('valor-harina-integral').textContent = this.value + '%';
+            const pct = (this.value - this.min) * 100 / (this.max - this.min);
+            this.style.backgroundSize = pct + '% 100%';
+            mostrarTipoHarinaIntegral(); // Esto llama a calcular y guardar
+        });
+
+        // Listener para cambio de método de entrada
+        document.querySelectorAll('input[name="input-method"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                document.getElementById('harina-group').style.display = radio.value === 'harina' ? 'block' : 'none';
+                document.getElementById('peso-final-group').style.display = radio.value === 'peso-final' ? 'block' : 'none';
+                 calcular(); // Recalcular cuando se cambia el método de entrada
+                guardarRecetaActual();
+            });
+        });
+
+        // Botones y select de recetas guardadas
+        document.getElementById('btn-calcular').addEventListener('click', calcular);
+        document.getElementById('btn-guardar').addEventListener('click', guardarReceta);
+        document.getElementById('btn-borrar-recipe').addEventListener('click', borrarReceta);
+        document.getElementById('btn-borrar-todas').addEventListener('click', borrarTodasRecetas);
+        document.getElementById('btn-es').addEventListener('click', () => changeLanguage('es'));
+        document.getElementById('btn-ca').addEventListener('click', () => changeLanguage('ca'));
+        document.getElementById('saved-recipes').addEventListener('change', function() {
+            cargarReceta(this.value);
+        });
+
+    </script>
+</body>
+</html>

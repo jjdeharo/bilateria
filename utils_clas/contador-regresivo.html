@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TempoCero: Contador regresivo</title>
+  <style>
+    :root {
+      --color-primary: #3498db;
+      --color-secondary: #2c3e50;
+      --color-accent: #e74c3c;
+      --color-background: #f9f9f9;
+      --color-text: #333;
+      --border-radius: 8px;
+      --transition: all 0.3s ease;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--color-background);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      color: var(--color-text);
+    }
+    .container {
+      background-color: white;
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+    }
+    h1 {
+      font-size: 2rem;
+      color: var(--color-secondary);
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid var(--color-primary);
+      padding-bottom: 10px;
+    }
+    .input-group {
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    input {
+      padding: 0.8rem;
+      font-size: 1.2rem;
+      border: 2px solid #ddd;
+      border-radius: var(--border-radius);
+      width: 150px;
+      text-align: center;
+      transition: var(--transition);
+    }
+    input:focus {
+      border-color: var(--color-primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+    .presets {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin: 1rem 0;
+    }
+    .preset-btn {
+      background-color: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius);
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.9rem;
+    }
+    .preset-btn:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+    }
+    .countdown {
+      margin: 1.5rem 0;
+      position: relative;
+    }
+    .timer-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    #timer {
+      font-size: 5rem;
+      font-weight: bold;
+      color: var(--color-secondary);
+      transition: color 0.3s ease;
+      background-color: white;
+      padding: 15px 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 40px;
+    }
+    .timer-warning {
+      color: var(--color-accent) !important;
+    }
+    .progress-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .progress-bar {
+      width: 80%;
+      height: 10px;
+      background-color: #eee;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    #progress-fill {
+      height: 100%;
+      background-color: #3498db;
+      width: 100%;
+      transition: width 0.3s linear;
+    }
+    .control-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 1.5rem;
+    }
+    #stopAlarm {
+      margin-top: 15px;
+      width: 100%;
+      max-width: 250px;
+      margin-left: auto;
+      margin-right: auto;
+      display: block;
+    }
+    .btn {
+      background-color: var(--color-secondary);
+      color: white;
+      font-size: 1rem;
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 120px;
+    }
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+    .btn-primary {
+      background-color: var(--color-primary);
+    }
+    .btn-danger {
+      background-color: var(--color-accent);
+    }
+    .btn-secondary {
+      background-color: #7f8c8d;
+    }
+    .btn:disabled {
+      background-color: #bdc3c7;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .hidden {
+      display: none;
+    }
+    .time-input-container {
+      position: relative;
+      width: 150px;
+      margin: 0 auto;
+    }
+    .input-buttons {
+      position: absolute;
+      right: 10px;
+      top: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .input-btn {
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      color: #777;
+      padding: 0;
+      margin: 0;
+      line-height: 1;
+    }
+    .input-btn:hover {
+      color: var(--color-primary);
+    }
+    .add-time-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .add-time-btn {
+      background-color: #ddd;
+      color: var(--color-text);
+      border: none;
+      border-radius: var(--border-radius);
+      padding: 0.5rem;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.9rem;
+    }
+    .add-time-btn:hover {
+      background-color: #ccc;
+    }
+    #stop-alarm {
+      margin-top: 1rem;
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 0.8rem;
+      color: #777;
+      text-align: center;
+    }
+    .footer a {
+      color: var(--color-primary);
+      text-decoration: none;
+    }
+    .footer a:hover {
+      text-decoration: underline;
+    }
+    @media (max-width: 480px) {
+      .container {
+        padding: 1.5rem;
+      }
+      #timer {
+        font-size: 4rem;
+      }
+      .control-buttons {
+        flex-direction: column;
+        gap: 10px;
+      }
+      .btn {
+        width: 100%;
+      }
+      .presets {
+        gap: 5px;
+      }
+      .preset-btn {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Contador regresivo</h1>
+    
+    <form id="timeForm">
+      <div class="input-group">
+        <label for="time">Tiempo (mm:ss):</label>
+        <div class="time-input-container">
+          <input type="text" id="time" name="time" pattern="^[0-9]{1,2}:[0-5][0-9]$" placeholder="05:00" required>
+        </div>
+        
+        <div class="presets">
+          <button type="button" class="preset-btn" data-time="01:00">1 min</button>
+          <button type="button" class="preset-btn" data-time="05:00">5 min</button>
+          <button type="button" class="preset-btn" data-time="10:00">10 min</button>
+          <button type="button" class="preset-btn" data-time="15:00">15 min</button>
+          <button type="button" class="preset-btn" data-time="30:00">30 min</button>
+        </div>
+        
+        <button type="submit" class="btn btn-primary" id="startButton">Iniciar</button>
+      </div>
+    </form>
+    
+    <div class="countdown">
+      <div class="timer-container">
+        <h2 id="timer">00:00</h2>
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div id="progress-fill"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="add-time-buttons hidden" id="addTimeButtons">
+        <button type="button" class="add-time-btn" data-add="10">+10s</button>
+        <button type="button" class="add-time-btn" data-add="30">+30s</button>
+        <button type="button" class="add-time-btn" data-add="60">+1m</button>
+      </div>
+      
+      <div class="control-buttons">
+        <button class="btn btn-secondary hidden" id="pauseButton">Pausar</button>
+        <button class="btn btn-danger hidden" id="resetButton">Reiniciar</button>
+      </div>
+      
+      <button class="btn btn-danger hidden" id="stopAlarm">Detener alarma</button>
+    </div>
+    
+    <div class="footer">
+      <p>Aplicación hecha por <a href="https://bilateria.org" target="_blank">Juan José de Haro</a></p>
+      <p>Esta obra está bajo una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank">licencia Creative Commons BY-SA</a></p>
+    </div>
+  </div>
+  
+  <script>
+    // Función para generar el sonido de alarma
+    function createAlarmSound() {
+      let audioContext = null;
+      let stopCurrentSound = null;
+      return {
+        play: function() {
+          if (stopCurrentSound) {
+            stopCurrentSound();
+          }
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          const oscillator1 = audioContext.createOscillator();
+          oscillator1.type = 'square';
+          oscillator1.frequency.setValueAtTime(880, audioContext.currentTime);
+          const oscillator2 = audioContext.createOscillator();
+          oscillator2.type = 'square';
+          oscillator2.frequency.setValueAtTime(988, audioContext.currentTime);
+          const gainNode = audioContext.createGain();
+          gainNode.gain.setValueAtTime(0.8, audioContext.currentTime);
+          const compressor = audioContext.createDynamicsCompressor();
+          compressor.threshold.value = -50;
+          compressor.knee.value = 40;
+          compressor.ratio.value = 12;
+          compressor.attack.value = 0;
+          compressor.release.value = 0.25;
+          oscillator1.connect(compressor);
+          oscillator2.connect(gainNode);
+          gainNode.connect(compressor);
+          compressor.connect(audioContext.destination);
+          oscillator1.start();
+          oscillator2.start();
+          let isFirstTone = true;
+          let intervalId = setInterval(() => {
+            if (isFirstTone) {
+              oscillator1.frequency.setValueAtTime(880, audioContext.currentTime);
+              oscillator2.frequency.setValueAtTime(988, audioContext.currentTime);
+            } else {
+              oscillator1.frequency.setValueAtTime(988, audioContext.currentTime);
+              oscillator2.frequency.setValueAtTime(880, audioContext.currentTime);
+            }
+            isFirstTone = !isFirstTone;
+          }, 250);
+          stopCurrentSound = function() {
+            try {
+              clearInterval(intervalId);
+              oscillator1.stop();
+              oscillator2.stop();
+              compressor.disconnect();
+              if (audioContext && audioContext.state !== 'closed') {
+                audioContext.close();
+              }
+            } catch (e) {
+              console.error("Error al detener el sonido:", e);
+            }
+          };
+          return stopCurrentSound;
+        },
+        stop: function() {
+          if (stopCurrentSound) {
+            stopCurrentSound();
+            stopCurrentSound = null;
+          }
+        }
+      };
+    }
+    
+    document.addEventListener("DOMContentLoaded", function() {
+      // Variables globales
+      let countdown;
+      let paused = false;
+      let totalTimeInSeconds = 0;
+      let currentTimeInSeconds = 0;
+      let alarmPlaying = false;
+      let endTime = 0;
+      const alarmSound = createAlarmSound();
+      
+      // Elementos del DOM
+      const timeForm = document.getElementById("timeForm");
+      const timeInput = document.getElementById("time");
+      const timerElement = document.getElementById("timer");
+      const progressFill = document.getElementById('progress-fill');
+      const pauseButton = document.getElementById("pauseButton");
+      const resetButton = document.getElementById("resetButton");
+      const stopAlarmButton = document.getElementById("stopAlarm");
+      const presetButtons = document.querySelectorAll(".preset-btn");
+      const addTimeButtons = document.getElementById("addTimeButtons");
+      const addTimeButtonElements = document.querySelectorAll(".add-time-btn");
+      
+      // Función para formatear tiempo en mm:ss
+      function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
+      }
+      
+      // Función para actualizar la barra de progreso
+      function updateProgressBar(percentage) {
+        progressFill.style.width = percentage + '%';
+        if (percentage < 25) {
+          progressFill.style.backgroundColor = "#e74c3c";
+        } else if (percentage < 50) {
+          progressFill.style.backgroundColor = "#f39c12";
+        } else {
+          progressFill.style.backgroundColor = "#3498db";
+        }
+      }
+      
+      // Función para iniciar la cuenta regresiva
+      function startCountdown(minutes, seconds) {
+        totalTimeInSeconds = minutes * 60 + seconds;
+        currentTimeInSeconds = totalTimeInSeconds;
+        endTime = Date.now() + (currentTimeInSeconds * 1000);
+        timeForm.querySelector(".input-group").classList.add("hidden");
+        pauseButton.classList.remove("hidden");
+        resetButton.classList.remove("hidden");
+        addTimeButtons.classList.remove("hidden");
+        
+        function updateTimer() {
+          if (!paused) {
+            const now = Date.now();
+            let timeRemaining = Math.round((endTime - now) / 1000);
+            if (timeRemaining < 0) timeRemaining = 0;
+            currentTimeInSeconds = timeRemaining;
+            if (timeRemaining <= 0) {
+              clearInterval(countdown);
+              timerElement.textContent = "¡Tiempo!";
+              timerElement.classList.add("timer-warning");
+              updateProgressBar(0);
+              stopAlarmButton.classList.remove("hidden");
+              if (!alarmPlaying) {
+                alarmSound.play();
+                alarmPlaying = true;
+              }
+              return;
+            }
+            timerElement.textContent = formatTime(timeRemaining);
+            const percentageComplete = (timeRemaining / totalTimeInSeconds) * 100;
+            updateProgressBar(percentageComplete);
+            if (timeRemaining <= 10) {
+              timerElement.classList.add("timer-warning");
+            } else {
+              timerElement.classList.remove("timer-warning");
+            }
+          }
+        }
+        clearInterval(countdown);
+        countdown = setInterval(updateTimer, 100);
+        updateTimer();
+      }
+      
+      // Manejar el envío del formulario
+      timeForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const timeValue = timeInput.value;
+        const timeParts = timeValue.split(':');
+        const minutes = parseInt(timeParts[0], 10);
+        const seconds = parseInt(timeParts[1], 10);
+        if (isNaN(minutes) || isNaN(seconds) || minutes < 0 || seconds < 0 || seconds >= 60) {
+          alert("Por favor, introduce un tiempo válido en formato mm:ss.");
+          return;
+        }
+        paused = false;
+        pauseButton.textContent = "Pausar";
+        alarmPlaying = false;
+        startCountdown(minutes, seconds);
+      });
+      
+      // Botón de pausa y reanudación
+      pauseButton.addEventListener("click", () => {
+        if (!paused) {
+          paused = true;
+          clearInterval(countdown);
+          pauseButton.textContent = 'Reanudar';
+        } else {
+          paused = false;
+          pauseButton.textContent = 'Pausar';
+          endTime = Date.now() + (currentTimeInSeconds * 1000);
+          countdown = setInterval(updateTimer, 100);
+        }
+      });
+      
+      // Botón de reinicio
+      resetButton.addEventListener("click", () => {
+        clearInterval(countdown);
+        timerElement.textContent = "00:00";
+        timerElement.classList.remove("timer-warning");
+        updateProgressBar(100);
+        if (alarmPlaying) {
+          alarmSound.stop();
+          alarmPlaying = false;
+          stopAlarmButton.classList.add("hidden");
+        }
+        timeForm.querySelector(".input-group").classList.remove("hidden");
+        pauseButton.classList.add("hidden");
+        resetButton.classList.add("hidden");
+        addTimeButtons.classList.add("hidden");
+        paused = false;
+      });
+      
+      // Botón para detener la alarma
+      stopAlarmButton.addEventListener("click", () => {
+        alarmSound.stop();
+        alarmPlaying = false;
+        stopAlarmButton.classList.add("hidden");
+      });
+      
+      // Botones preestablecidos
+      presetButtons.forEach(button => {
+        button.addEventListener("click", () => {
+          timeInput.value = button.dataset.time;
+        });
+      });
+      
+      // Botones para añadir tiempo
+      addTimeButtonElements.forEach(button => {
+        button.addEventListener("click", function() {
+          if (currentTimeInSeconds > 0 && !paused) {
+            const secondsToAdd = parseInt(this.dataset.add, 10);
+            currentTimeInSeconds += secondsToAdd;
+            totalTimeInSeconds += secondsToAdd;
+            endTime += secondsToAdd * 1000;
+          }
+        });
+      });
+      
+      // Función updateTimer usada en reanudación
+      function updateTimer() {
+        if (!paused) {
+          const now = Date.now();
+          let timeRemaining = Math.round((endTime - now) / 1000);
+          if (timeRemaining < 0) timeRemaining = 0;
+          currentTimeInSeconds = timeRemaining;
+          if (timeRemaining <= 0) {
+            clearInterval(countdown);
+            timerElement.textContent = "¡Tiempo!";
+            timerElement.classList.add("timer-warning");
+            updateProgressBar(0);
+            stopAlarmButton.classList.remove("hidden");
+            if (!alarmPlaying) {
+              alarmSound.play();
+              alarmPlaying = true;
+            }
+            return;
+          }
+          timerElement.textContent = formatTime(timeRemaining);
+          const percentageComplete = (timeRemaining / totalTimeInSeconds) * 100;
+          updateProgressBar(percentageComplete);
+          if (timeRemaining <= 10) {
+            timerElement.classList.add("timer-warning");
+          } else {
+            timerElement.classList.remove("timer-warning");
+          }
+        }
+      }
+      
+      // Atajos de teclado: espacio para pausar/reanudar y Esc para reiniciar (cuando el temporizador está activo)
+      document.addEventListener("keydown", (event) => {
+        if (event.code === "Space" && timeForm.querySelector(".input-group").classList.contains("hidden")) {
+          event.preventDefault();
+          pauseButton.click();
+        } else if (event.code === "Escape" && timeForm.querySelector(".input-group").classList.contains("hidden")) {
+          event.preventDefault();
+          resetButton.click();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+

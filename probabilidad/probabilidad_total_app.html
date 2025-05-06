@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teorema de la probabilidad total</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .ejemplo {
+            background-color: #e9f7ef;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .calculadora {
+            background-color: #f0f8ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        input {
+            width: 60px;
+            padding: 5px;
+            margin: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        .language-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="toggleLanguage()" class="language-selector" id="langButton">Català</button>
+    <div class="container">
+        <div id="contenido-es">
+            <h1>Teorema de la probabilidad total</h1>
+            
+            <p>El teorema de la probabilidad total nos permite calcular la probabilidad de un suceso cuando conocemos:</p>
+            <ul>
+                <li>Las probabilidades de varios sucesos que no se pueden dar a la vez (mutuamente excluyentes) y cuya suma es 1.</li>
+                <li>Las probabilidades condicionadas del suceso que queremos calcular respecto a cada uno de los sucesos anteriores.</li>
+            </ul>
+
+            <h2>La fórmula</h2>
+            <p>Si tenemos un suceso A y varios sucesos B₁, B₂, ..., Bₙ que son mutuamente excluyentes y cuya suma es 1, entonces:</p>
+            <div style="text-align: center;">
+                $$P(A) = P(B_1) \cdot P(A|B_1) + P(B_2) \cdot P(A|B_2) + ... + P(B_n) \cdot P(A|B_n)$$
+            </div>
+
+            <div class="ejemplo">
+                <h2>Ejemplo interactivo</h2>
+                <p>Imagina que en una clase hay estudiantes que:</p>
+                <ul>
+                    <li>Estudian mucho (40% de la clase)</li>
+                    <li>Estudian poco (60% de la clase)</li>
+                </ul>
+                <p>La probabilidad de aprobar si:</p>
+                <ul>
+                    <li>Estudian mucho: 90%</li>
+                    <li>Estudian poco: 30%</li>
+                </ul>
+                
+                <div class="calculadora">
+                    <h3>Calculadora</h3>
+                    <p>Modifica los valores y calcula la probabilidad total de aprobar:</p>
+                    <div>
+                        <label>Estudian mucho (%): </label>
+                        <input type="number" id="p1" value="40" min="0" max="100">
+                    </div>
+                    <div>
+                        <label>Estudian poco (%): </label>
+                        <input type="number" id="p2" value="60" min="0" max="100">
+                    </div>
+                    <div>
+                        <label>Probabilidad de aprobar si estudian mucho (%): </label>
+                        <input type="number" id="pa1" value="90" min="0" max="100">
+                    </div>
+                    <div>
+                        <label>Probabilidad de aprobar si estudian poco (%): </label>
+                        <input type="number" id="pa2" value="30" min="0" max="100">
+                    </div>
+                    <button onclick="calcular('es')">Calcular</button>
+                    <p id="resultado-es"></p>
+                    <p id="procedimiento-es"></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="contenido-ca" style="display: none;">
+            <h1>Teorema de la probabilitat total</h1>
+            
+            <p>El teorema de la probabilitat total ens permet calcular la probabilitat d'un esdeveniment quan coneixem:</p>
+            <ul>
+                <li>Les probabilitats de diversos esdeveniments que no poden passar alhora (mútuament excloents) i la seva suma és 1.</li>
+                <li>Les probabilitats condicionades de l'esdeveniment que volem calcular respecte a cadascun dels esdeveniments anteriors.</li>
+            </ul>
+
+            <h2>La fórmula</h2>
+            <p>Si tenim un esdeveniment A i diversos esdeveniments B₁, B₂, ..., Bₙ que són mútuament excloents i la seva suma és 1, aleshores:</p>
+            <div style="text-align: center;">
+                $$P(A) = P(B_1) \cdot P(A|B_1) + P(B_2) \cdot P(A|B_2) + ... + P(B_n) \cdot P(A|B_n)$$
+            </div>
+
+            <div class="ejemplo">
+                <h2>Exemple interactiu</h2>
+                <p>Imagina que en una classe hi ha estudiants que:</p>
+                <ul>
+                    <li>Estudien molt (40% de la classe)</li>
+                    <li>Estudien poc (60% de la classe)</li>
+                </ul>
+                <p>La probabilitat d'aprovar si:</p>
+                <ul>
+                    <li>Estudien molt: 90%</li>
+                    <li>Estudien poc: 30%</li>
+                </ul>
+                
+                <div class="calculadora">
+                    <h3>Calculadora</h3>
+                    <p>Modifica els valors i calcula la probabilitat total d'aprovar:</p>
+                    <div>
+                        <label>Estudien molt (%): </label>
+                        <input type="number" id="p1-ca" value="40" min="0" max="100">
+                    </div>
+                    <div>
+                        <label>Estudien poc (%): </label>
+                        <input type="number" id="p2-ca" value="60" min="0" max="100">
+                    </div>
+                    <div>
+                        <label>Probabilitat d'aprovar si estudien molt (%): </label>
+                        <input type="number" id="pa1-ca" value="90" min="0" max="100">
+                    </div>
+                    <div>
+                        <label>Probabilitat d'aprovar si estudien poc (%): </label>
+                        <input type="number" id="pa2-ca" value="30" min="0" max="100">
+                    </div>
+                    <button onclick="calcular('ca')">Calcular</button>
+                    <p id="resultado-ca"></p>
+                    <p id="procedimiento-ca"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Aplicació feta per <a href="https://bilateria.org">Juan José de Haro</a></p>
+        <p>Aquesta obra està sota una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ca">llicència Creative Commons BY-SA</a></p>
+    </div>
+
+    <script>
+        // Detectar el idioma del navegador
+        function getPreferredLanguage() {
+            const preferredLanguage = (navigator.language || navigator.userLanguage).toLowerCase();
+            return preferredLanguage.startsWith('ca') ? 'ca' : 'es';
+        }
+
+        // Establecer idioma inicial
+        let currentLanguage = getPreferredLanguage();
+        setLanguage(currentLanguage);
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'es' ? 'ca' : 'es';
+            setLanguage(currentLanguage);
+        }
+
+        function setLanguage(lang) {
+            document.getElementById('contenido-es').style.display = lang === 'es' ? 'block' : 'none';
+            document.getElementById('contenido-ca').style.display = lang === 'ca' ? 'block' : 'none';
+            document.getElementById('langButton').innerText = lang === 'es' ? 'Català' : 'Castellano';
+            
+            // Actualizar el título del documento
+            document.title = lang === 'es' ? 'Teorema de la probabilidad total' : 'Teorema de la probabilitat total';
+            
+            // Actualizar el footer
+            const footer = document.querySelector('.footer');
+            if (lang === 'es') {
+                footer.innerHTML = `
+                    <p>Aplicación hecha por <a href="https://bilateria.org">Juan José de Haro</a></p>
+                    <p>Esta obra está bajo una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es">licencia Creative Commons BY-SA</a></p>
+                `;
+            } else {
+                footer.innerHTML = `
+                    <p>Aplicació feta per <a href="https://bilateria.org">Juan José de Haro</a></p>
+                    <p>Aquesta obra està sota una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ca">llicència Creative Commons BY-SA</a></p>
+                `;
+            }
+        }
+
+        function calcular(lang) {
+            // Obtener valores según el idioma
+            const suffix = lang === 'ca' ? '-ca' : '';
+            const p1 = parseFloat(document.getElementById('p1' + suffix).value) / 100;
+            const p2 = parseFloat(document.getElementById('p2' + suffix).value) / 100;
+            const pa1 = parseFloat(document.getElementById('pa1' + suffix).value) / 100;
+            const pa2 = parseFloat(document.getElementById('pa2' + suffix).value) / 100;
+
+            // Verificar que las probabilidades suman 1
+            if (Math.abs(p1 + p2 - 1) > 0.01) {
+                alert(lang === 'es' ? 
+                    'Las probabilidades de los sucesos deben sumar 100%' : 
+                    'Les probabilitats dels esdeveniments han de sumar 100%');
+                return;
+            }
+
+            // Calcular probabilidad total
+            const probTotal = p1 * pa1 + p2 * pa2;
+
+            // Mostrar resultado según el idioma
+            const resultadoElement = document.getElementById('resultado-' + lang);
+            const procedimientoElement = document.getElementById('procedimiento-' + lang);
+
+            if (lang === 'es') {
+                resultadoElement.innerHTML = 
+                    `<strong>La probabilidad total de aprobar es: ${(probTotal * 100).toFixed(2)}%</strong>`;
+                procedimientoElement.innerHTML = 
+                    `Procedimiento:<br>
+                    P(Aprobar) = P(Estudian mucho) × P(Aprobar|Estudian mucho) + P(Estudian poco) × P(Aprobar|Estudian poco)<br>
+                    P(Aprobar) = ${(p1 * 100).toFixed(2)}% × ${(pa1 * 100).toFixed(2)}% + ${(p2 * 100).toFixed(2)}% × ${(pa2 * 100).toFixed(2)}%<br>
+                    P(Aprobar) = ${(p1 * pa1 * 100).toFixed(2)}% + ${(p2 * pa2 * 100).toFixed(2)}% = ${(probTotal * 100).toFixed(2)}%`;
+            } else {
+                resultadoElement.innerHTML = 
+                    `<strong>La probabilitat total d'aprovar és: ${(probTotal * 100).toFixed(2)}%</strong>`;
+                procedimientoElement.innerHTML = 
+                    `Procediment:<br>
+                    P(Aprovar) = P(Estudien molt) × P(Aprovar|Estudien molt) + P(Estudien poc) × P(Aprovar|Estudien poc)<br>
+                    P(Aprovar) = ${(p1 * 100).toFixed(2)}% × ${(pa1 * 100).toFixed(2)}% + ${(p2 * 100).toFixed(2)}% × ${(pa2 * 100).toFixed(2)}%<br>
+                    P(Aprovar) = ${(p1 * pa1 * 100).toFixed(2)}% + ${(p2 * pa2 * 100).toFixed(2)}% = ${(probTotal * 100).toFixed(2)}%`;
+            }
+        }
+    </script>
+</body>
+</html>

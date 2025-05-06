@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía para crear URLs de prompts para chatbots</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            flex: 1;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        h2 {
+            color: #2980b9;
+            margin: 25px 0 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        h3 {
+            color: #3498db;
+            margin: 20px 0 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+        }
+        
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+        }
+        
+        code {
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            background-color: #f8f8f8;
+            padding: 2px 5px;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        pre code {
+            border: none;
+            padding: 0;
+            background-color: transparent;
+        }
+        
+        .note {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-left: 5px solid #3498db;
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .warning {
+            background-color: #fff8e1;
+            padding: 15px;
+            border-left: 5px solid #ffc107;
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f8f8;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .footer a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            pre {
+                padding: 10px;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Guía para crear URLs de prompts para chatbots</h1>
+        
+        <section>
+            <p>Este documento explica cómo implementar un sistema para enviar instrucciones (prompts) automáticamente a chatbots mediante URLs. Esta técnica permite abrir directamente un chatbot con una instrucción predefinida.</p>
+            
+            <div class="note">
+                <p>Esta guía está centrada en los seis chatbots principales que admiten la funcionalidad de envío de prompts vía URL: ChatGPT, Grok, Le Chat (Mistral AI), Microsoft Copilot, Perplexity y Claude.</p>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Formatos de URL por chatbot</h2>
+            
+            <p>Cada chatbot tiene su formato específico para recibir prompts mediante URL:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Chatbot</th>
+                        <th>Formato de URL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ChatGPT</td>
+                        <td><code>https://chatgpt.com/?q={PROMPT}</code></td>
+                    </tr>
+                    <tr>
+                        <td>Grok</td>
+                        <td><code>https://grok.com/?q={PROMPT}</code></td>
+                    </tr>
+                    <tr>
+                        <td>Le Chat (Mistral AI)</td>
+                        <td><code>https://chat.mistral.ai/chat/?q={PROMPT}</code></td>
+                    </tr>
+                    <tr>
+                        <td>Microsoft Copilot</td>
+                        <td><code>https://copilot.microsoft.com/?q={PROMPT}</code></td>
+                    </tr>
+                    <tr>
+                        <td>Perplexity</td>
+                        <td><code>https://www.perplexity.ai/?q={PROMPT}</code></td>
+                    </tr>
+                    <tr>
+                        <td>Claude</td>
+                        <td><code>https://claude.ai/new?q={PROMPT}</code></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p>En estos formatos, <code>{PROMPT}</code> debe reemplazarse con la instrucción codificada para URL usando <code>encodeURIComponent()</code>.</p>
+        </section>
+        
+        <section>
+            <h2>Implementación del código</h2>
+            
+            <h3>Función para construir URLs</h3>
+            <pre><code>function construirURLPrompt(chatbot, prompt) {
+    // Objeto con las URLs base para los chatbots soportados
+    const chatbotBaseURLs = {
+        'chatgpt': 'https://chatgpt.com/?q=',
+        'grok': 'https://grok.com/?q=',
+        'lechat': 'https://chat.mistral.ai/chat/?q=',
+        'copilot': 'https://copilot.microsoft.com/?q=',
+        'perplexity': 'https://www.perplexity.ai/?q=',
+        'claude': 'https://claude.ai/new?q='
+    };
+    
+    // Verificar si el chatbot existe en nuestro objeto
+    if (!chatbotBaseURLs[chatbot]) {
+        console.error(`Chatbot "${chatbot}" no soportado.`);
+        return null;
+    }
+    
+    // Codificar el prompt para URL y construir la URL completa
+    const promptCodificado = encodeURIComponent(prompt);
+    return chatbotBaseURLs[chatbot] + promptCodificado;
+}</code></pre>
+
+            <h3>Función para abrir la URL</h3>
+            <pre><code>function abrirURLChatbot(url, modoApertura = 'ventana') {
+    if (!url) return;
+    
+    if (modoApertura === 'pestaña') {
+        // Abrir en nueva pestaña
+        window.open(url, '_blank');
+    } else {
+        // Abrir en ventana emergente
+        const ancho = 800;
+        const alto = 600;
+        const izquierda = (window.innerWidth - ancho) / 2;
+        const arriba = (window.innerHeight - alto) / 2;
+        
+        window.open(
+            url,
+            'chatbotPrompt',
+            `width=${ancho},height=${alto},left=${izquierda},top=${arriba}`
+        );
+    }
+}</code></pre>
+
+            <h3>Función principal para uso directo</h3>
+            <pre><code>function enviarPromptAChatbot(chatbot, prompt, modoApertura = 'ventana') {
+    // Construir la URL
+    const url = construirURLPrompt(chatbot, prompt);
+    
+    // Abrir la URL
+    abrirURLChatbot(url, modoApertura);
+    
+    return url; // Devolver la URL por si se necesita
+}</code></pre>
+        </section>
+        
+        <section>
+            <h2>Sistema de plantillas</h2>
+            
+            <p>Para hacer el sistema más versátil, puedes implementar un sistema de plantillas:</p>
+            
+            <pre><code>// Objeto con plantillas por categoría y tipo
+const plantillas = {
+    'poema': {
+        'libre': 'Escribe un poema en verso libre sobre {0}.',
+        'soneto': 'Escribe un soneto sobre {0}.',
+        'haiku': 'Escribe un haiku sobre {0}.'
+    },
+    'texto': {
+        'resumen': 'Resume en 100 palabras el tema: {0}.',
+        'explicacion': 'Explica de forma sencilla qué es {0}.'
+    }
+};
+
+// Función para generar un prompt a partir de una plantilla
+function generarPrompt(categoria, tipo, parametros) {
+    if (!plantillas[categoria] || !plantillas[categoria][tipo]) {
+        return null;
+    }
+    
+    let prompt = plantillas[categoria][tipo];
+    
+    // Reemplazar todos los marcadores
+    for (let i = 0; i < parametros.length; i++) {
+        prompt = prompt.replace(`{${i}}`, parametros[i]);
+    }
+    
+    return prompt;
+}</code></pre>
+        </section>
+        
+        <section>
+            <h2>Ejemplos de uso</h2>
+            
+            <h3>Ejemplo básico</h3>
+            <pre><code>// Enviar un prompt simple a Claude
+enviarPromptAChatbot('claude', 'Escribe un cuento corto sobre un gato aventurero');</code></pre>
+            
+            <h3>Uso con plantillas</h3>
+            <pre><code>// Generar un prompt usando el sistema de plantillas
+const prompt = generarPrompt('poema', 'soneto', ['la naturaleza']);
+
+// Enviarlo a ChatGPT
+enviarPromptAChatbot('chatgpt', prompt, 'pestaña');</code></pre>
+            
+            <h3>Sistema completo</h3>
+            <pre><code>// Interfaz de usuario básica
+document.getElementById('enviar-btn').addEventListener('click', function() {
+    const chatbot = document.querySelector('input[name="chatbot"]:checked').value;
+    const categoria = document.getElementById('categoria').value;
+    const tipo = document.getElementById('tipo').value;
+    const parametro = document.getElementById('parametro').value;
+    const modoApertura = document.querySelector('input[name="modo"]:checked').value;
+    
+    const prompt = generarPrompt(categoria, tipo, [parametro]);
+    
+    if (prompt) {
+        enviarPromptAChatbot(chatbot, prompt, modoApertura);
+    } else {
+        alert('No se pudo generar el prompt con los parámetros seleccionados.');
+    }
+});</code></pre>
+        </section>
+        
+        <section>
+            <h2>Notas importantes</h2>
+            
+            <ul>
+                <li>El usuario debe haber iniciado sesión previamente en el chatbot seleccionado para que las URLs funcionen correctamente.</li>
+                <li>Siempre utiliza <code>encodeURIComponent()</code> para el prompt para manejar caracteres especiales y espacios.</li>
+                <li>Advierte al usuario que debe permitir ventanas emergentes en su navegador si elige esa opción.</li>
+                <li>Las URLs muy largas pueden no funcionar correctamente. Es recomendable limitar la longitud de los prompts.</li>
+                <li>La interfaz de URL puede cambiar con actualizaciones de los chatbots, por lo que es importante verificar periódicamente que sigan funcionando.</li>
+            </ul>
+            
+            <div class="warning">
+                <p>Este método depende de las interfaces públicas de los chatbots que pueden cambiar sin previo aviso. Si dejas de funcionar un chatbot concreto, verifica su URL actual visitando el sitio y observando el formato que usa para los parámetros de consulta.</p>
+            </div>
+        </section>
+    </div>
+    
+    <div class="footer">
+        <p><a href="https://labia.tiddlyhost.com" target="_blank">Laboratorio de aplicaciones educativas</a></p>
+        <p><a href="https://bilateria.org" target="_blank">Aplicación hecha por Juan José de Haro</a></p>
+        <p><a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank">Esta obra está bajo una licencia Creative Commons BY-SA</a></p>
+    </div>
+</body>
+</html>

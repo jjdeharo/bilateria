@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GeCo - Generador de Equipos Cooperativos</title>
+  <style>
+    :root {
+      --primary-color: #4a6fa5;
+      --secondary-color: #2c3e50;
+      --background-color: #f5f7fa;
+      --text-color: #333;
+      --border-color: #ddd;
+      --success-color: #2ecc71;
+      --light-color: #ecf0f1;
+      --accent-color: #e67e22;
+      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      background-color: var(--background-color);
+      color: var(--text-color);
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    h1 {
+      color: var(--secondary-color);
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: 600;
+      font-size: 2.2rem;
+    }
+
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .nav-link {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .nav-link:hover {
+      color: var(--accent-color);
+    }
+
+    .language-switcher {
+      display: flex;
+      gap: 5px;
+    }
+
+    .lang-btn {
+      padding: 5px 10px;
+      background-color: var(--light-color);
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .lang-btn.active {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .card {
+      background-color: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 20px;
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+    }
+    
+    .typology-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .typology-column {
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 15px;
+      background-color: #f9f9f9;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+      transition: all 0.3s ease;
+    }
+    
+    .typology-column:hover {
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.07);
+      transform: translateY(-2px);
+    }
+    
+    .typology-column.active {
+      background-color: #fcf4e8;
+      border-color: #e67e22;
+      box-shadow: 0 4px 8px rgba(230, 126, 34, 0.15);
+    }
+    
+    .typology-column:nth-child(1) {
+      border-top: 3px solid #8e44ad;
+    }
+    
+    .typology-column:nth-child(2) {
+      border-top: 3px solid #16a085;
+    }
+    
+    .typology-column:nth-child(3) {
+      border-top: 3px solid #c0392b;
+    }
+    
+    .members-selector-container {
+      display: flex;
+      margin-top: 10px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 20px;
+    }
+    
+    .selector-label {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      padding-right: 15px;
+    }
+    
+    .selector-bubbles {
+      flex: 2;
+    }
+    
+    @media (max-width: 768px) {
+      .members-selector-container {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--secondary-color);
+    }
+
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      resize: vertical;
+      font-family: inherit;
+      transition: border 0.3s;
+      height: 150px;
+    }
+
+    textarea:focus {
+      border-color: var(--primary-color);
+      outline: none;
+    }
+
+    .number-selector {
+      margin-top: 10px;
+    }
+    
+    .number-bubbles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    
+    .bubble {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--light-color);
+      color: var(--text-color);
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      user-select: none;
+      border: 2px solid transparent;
+    }
+    
+    .bubble:hover {
+      background-color: #e0e7ec;
+      transform: translateY(-2px);
+    }
+    
+    .bubble.active {
+      background-color: var(--primary-color);
+      color: white;
+      transform: scale(1.1);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    .options-container {
+      display: flex;
+      margin-bottom: 20px;
+      gap: 20px;
+    }
+    
+    .options-column {
+      flex: 1;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+    }
+    
+    .option-title {
+      font-weight: 600;
+      color: white;
+      background-color: var(--primary-color);
+      padding: 10px 15px;
+      font-size: 0.95rem;
+    }
+    
+    .option-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .option-radio {
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      cursor: pointer;
+      user-select: none;
+      border-bottom: 1px solid #eee;
+      transition: all 0.2s ease;
+    }
+    
+    .option-radio:last-child {
+      border-bottom: none;
+    }
+    
+    .option-radio:hover {
+      background-color: #f5f7fa;
+    }
+    
+    .option-radio input[type="radio"] {
+      margin-right: 10px;
+      cursor: pointer;
+    }
+    
+    .option-radio input[type="radio"]:checked + span {
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+    
+    @media (max-width: 576px) {
+      .options-container {
+        flex-direction: column;
+      }
+    }
+    
+    .generate-btn {
+      display: inline-block;
+      width: auto;
+      min-width: 180px;
+      margin: 0 auto;
+      padding: 10px 20px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      text-align: center;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    
+    .generate-btn:hover {
+      background-color: #3d5f8a;
+      transform: translateY(-2px);
+    }
+    
+    @media (max-width: 576px) {
+      .options-container {
+        flex-direction: column;
+      }
+      
+      .options-column:first-child {
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+      }
+    }
+
+    .btn {
+      display: inline-block;
+      width: auto;
+      min-width: 180px;
+      margin: 0 auto 20px;
+      padding: 10px 20px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      text-align: center;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    
+    .btn:hover {
+      background-color: #3d5f8a;
+      transform: translateY(-2px);
+    }
+    
+    #generarGrupos {
+      display: block;
+      margin: 0 auto 20px;
+    }
+
+    #copiarEquipos {
+      display: block;
+      margin: 20px auto 0;
+    }
+
+    .info-columns {
+      display: flex;
+      gap: 20px;
+      margin: 15px 0 25px 0;
+    }
+    
+    .info-column {
+      flex: 1;
+    }
+    
+    .info-text {
+      color: white;
+      font-weight: 500;
+      text-align: center;
+      background-color: var(--primary-color);
+      padding: 12px;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      font-size: 1rem;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .info-text-secondary {
+      color: white;
+      font-weight: 500;
+      text-align: center;
+      background-color: var(--secondary-color);
+      padding: 12px;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      font-size: 1rem;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    @media (max-width: 768px) {
+      .info-columns {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+
+    .success-message {
+      background-color: var(--success-color);
+      color: white;
+      padding: 10px;
+      border-radius: 6px;
+      text-align: center;
+      margin-top: 15px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .success-message.show {
+      opacity: 1;
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      padding: 20px;
+      color: var(--text-color);
+      font-size: 0.9em;
+      border-top: 1px solid var(--border-color);
+    }
+
+    footer a {
+      color: var(--primary-color);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+      color: var(--accent-color);
+    }
+
+    @media (max-width: 768px) {
+      .typology-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      
+      .radio-options {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      textarea {
+        height: 120px;
+      }
+    }
+
+    /* Estilos para el botón de borrar */
+    .clear-all-btn {
+      display: block;
+      width: auto;
+      padding: 8px 15px;
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 15px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .clear-all-btn:hover {
+      background-color: #c0392b;
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 id="title">Generador de equipos cooperativos</h1>
+    
+    <div class="header-container">
+      <a href="instr.html" class="nav-link" id="guide-link">Guía de uso</a>
+      <div class="language-switcher">
+        <button id="es-btn" class="lang-btn active">ES</button>
+        <button id="ca-btn" class="lang-btn">CA</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 id="groups-title">Grupos de estudiantes</h2>
+        <button id="clearAllBtn" class="clear-all-btn">Borrar todos los nombres</button>
+      </div>
+
+      <div class="typology-grid">
+        <div class="typology-column">
+          <div class="form-group">
+            <label for="grupoA" id="label-group-a"><strong>Tipología A</strong> (no necesitan ayuda):</label>
+            <textarea id="grupoA" rows="4">Ana, Pedro, María, Luis</textarea>
+          </div>
+        </div>
+        
+        <div class="typology-column">
+          <div class="form-group">
+            <label for="grupoB" id="label-group-b"><strong>Tipología B</strong> (necesitan alguna ayuda):</label>
+            <textarea id="grupoB" rows="4">Lucía, Carlos, Marta, Juan, Sofía, Miguel, Elena, Pablo, Laura, Alejandro, Carmen, David, Raquel, Andrea, Jorge</textarea>
+          </div>
+        </div>
+        
+        <div class="typology-column">
+          <div class="form-group">
+            <label for="grupoC" id="label-group-c"><strong>Tipología C</strong> (necesitan ayuda):</label>
+            <textarea id="grupoC" rows="4">Isabel, Guillermo, Martín, Irene, Daniel, Teresa, Javier</textarea>
+          </div>
+        </div>
+      </div>
+      
+      <div class="members-selector-container">
+        <div class="selector-label">
+          <label for="numSelector" id="label-members-per-team">Número de miembros por equipo:</label>
+        </div>
+        <div class="selector-bubbles">
+          <div class="number-selector">
+            <div class="number-bubbles">
+              <div class="bubble" data-value="2">2</div>
+              <div class="bubble" data-value="3">3</div>
+              <div class="bubble" data-value="4">4</div>
+              <div class="bubble" data-value="5">5</div>
+              <div class="bubble" data-value="6">6</div>
+            </div>
+            <input type="hidden" id="numAlumnos" value="4">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-columns">
+      <div class="info-column">
+        <p id="infoGrupos" class="info-text"></p>
+      </div>
+      <div class="info-column">
+        <p id="infoTotales" class="info-text-secondary"></p>
+      </div>
+    </div>
+
+    <div class="options-container">
+      <div class="options-column">
+        <div class="option-title" id="team-type-title">Tipo de los equipos:</div>
+        <div class="option-group">
+          <label class="option-radio">
+            <input type="radio" id="heterogeneos" name="tipoGrupo" value="heterogeneos" checked>
+            <span id="label-heterogeneous">Heterogéneos (base)</span>
+          </label>
+          <label class="option-radio">
+            <input type="radio" id="homogeneos" name="tipoGrupo" value="homogeneos">
+            <span id="label-homogeneous">Homogéneos (similares)</span>
+          </label>
+          <label class="option-radio">
+            <input type="radio" id="esporadicos" name="tipoGrupo" value="esporadicos">
+            <span id="label-temporary">Temporales (esporádicos)</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="options-column">
+        <div class="option-title" id="leftover-title">¿Qué hacemos con los miembros sobrantes?</div>
+        <div class="option-group">
+          <label class="option-radio">
+            <input type="radio" id="grupoNuevo" name="sobrantes" value="grupoNuevo" checked>
+            <span id="label-new-team">Crear un equipo nuevo</span>
+          </label>
+          <label class="option-radio">
+            <input type="radio" id="agregar" name="sobrantes" value="agregar">
+            <span id="label-add-to-others">Agregar a otros equipos</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    
+    <button id="generarGrupos" class="btn">Generar equipos</button>
+
+    <div id="resultados" class="card"></div>
+    
+    <div id="copySuccess" class="success-message"></div>
+
+    <footer>
+      <p id="geco-doi">GeCo - <a href="https://doi.org/10.5281/zenodo.7934796" target="_blank">DOI: 10.5281/zenodo.7934796</a></p>
+      <p>Laboratorio de aplicaciones educativas <a href="https://labia.tiddlyhost.com" target="_blank">LABIA</a></p>
+      <p>Aplicación hecha por <a href="https://bilateria.org" target="_blank">Juan José de Haro</a></p>
+      <p>Esta obra está bajo una licencia <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons BY-SA</a></p>
+    </footer>
+  </div>
+
+  <script>
+    // Definir los textos para ambos idiomas
+    const translations = {
+      es: {
+        title: "Generador de equipos cooperativos",
+        groupsTitle: "Grupos de estudiantes",
+        clearAll: "Borrar todos los nombres",
+        guideLink: "Guía de uso",
+        groupALabel: "<strong>Tipología A</strong> (no necesitan ayuda):",
+        groupBLabel: "<strong>Tipología B</strong> (necesitan alguna ayuda):",
+        groupCLabel: "<strong>Tipología C</strong> (necesitan ayuda):",
+        membersPerTeam: "Número de miembros por equipo:",
+        teamTypeTitle: "Tipo de los equipos:",
+        heterogeneousLabel: "Heterogéneos (base)",
+        homogeneousLabel: "Homogéneos (similares)",
+        temporaryLabel: "Temporales (esporádicos)",
+        leftoverTitle: "¿Qué hacemos con los miembros sobrantes?",
+        newTeamLabel: "Crear un equipo nuevo",
+        addToOthersLabel: "Agregar a otros equipos",
+        generateButton: "Generar equipos",
+        copyButton: "Copiar equipos",
+        copySuccess: "Equipos copiados al portapapeles",
+        gecoDoi: "GeCo - <a href='https://doi.org/10.5281/zenodo.7934796' target='_blank'>DOI: 10.5281/zenodo.7934796</a>",
+        labText: "Laboratorio de aplicaciones educativas <a href='https://labia.tiddlyhost.com' target='_blank'>LABIA</a>",
+        authorText: "Aplicación hecha por <a href='https://bilateria.org' target='_blank'>Juan José de Haro</a>",
+        licenseText: "Esta obra está bajo una licencia <a href='https://creativecommons.org/licenses/by-sa/4.0/' target='_blank'>Creative Commons BY-SA</a>"
+      },
+      ca: {
+        title: "Generador d'equips cooperatius",
+        groupsTitle: "Grups d'estudiants",
+        clearAll: "Esborrar tots els noms",
+        guideLink: "Guia d'ús",
+        groupALabel: "<strong>Tipologia A</strong> (no necessiten ajuda):",
+        groupBLabel: "<strong>Tipologia B</strong> (necessiten alguna ajuda):",
+        groupCLabel: "<strong>Tipologia C</strong> (necessiten ajuda):",
+        membersPerTeam: "Nombre de membres per equip:",
+        teamTypeTitle: "Tipus dels equips:",
+        heterogeneousLabel: "Heterogenis (base)",
+        homogeneousLabel: "Homogenis (similars)",
+        temporaryLabel: "Temporals (esporàdics)",
+        leftoverTitle: "Què fem amb els membres sobrants?",
+        newTeamLabel: "Crear un equip nou",
+        addToOthersLabel: "Afegir a altres equips",
+        generateButton: "Generar equips",
+        copyButton: "Copiar equips",
+        copySuccess: "Equips copiats al portapapers",
+        gecoDoi: "GeCo - <a href='https://doi.org/10.5281/zenodo.7934796' target='_blank'>DOI: 10.5281/zenodo.7934796</a>",
+        labText: "Laboratori d'aplicacions educatives <a href='https://labia.tiddlyhost.com' target='_blank'>LABIA</a>",
+        authorText: "Aplicació feta per <a href='https://bilateria.org' target='_blank'>Juan José de Haro</a>",
+        licenseText: "Aquesta obra està sota una llicència <a href='https://creativecommons.org/licenses/by-sa/4.0/' target='_blank'>Creative Commons BY-SA</a>"
+      }
+    };
+
+    // Función para detectar el idioma del navegador
+    function detectBrowserLanguage() {
+      const userLang = navigator.language || navigator.userLanguage;
+      return userLang.startsWith('ca') ? 'ca' : 'es';
+    }
+
+    // Función para establecer el idioma
+    function setLanguage(lang) {
+      // Actualizar clases de los botones
+      document.getElementById('es-btn').classList.toggle('active', lang === 'es');
+      document.getElementById('ca-btn').classList.toggle('active', lang === 'ca');
+      
+      // Actualizar textos
+      document.getElementById('title').innerText = translations[lang].title;
+      document.getElementById('groups-title').innerText = translations[lang].groupsTitle;
+      document.getElementById('clearAllBtn').innerText = translations[lang].clearAll;
+      document.getElementById('guide-link').innerText = translations[lang].guideLink;
+      document.getElementById('label-group-a').innerHTML = translations[lang].groupALabel;
+      document.getElementById('label-group-b').innerHTML = translations[lang].groupBLabel;
+      document.getElementById('label-group-c').innerHTML = translations[lang].groupCLabel;
+      document.getElementById('label-members-per-team').innerText = translations[lang].membersPerTeam;
+      document.getElementById('team-type-title').innerText = translations[lang].teamTypeTitle;
+      document.getElementById('label-heterogeneous').innerText = translations[lang].heterogeneousLabel;
+      document.getElementById('label-homogeneous').innerText = translations[lang].homogeneousLabel;
+      document.getElementById('label-temporary').innerText = translations[lang].temporaryLabel;
+      document.getElementById('leftover-title').innerText = translations[lang].leftoverTitle;
+      document.getElementById('label-new-team').innerText = translations[lang].newTeamLabel;
+      document.getElementById('label-add-to-others').innerText = translations[lang].addToOthersLabel;
+      document.getElementById('generarGrupos').innerText = translations[lang].generateButton;
+      document.getElementById('geco-doi').innerHTML = translations[lang].gecoDoi;
+      document.querySelectorAll('footer p')[1].innerHTML = translations[lang].labText;
+      document.querySelectorAll('footer p')[2].innerHTML = translations[lang].authorText;
+      document.querySelectorAll('footer p')[3].innerHTML = translations[lang].licenseText;
+      
+      // Actualizar la información de grupos
+      updateInfoGrupos();
+      
+      // Guardar preferencia de idioma
+      localStorage.setItem('preferredLanguage', lang);
+    }
+
+    // Función para borrar todos los nombres
+    function clearAllNames() {
+      document.getElementById('grupoA').value = '';
+      document.getElementById('grupoB').value = '';
+      document.getElementById('grupoC').value = '';
+      updateInfoGrupos();
+    }
+
+    // Aplicar el idioma al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+      // Comprobar si hay una preferencia de idioma guardada
+      const savedLang = localStorage.getItem('preferredLanguage');
+      // Si no hay preferencia guardada, detectar el idioma del navegador
+      const initialLang = savedLang || detectBrowserLanguage();
+      setLanguage(initialLang);
+      
+      // Añadir eventos para cambiar de idioma
+      document.getElementById('es-btn').addEventListener('click', function() {
+        setLanguage('es');
+      });
+      document.getElementById('ca-btn').addEventListener('click', function() {
+        setLanguage('ca');
+      });
+      
+      // Inicializar el selector numérico
+      initNumberSelector();
+      
+      // Inicializar los eventos de las columnas de tipología
+      initTypologyColumns();
+      
+      // Añadir evento para detectar cambios en los textareas
+      document.getElementById('grupoA').addEventListener('input', updateInfoGrupos);
+      document.getElementById('grupoB').addEventListener('input', updateInfoGrupos);
+      document.getElementById('grupoC').addEventListener('input', updateInfoGrupos);
+      
+      // Añadir evento al botón de generar equipos
+      document.getElementById('generarGrupos').addEventListener('click', function() {
+        generarYMostrarEquipos();
+      });
+      
+      // Añadir evento al botón de borrar todos los nombres
+      document.getElementById('clearAllBtn').addEventListener('click', clearAllNames);
+    });
+    
+    // Función para inicializar el selector numérico
+    function initNumberSelector() {
+      const bubbles = document.querySelectorAll('.bubble');
+      const hiddenInput = document.getElementById('numAlumnos');
+      
+      // Establecer el valor inicial
+      const initialValue = hiddenInput.value;
+      document.querySelector(`.bubble[data-value="${initialValue}"]`).classList.add('active');
+      
+      // Actualizar información al inicio
+      updateInfoGrupos();
+      
+      // Añadir eventos a las burbujas
+      bubbles.forEach(bubble => {
+        bubble.addEventListener('click', function() {
+          // Quitar la clase activa de todas las burbujas
+          bubbles.forEach(b => b.classList.remove('active'));
+          
+          // Añadir la clase activa a la burbuja seleccionada
+          this.classList.add('active');
+          
+          // Actualizar el valor del input oculto
+          hiddenInput.value = this.getAttribute('data-value');
+          
+          // Actualizar la información de grupos
+          updateInfoGrupos();
+        });
+      });
+    }
+    
+    // Función para actualizar la información de grupos
+    function updateInfoGrupos() {
+      const grupoA = document.getElementById('grupoA').value.split(',').map(item => item.trim()).filter(item => item !== '');
+      const grupoB = document.getElementById('grupoB').value.split(',').map(item => item.trim()).filter(item => item !== '');
+      const grupoC = document.getElementById('grupoC').value.split(',').map(item => item.trim()).filter(item => item !== '');
+      const numAlumnos = parseInt(document.getElementById('numAlumnos').value);
+      
+      const totalAlumnos = grupoA.length + grupoB.length + grupoC.length;
+      const numEquipos = Math.floor(totalAlumnos / numAlumnos);
+      const sobrantes = totalAlumnos % numAlumnos;
+      
+      const lang = document.getElementById('es-btn').classList.contains('active') ? 'es' : 'ca';
+      
+      let infoText = '';
+      let infoTotalesText = '';
+      
+      if (lang === 'es') {
+        infoText = `Equipos: ${numEquipos} | Sobran: ${sobrantes}`;
+        infoTotalesText = `Total: ${totalAlumnos} personas (A: ${grupoA.length}, B: ${grupoB.length}, C: ${grupoC.length})`;
+      } else {
+        infoText = `Equips: ${numEquipos} | Sobren: ${sobrantes}`;
+        infoTotalesText = `Total: ${totalAlumnos} persones (A: ${grupoA.length}, B: ${grupoB.length}, C: ${grupoC.length})`;
+      }
+      
+      document.getElementById('infoGrupos').textContent = infoText;
+      document.getElementById('infoTotales').textContent = infoTotalesText;
+    }
+    
+    // Función para inicializar los eventos de las columnas de tipología
+    function initTypologyColumns() {
+      const columns = document.querySelectorAll('.typology-column');
+      const textareas = document.querySelectorAll('.typology-column textarea');
+      
+      // Establecer el primer cuadro como activo por defecto
+      columns[0].classList.add('active');
+      
+      // Añadir evento a las columnas y textareas
+      columns.forEach((column, index) => {
+        // Evento para hacer clic en la columna
+        column.addEventListener('click', function() {
+          // Quitar clase activa de todas las columnas
+          columns.forEach(c => c.classList.remove('active'));
+          // Añadir clase activa a esta columna
+          this.classList.add('active');
+        });
+        
+        // Evento para foco en textarea
+        textareas[index].addEventListener('focus', function() {
+          // Quitar clase activa de todas las columnas
+          columns.forEach(c => c.classList.remove('active'));
+          // Añadir clase activa a la columna padre
+          columns[index].classList.add('active');
+        });
+      });
+    }
+
+    // Función para generar equipos
+    function generarEquipos() {
+      const grupoA = document.getElementById('grupoA').value.split(',').map(item => item.trim()).filter(item => item !== '');
+      const grupoB = document.getElementById('grupoB').value.split(',').map(item => item.trim()).filter(item => item !== '');
+      const grupoC = document.getElementById('grupoC').value.split(',').map(item => item.trim()).filter(item => item !== '');
+      const numAlumnos = parseInt(document.getElementById('numAlumnos').value);
+      const tipoGrupo = document.querySelector('input[name="tipoGrupo"]:checked').value;
+      const sobrantes = document.querySelector('input[name="sobrantes"]:checked').value;
+      
+      const totalAlumnos = grupoA.length + grupoB.length + grupoC.length;
+      
+      // Mezclar los arrays para aleatorizar
+      function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+      }
+      
+      const alumnosA = shuffle([...grupoA]);
+      const alumnosB = shuffle([...grupoB]);
+      const alumnosC = shuffle([...grupoC]);
+      
+      let equipos = [];
+      let alumnosRestantes = [];
+      
+      // Implementación para equipos heterogéneos
+      if (tipoGrupo === 'heterogeneos') {
+        // Cálculo de distribución ideal
+        const numEquipos = Math.floor(totalAlumnos / numAlumnos);
+        const disA = Math.max(1, Math.round(grupoA.length / numEquipos));
+        const disC = Math.max(1, Math.round(grupoC.length / numEquipos));
+        
+        // Crear equipos heterogéneos
+        for (let i = 0; i < numEquipos; i++) {
+          let equipo = [];
+          
+          // Agregar alumnos de tipo A
+          for (let j = 0; j < disA && alumnosA.length > 0; j++) {
+            if (equipo.length < numAlumnos) {
+              equipo.push(alumnosA.pop());
+            } else {
+              alumnosRestantes.push(alumnosA.pop());
+            }
+          }
+          
+          // Agregar alumnos de tipo C
+          for (let j = 0; j < disC && alumnosC.length > 0; j++) {
+            if (equipo.length < numAlumnos) {
+              equipo.push(alumnosC.pop());
+            } else {
+              alumnosRestantes.push(alumnosC.pop());
+            }
+          }
+          
+          // Completar con alumnos de tipo B
+          while (equipo.length < numAlumnos && alumnosB.length > 0) {
+            equipo.push(alumnosB.pop());
+          }
+          
+          equipos.push(equipo);
+        }
+        
+        // Agregar alumnos restantes
+        alumnosRestantes = alumnosRestantes.concat(alumnosA, alumnosB, alumnosC);
+        
+      } else if (tipoGrupo === 'homogeneos') {
+        // Implementación para equipos homogéneos
+        const alumnosTodos = [...alumnosA, ...alumnosB, ...alumnosC];
+        const numEquipos = Math.floor(alumnosTodos.length / numAlumnos);
+        
+        for (let i = 0; i < numEquipos; i++) {
+          let equipo = [];
+          for (let j = 0; j < numAlumnos && alumnosTodos.length > 0; j++) {
+            equipo.push(alumnosTodos.pop());
+          }
+          equipos.push(equipo);
+        }
+        
+        alumnosRestantes = [...alumnosTodos];
+        
+      } else if (tipoGrupo === 'esporadicos') {
+        // Implementación para equipos esporádicos (mezclados aleatoriamente)
+        const alumnosTodos = shuffle([...alumnosA, ...alumnosB, ...alumnosC]);
+        const numEquipos = Math.floor(alumnosTodos.length / numAlumnos);
+        
+        for (let i = 0; i < numEquipos; i++) {
+          let equipo = [];
+          for (let j = 0; j < numAlumnos && alumnosTodos.length > 0; j++) {
+            equipo.push(alumnosTodos.pop());
+          }
+          equipos.push(equipo);
+        }
+        
+        alumnosRestantes = [...alumnosTodos];
+      }
+      
+      // Manejar alumnos sobrantes
+      if (sobrantes === 'grupoNuevo' && alumnosRestantes.length > 0) {
+        equipos.push(alumnosRestantes);
+      } else if (sobrantes === 'agregar' && alumnosRestantes.length > 0) {
+        let i = 0;
+        while (alumnosRestantes.length > 0) {
+          equipos[i % equipos.length].push(alumnosRestantes.pop());
+          i++;
+        }
+      }
+      
+      return equipos;
+    }
+
+    // Función para generar y mostrar equipos
+    function generarYMostrarEquipos() {
+      const grupoA = document.getElementById('grupoA').value.split(',').map(item => item.trim()).filter(item => item !== '');
+      const grupoB = document.getElementById('grupoB').value.split(',').map(item => item.trim()).filter(item => item !== '');
+      const grupoC = document.getElementById('grupoC').value.split(',').map(item => item.trim()).filter(item => item !== '');
+      const numAlumnos = parseInt(document.getElementById('numAlumnos').value);
+      const totalAlumnos = grupoA.length + grupoB.length + grupoC.length;
+      const numEquipos = Math.floor(totalAlumnos / numAlumnos);
+      const lang = document.getElementById('es-btn').classList.contains('active') ? 'es' : 'ca';
+      
+      // Actualizar información sobre los grupos
+      updateInfoGrupos();
+      
+      // Generar equipos
+      const equipos = generarEquipos();
+      
+      // Mostrar los equipos
+      mostrarEquipos(equipos, grupoA, grupoB, grupoC);
+    }
+
+    // Función para mostrar equipos en pantalla
+    function mostrarEquipos(equipos, grupoA, grupoB, grupoC) {
+      const resultadosDiv = document.getElementById('resultados');
+      resultadosDiv.innerHTML = '';
+      
+      const lang = document.getElementById('es-btn').classList.contains('active') ? 'es' : 'ca';
+      
+      // Crear tabla de equipos
+      const table = document.createElement('table');
+      table.style.width = '100%';
+      table.style.borderCollapse = 'collapse';
+      table.style.marginTop = '20px';
+      
+      equipos.forEach((equipo, index) => {
+        const row = table.insertRow();
+        
+        const cellNum = row.insertCell();
+        cellNum.style.padding = '10px';
+        cellNum.style.borderBottom = '1px solid #ddd';
+        cellNum.style.fontWeight = 'bold';
+        
+        const cellMiembros = row.insertCell();
+        cellMiembros.style.padding = '10px';
+        cellMiembros.style.borderBottom = '1px solid #ddd';
+        
+        if (lang === 'es') {
+          cellNum.textContent = `Equipo ${index + 1}:`;
+        } else {
+          cellNum.textContent = `Equip ${index + 1}:`;
+        }
+        
+        // Mostrar tipología de cada alumno
+        let miembrosTexto = "";
+        equipo.forEach((alumno, i) => {
+          // Determinar la tipología del alumno
+          let tipologia = '';
+          if (grupoA.includes(alumno)) {
+            tipologia = '(A)';
+          } else if (grupoB.includes(alumno)) {
+            tipologia = '(B)';
+          } else if (grupoC.includes(alumno)) {
+            tipologia = '(C)';
+          }
+          
+          miembrosTexto += `${tipologia} ${alumno}`;
+          if (i < equipo.length - 1) {
+            miembrosTexto += ', ';
+          }
+        });
+        
+        cellMiembros.textContent = miembrosTexto;
+      });
+      
+      resultadosDiv.appendChild(table);
+      
+      // Añadir botón de copiar
+      const copyButton = document.createElement('button');
+      copyButton.id = 'copiarEquipos';
+      copyButton.className = 'btn';
+      copyButton.textContent = translations[lang].copyButton;
+      resultadosDiv.appendChild(copyButton);
+      
+      // Añadir evento para copiar al portapapeles
+      document.getElementById('copiarEquipos').addEventListener('click', function() {
+        copiarEquipos(equipos, grupoA, grupoB, grupoC);
+      });
+    }
+
+    // Función para copiar equipos al portapapeles
+    function copiarEquipos(equipos, grupoA, grupoB, grupoC) {
+      const lang = document.getElementById('es-btn').classList.contains('active') ? 'es' : 'ca';
+      let textoCopiar = '';
+      
+      equipos.forEach((equipo, index) => {
+        if (lang === 'es') {
+          textoCopiar += `Equipo ${index + 1}: `;
+        } else {
+          textoCopiar += `Equip ${index + 1}: `;
+        }
+        
+        let miembrosTexto = "";
+        equipo.forEach((alumno, i) => {
+          // Determinar la tipología del alumno
+          let tipologia = '';
+          if (grupoA.includes(alumno)) {
+            tipologia = '(A)';
+          } else if (grupoB.includes(alumno)) {
+            tipologia = '(B)';
+          } else if (grupoC.includes(alumno)) {
+            tipologia = '(C)';
+          }
+          
+          miembrosTexto += `${tipologia} ${alumno}`;
+          if (i < equipo.length - 1) {
+            miembrosTexto += ', ';
+          }
+        });
+        
+        textoCopiar += miembrosTexto + '\n';
+      });
+      
+      // Copiar al portapapeles
+      navigator.clipboard.writeText(textoCopiar).then(function() {
+        // Mostrar mensaje de éxito
+        const successMsg = document.getElementById('copySuccess');
+        successMsg.textContent = translations[lang].copySuccess;
+        successMsg.classList.add('show');
+        
+        // Ocultar mensaje después de 3 segundos
+        setTimeout(function() {
+          successMsg.classList.remove('show');
+        }, 3000);
+      });
+    }
+  </script>
+</body>
+</html>

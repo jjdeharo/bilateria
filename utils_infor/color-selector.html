@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Selector de colores</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --text-color: #333;
+            --bg-color: #f5f5f5;
+            --card-bg: #fff;
+            --border-color: #ddd;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            flex: 1;
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+        }
+        
+        .color-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .color-container {
+                flex-direction: row;
+            }
+            
+            .color-picker {
+                flex: 1;
+            }
+            
+            .color-values {
+                flex: 1;
+            }
+        }
+        
+        .color-preview {
+            width: 100%;
+            height: 150px;
+            border-radius: 8px; /* Vuelto a establecer como estaba originalmente */
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input[type="color"] {
+            width: 100%;
+            height: 40px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px; /* Aumentado para hacer el input color redondo */
+            cursor: pointer;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin-top: 5px;
+        }
+        
+        .color-values-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        
+        @media (min-width: 576px) {
+            .color-values-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .color-value-item {
+            position: relative;
+        }
+        
+        .color-value-input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            background: transparent;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        .copy-btn:hover {
+            color: var(--secondary-color);
+        }
+        
+        .status-message {
+            background-color: #2ecc71;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .language-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 5px;
+        }
+        
+        .lang-btn {
+            padding: 5px 10px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .lang-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher">
+        <button id="lang-ca" class="lang-btn">CA</button>
+        <button id="lang-es" class="lang-btn active">ES</button>
+    </div>
+    
+    <div class="container">
+        <h1 id="main-title">Selector de colores</h1>
+        
+        <div class="card">
+            <div class="color-container">
+                <div class="color-picker">
+                    <div id="color-preview" class="color-preview"></div>
+                    
+                    <div class="input-group">
+                        <label id="color-picker-label" for="color-input">Selecciona un color:</label>
+                        <input type="color" id="color-input" value="#3498db">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label id="red-label" for="red-input">Rojo (R):</label>
+                        <input type="range" id="red-input" min="0" max="255" value="52">
+                        <span id="red-value">52</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label id="green-label" for="green-input">Verde (G):</label>
+                        <input type="range" id="green-input" min="0" max="255" value="152">
+                        <span id="green-value">152</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label id="blue-label" for="blue-input">Azul (B):</label>
+                        <input type="range" id="blue-input" min="0" max="255" value="219">
+                        <span id="blue-value">219</span>
+                    </div>
+                </div>
+                
+                <div class="color-values">
+                    <h2 id="color-values-title">Valores del color</h2>
+                    
+                    <div class="color-values-grid">
+                        <div class="color-value-item">
+                            <label id="hex-label" for="hex-value">Hexadecimal:</label>
+                            <input type="text" id="hex-value" class="color-value-input" value="3498DB">
+                            <button class="copy-btn" data-target="hex-value">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <div class="color-value-item">
+                            <label id="rgb-label" for="rgb-value">RGB:</label>
+                            <input type="text" id="rgb-value" class="color-value-input" value="52,152,219">
+                            <button class="copy-btn" data-target="rgb-value">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <div class="color-value-item">
+                            <label id="rgba-label" for="rgba-value">RGBA:</label>
+                            <input type="text" id="rgba-value" class="color-value-input" value="52,152,219,1">
+                            <button class="copy-btn" data-target="rgba-value">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <div class="color-value-item">
+                            <label id="hsl-label" for="hsl-value">HSL:</label>
+                            <input type="text" id="hsl-value" class="color-value-input" value="204,70,53">
+                            <button class="copy-btn" data-target="hsl-value">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="status-message" class="status-message"></div>
+    
+    <footer>
+        <p>
+            <a href="https://labia.tiddlyhost.com" target="_blank">Laboratorio de aplicaciones educativas</a><br>
+            <a href="https://bilateria.org" target="_blank">Aplicación hecha por Juan José de Haro</a><br>
+            <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank">Esta obra está bajo una licencia Creative Commons BY-SA</a>
+        </p>
+    </footer>
+    
+    <script>
+        // Definiciones de idioma
+        const translations = {
+            es: {
+                pageTitle: "Selector de colores",
+                mainTitle: "Selector de colores",
+                colorPickerLabel: "Selecciona un color:",
+                redLabel: "Rojo (R):",
+                greenLabel: "Verde (G):",
+                blueLabel: "Azul (B):",
+                colorValuesTitle: "Valores del color",
+                hexLabel: "Hexadecimal:",
+                rgbLabel: "RGB:",
+                rgbaLabel: "RGBA:",
+                hslLabel: "HSL:",
+                copied: "¡Copiado al portapapeles!",
+                labLink: "Laboratorio de aplicaciones educativas",
+                authorLink: "Aplicación hecha por Juan José de Haro",
+                licenseLink: "Esta obra está bajo una licencia Creative Commons BY-SA"
+            },
+            ca: {
+                pageTitle: "Selector de colors",
+                mainTitle: "Selector de colors",
+                colorPickerLabel: "Selecciona un color:",
+                redLabel: "Vermell (R):",
+                greenLabel: "Verd (G):",
+                blueLabel: "Blau (B):",
+                colorValuesTitle: "Valors del color",
+                hexLabel: "Hexadecimal:",
+                rgbLabel: "RGB:",
+                rgbaLabel: "RGBA:",
+                hslLabel: "HSL:",
+                copied: "Copiat al porta-retalls!",
+                labLink: "Laboratori d'aplicacions educatives",
+                authorLink: "Aplicació feta per Juan José de Haro",
+                licenseLink: "Aquesta obra està sota una llicència Creative Commons BY-SA"
+            }
+        };
+        
+        // Detectar idioma del navegador
+        function detectLanguage() {
+            const browserLang = navigator.language || navigator.userLanguage;
+            return browserLang.startsWith('ca') ? 'ca' : 'es';
+        }
+        
+        // Configuración inicial de idioma
+        let currentLang = detectLanguage();
+        
+        // Cambiar el idioma de la interfaz
+        function setLanguage(lang) {
+            currentLang = lang;
+            const texts = translations[lang];
+            
+            // Actualizar elementos
+            document.getElementById('page-title').textContent = texts.pageTitle;
+            document.getElementById('main-title').textContent = texts.mainTitle;
+            document.getElementById('color-picker-label').textContent = texts.colorPickerLabel;
+            document.getElementById('red-label').textContent = texts.redLabel;
+            document.getElementById('green-label').textContent = texts.greenLabel;
+            document.getElementById('blue-label').textContent = texts.blueLabel;
+            document.getElementById('color-values-title').textContent = texts.colorValuesTitle;
+            document.getElementById('hex-label').textContent = texts.hexLabel;
+            document.getElementById('rgb-label').textContent = texts.rgbLabel;
+            document.getElementById('rgba-label').textContent = texts.rgbaLabel;
+            document.getElementById('hsl-label').textContent = texts.hslLabel;
+            
+            // Actualizar botones de idioma
+            document.getElementById('lang-ca').classList.toggle('active', lang === 'ca');
+            document.getElementById('lang-es').classList.toggle('active', lang === 'es');
+            
+            // Actualizar atributo lang del HTML
+            document.documentElement.lang = lang;
+        }
+        
+        // Conversión de RGB a HSL
+        function rgbToHsl(r, g, b) {
+            r /= 255;
+            g /= 255;
+            b /= 255;
+            
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            
+            if (max === min) {
+                h = s = 0; // acromático
+            } else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                
+                h /= 6;
+            }
+            
+            return {
+                h: Math.round(h * 360),
+                s: Math.round(s * 100),
+                l: Math.round(l * 100)
+            };
+        }
+        
+        // Función para actualizar todos los valores de color
+        function updateColorValues() {
+            const redValue = parseInt(document.getElementById('red-input').value);
+            const greenValue = parseInt(document.getElementById('green-input').value);
+            const blueValue = parseInt(document.getElementById('blue-input').value);
+            
+            // Actualizar visualización de valores RGB
+            document.getElementById('red-value').textContent = redValue;
+            document.getElementById('green-value').textContent = greenValue;
+            document.getElementById('blue-value').textContent = blueValue;
+            
+            // Convertir a hexadecimal y asegurar que está en mayúsculas
+            const hexColor = '#' + 
+                redValue.toString(16).padStart(2, '0').toUpperCase() + 
+                greenValue.toString(16).padStart(2, '0').toUpperCase() + 
+                blueValue.toString(16).padStart(2, '0').toUpperCase();
+            
+            // Actualizar color-picker
+            document.getElementById('color-input').value = hexColor;
+            
+            // Actualizar vista previa
+            document.getElementById('color-preview').style.backgroundColor = hexColor;
+            
+            // Actualizar valores de texto (solo los valores, sin formato)
+            document.getElementById('hex-value').value = hexColor.substring(1);
+            document.getElementById('rgb-value').value = `${redValue},${greenValue},${blueValue}`;
+            document.getElementById('rgba-value').value = `${redValue},${greenValue},${blueValue},1`;
+            
+            // Calcular y mostrar HSL
+            const hsl = rgbToHsl(redValue, greenValue, blueValue);
+            document.getElementById('hsl-value').value = `${hsl.h},${hsl.s},${hsl.l}`;
+        }
+        
+        // Función para convertir hexadecimal a RGB
+        function hexToRgb(hex) {
+            hex = hex.replace('#', '');
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+            return { r, g, b };
+        }
+        
+        // Evento para el input de color
+        document.getElementById('color-input').addEventListener('input', function(e) {
+            const rgb = hexToRgb(e.target.value);
+            
+            document.getElementById('red-input').value = rgb.r;
+            document.getElementById('green-input').value = rgb.g;
+            document.getElementById('blue-input').value = rgb.b;
+            
+            updateColorValues();
+        });
+        
+        // Eventos para los sliders RGB
+        document.getElementById('red-input').addEventListener('input', updateColorValues);
+        document.getElementById('green-input').addEventListener('input', updateColorValues);
+        document.getElementById('blue-input').addEventListener('input', updateColorValues);
+        
+        // Función para copiar al portapapeles
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const statusMessage = document.getElementById('status-message');
+                statusMessage.textContent = translations[currentLang].copied;
+                statusMessage.style.opacity = 1;
+                
+                setTimeout(() => {
+                    statusMessage.style.opacity = 0;
+                }, 2000);
+            });
+        }
+        
+        // Función para convertir RGB a Hex
+        function rgbToHex(r, g, b) {
+            return r.toString(16).padStart(2, '0').toUpperCase() + 
+                   g.toString(16).padStart(2, '0').toUpperCase() + 
+                   b.toString(16).padStart(2, '0').toUpperCase();
+        }
+        
+        // Función para actualizar desde el campo hexadecimal
+        document.getElementById('hex-value').addEventListener('input', function(e) {
+            let hex = e.target.value;
+            if (hex.length === 6) {
+                const rgb = hexToRgb('#' + hex);
+                
+                document.getElementById('red-input').value = rgb.r;
+                document.getElementById('green-input').value = rgb.g;
+                document.getElementById('blue-input').value = rgb.b;
+                
+                updateColorValues();
+            }
+        });
+        
+        // Función para actualizar desde el campo RGB
+        document.getElementById('rgb-value').addEventListener('input', function(e) {
+            const values = e.target.value.split(',');
+            if (values.length === 3) {
+                const r = parseInt(values[0].trim()) || 0;
+                const g = parseInt(values[1].trim()) || 0;
+                const b = parseInt(values[2].trim()) || 0;
+                
+                if (r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255) {
+                    document.getElementById('red-input').value = r;
+                    document.getElementById('green-input').value = g;
+                    document.getElementById('blue-input').value = b;
+                    
+                    updateColorValues();
+                }
+            }
+        });
+        
+        // Función para actualizar desde el campo RGBA
+        document.getElementById('rgba-value').addEventListener('input', function(e) {
+            const values = e.target.value.split(',');
+            if (values.length >= 3) {
+                const r = parseInt(values[0].trim()) || 0;
+                const g = parseInt(values[1].trim()) || 0;
+                const b = parseInt(values[2].trim()) || 0;
+                
+                if (r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255) {
+                    document.getElementById('red-input').value = r;
+                    document.getElementById('green-input').value = g;
+                    document.getElementById('blue-input').value = b;
+                    
+                    updateColorValues();
+                }
+            }
+        });
+        
+        // Función para convertir HSL a RGB
+        function hslToRgb(h, s, l) {
+            h /= 360;
+            s /= 100;
+            l /= 100;
+            let r, g, b;
+            
+            if (s === 0) {
+                r = g = b = l; // acromático
+            } else {
+                const hue2rgb = (p, q, t) => {
+                    if (t < 0) t += 1;
+                    if (t > 1) t -= 1;
+                    if (t < 1/6) return p + (q - p) * 6 * t;
+                    if (t < 1/2) return q;
+                    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                    return p;
+                };
+                
+                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                const p = 2 * l - q;
+                r = hue2rgb(p, q, h + 1/3);
+                g = hue2rgb(p, q, h);
+                b = hue2rgb(p, q, h - 1/3);
+            }
+            
+            return {
+                r: Math.round(r * 255),
+                g: Math.round(g * 255),
+                b: Math.round(b * 255)
+            };
+        }
+        
+        // Función para actualizar desde el campo HSL
+        document.getElementById('hsl-value').addEventListener('input', function(e) {
+            const values = e.target.value.split(',');
+            if (values.length === 3) {
+                const h = parseInt(values[0].trim()) || 0;
+                const s = parseInt(values[1].trim()) || 0;
+                const l = parseInt(values[2].trim()) || 0;
+                
+                if (h >= 0 && h <= 360 && s >= 0 && s <= 100 && l >= 0 && l <= 100) {
+                    const rgb = hslToRgb(h, s, l);
+                    
+                    document.getElementById('red-input').value = rgb.r;
+                    document.getElementById('green-input').value = rgb.g;
+                    document.getElementById('blue-input').value = rgb.b;
+                    
+                    updateColorValues();
+                }
+            }
+        });
+        
+        // Agregar eventos a los botones de copia
+        const copyButtons = document.querySelectorAll('.copy-btn');
+        copyButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const text = document.getElementById(targetId).value;
+                copyToClipboard(text);
+            });
+        });
+        
+        // Eventos para los botones de idioma
+        document.getElementById('lang-ca').addEventListener('click', () => setLanguage('ca'));
+        document.getElementById('lang-es').addEventListener('click', () => setLanguage('es'));
+        
+        // Inicializar la aplicación
+        setLanguage(currentLang);
+        updateColorValues();
+    </script>
+</body>
+</html>

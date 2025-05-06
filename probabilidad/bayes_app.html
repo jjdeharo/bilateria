@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teorema de Bayes</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: white;
+        }
+        .formula {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 15px 0;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .steps {
+            display: none;
+            margin-top: 20px;
+        }
+        .step {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .language-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 5px;
+        }
+        .lang-btn {
+            padding: 5px 10px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .lang-btn.active {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-buttons">
+        <button id="ca-btn" class="lang-btn">CA</button>
+        <button id="es-btn" class="lang-btn">ES</button>
+    </div>
+
+    <h1 id="main-title">Teorema de Bayes: Aplicació pràctica</h1>
+    
+    <div class="card">
+        <h2 id="example-title">Exemple: Test de càncer</h2>
+        <p id="example-desc">Volem calcular la probabilitat que una persona tingui càncer si el seu test ha donat positiu.</p>
+        
+        <div class="formula" id="main-formula">
+            \[P(Càncer|Test+) = \frac{P(Test+|Càncer) \cdot P(Càncer)}{P(Test+)}\]
+        </div>
+        <div class="input-group">
+            <label id="sensitivity-label">P(Test+|Càncer) - Sensibilitat del test</label>
+            <input type="number" id="sensibilitat" min="0" max="100" value="90" step="1">
+            <small id="sensitivity-desc">De cada 100 persones amb càncer, a quantes el test els dóna positiu?</small>
+        </div>
+        <div class="input-group">
+            <label id="prevalence-label">P(Càncer) - Prevalença del càncer</label>
+            <input type="number" id="prevalenca" min="0" max="100" value="1" step="0.1">
+            <small id="prevalence-desc">De cada 100 persones, quantes tenen càncer?</small>
+        </div>
+        <div class="input-group">
+            <label id="false-positive-label">P(Test+|No Càncer) - Taxa de falsos positius</label>
+            <input type="number" id="falsos-positius" min="0" max="100" value="10" step="1">
+            <small id="false-positive-desc">De cada 100 persones sense càncer, a quantes el test els dóna positiu per error?</small>
+        </div>
+        <button onclick="calcularBayes()" id="calculate-button">Calcular pas a pas</button>
+        <div id="steps" class="steps">
+            <div class="step" id="step1">
+                <h3 id="step1-title">Pas 1: Convertir percentatges a probabilitats</h3>
+                <div id="pas1-contingut"></div>
+            </div>
+            <div class="step" id="step2">
+                <h3 id="step2-title">Pas 2: Calcular P(Test+) amb la regla de la probabilitat total</h3>
+                <div class="formula" id="step2-formula">
+                    \[P(Test+) = P(Test+|Càncer) \cdot P(Càncer) + P(Test+|No Càncer) \cdot P(No Càncer)\]
+                </div>
+                <div id="pas2-contingut"></div>
+            </div>
+            <div class="step" id="step3">
+                <h3 id="step3-title">Pas 3: Aplicar el Teorema de Bayes</h3>
+                <div id="pas3-contingut"></div>
+            </div>
+            <div class="step" id="step4">
+                <h3 id="step4-title">Interpretació final</h3>
+                <div id="interpretacio"></div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p><span id="footer-by">Aplicació feta per</span> <a href="https://bilateria.org">Juan José de Haro</a></p>
+        <p><a href="" id="license-link">Aquesta obra està sota una llicència Creative Commons BY-SA</a></p>
+    </footer>
+    <script>
+        // Traducciones
+        const translations = {
+            ca: {
+                mainTitle: "Teorema de Bayes: Aplicació pràctica",
+                exampleTitle: "Exemple: Test de càncer",
+                exampleDesc: "Volem calcular la probabilitat que una persona tingui càncer si el seu test ha donat positiu.",
+                mainFormula: "\\[P(Càncer|Test+) = \\frac{P(Test+|Càncer) \\cdot P(Càncer)}{P(Test+)}\\]",
+                sensitivityLabel: "P(Test+|Càncer) - Sensibilitat del test",
+                sensitivityDesc: "De cada 100 persones amb càncer, a quantes el test els dóna positiu?",
+                prevalenceLabel: "P(Càncer) - Prevalença del càncer",
+                prevalenceDesc: "De cada 100 persones, quantes tenen càncer?",
+                falsePositiveLabel: "P(Test+|No Càncer) - Taxa de falsos positius",
+                falsePositiveDesc: "De cada 100 persones sense càncer, a quantes el test els dóna positiu per error?",
+                calculateButton: "Calcular pas a pas",
+                step1Title: "Pas 1: Convertir percentatges a probabilitats",
+                step2Title: "Pas 2: Calcular P(Test+) amb la regla de la probabilitat total",
+                step2Formula: "\\[P(Test+) = P(Test+|Càncer) \\cdot P(Càncer) + P(Test+|No Càncer) \\cdot P(No Càncer)\\]",
+                step3Title: "Pas 3: Aplicar el Teorema de Bayes",
+                step4Title: "Interpretació final",
+                footerBy: "Aplicació feta per",
+                licenseText: "Aquesta obra està sota una llicència Creative Commons BY-SA",
+                licenseLink: "https://creativecommons.org/licenses/by-sa/4.0/deed.ca",
+                cancer: "Càncer",
+                noCancer: "NoCàncer",
+                interpretation1: "Si una persona dona positiu en el test, la probabilitat que tingui càncer és del",
+                interpretation2: "Dit d'una altra manera: de cada 100 persones que donen positiu en el test, només",
+                interpretation3: "tenen realment càncer."
+            },
+            es: {
+                mainTitle: "Teorema de Bayes: Aplicación práctica",
+                exampleTitle: "Ejemplo: Test de cáncer",
+                exampleDesc: "Queremos calcular la probabilidad de que una persona tenga cáncer si su test ha dado positivo.",
+                mainFormula: "\\[P(Cáncer|Test+) = \\frac{P(Test+|Cáncer) \\cdot P(Cáncer)}{P(Test+)}\\]",
+                sensitivityLabel: "P(Test+|Cáncer) - Sensibilidad del test",
+                sensitivityDesc: "De cada 100 personas con cáncer, ¿a cuántas el test les da positivo?",
+                prevalenceLabel: "P(Cáncer) - Prevalencia del cáncer",
+                prevalenceDesc: "De cada 100 personas, ¿cuántas tienen cáncer?",
+                falsePositiveLabel: "P(Test+|No Cáncer) - Tasa de falsos positivos",
+                falsePositiveDesc: "De cada 100 personas sin cáncer, ¿a cuántas el test les da positivo por error?",
+                calculateButton: "Calcular paso a paso",
+                step1Title: "Paso 1: Convertir porcentajes a probabilidades",
+                step2Title: "Paso 2: Calcular P(Test+) con la regla de la probabilidad total",
+                step2Formula: "\\[P(Test+) = P(Test+|Cáncer) \\cdot P(Cáncer) + P(Test+|No Cáncer) \\cdot P(No Cáncer)\\]",
+                step3Title: "Paso 3: Aplicar el Teorema de Bayes",
+                step4Title: "Interpretación final",
+                footerBy: "Aplicación hecha por",
+                licenseText: "Esta obra está bajo una licencia Creative Commons BY-SA",
+                licenseLink: "https://creativecommons.org/licenses/by-sa/4.0/deed.es",
+                cancer: "Cáncer",
+                noCancer: "NoCáncer",
+                interpretation1: "Si una persona da positivo en el test, la probabilidad de que tenga cáncer es del",
+                interpretation2: "Dicho de otra manera: de cada 100 personas que dan positivo en el test, solo",
+                interpretation3: "tienen realmente cáncer."
+            }
+        };
+
+        // Variables globales
+        let currentLang = 'ca'; // Idioma predeterminado
+
+        // Detectar idioma del navegador al cargar la página
+        window.onload = function() {
+            const browserLang = navigator.language || navigator.userLanguage;
+            if (browserLang.startsWith('ca')) {
+                currentLang = 'ca';
+            } else {
+                currentLang = 'es';
+            }
+            setLanguage(currentLang);
+
+            if (typeof MathJax !== 'undefined') {
+                MathJax.Hub.Config({
+                    tex2jax: {inlineMath: [['$', '$'], ['\\(', '\\)']]}
+                });
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+            }
+        };
+
+        // Cambiar idioma
+        function setLanguage(lang) {
+            currentLang = lang;
+            
+            // Actualizar UI con el idioma seleccionado
+            document.getElementById('main-title').textContent = translations[lang].mainTitle;
+            document.getElementById('example-title').textContent = translations[lang].exampleTitle;
+            document.getElementById('example-desc').textContent = translations[lang].exampleDesc;
+            document.getElementById('main-formula').innerHTML = translations[lang].mainFormula;
+            document.getElementById('sensitivity-label').textContent = translations[lang].sensitivityLabel;
+            document.getElementById('sensitivity-desc').textContent = translations[lang].sensitivityDesc;
+            document.getElementById('prevalence-label').textContent = translations[lang].prevalenceLabel;
+            document.getElementById('prevalence-desc').textContent = translations[lang].prevalenceDesc;
+            document.getElementById('false-positive-label').textContent = translations[lang].falsePositiveLabel;
+            document.getElementById('false-positive-desc').textContent = translations[lang].falsePositiveDesc;
+            document.getElementById('calculate-button').textContent = translations[lang].calculateButton;
+            document.getElementById('step1-title').textContent = translations[lang].step1Title;
+            document.getElementById('step2-title').textContent = translations[lang].step2Title;
+            document.getElementById('step2-formula').innerHTML = translations[lang].step2Formula;
+            document.getElementById('step3-title').textContent = translations[lang].step3Title;
+            document.getElementById('step4-title').textContent = translations[lang].step4Title;
+            document.getElementById('footer-by').textContent = translations[lang].footerBy;
+            document.getElementById('license-link').textContent = translations[lang].licenseText;
+            document.getElementById('license-link').href = translations[lang].licenseLink;
+            
+            // Actualizar botones de idioma
+            document.getElementById('ca-btn').classList.toggle('active', lang === 'ca');
+            document.getElementById('es-btn').classList.toggle('active', lang === 'es');
+            
+            // Actualizar el contenido de los pasos si están visibles
+            if (document.getElementById('steps').style.display === 'block') {
+                calcularBayes();
+            }
+
+            // Actualizar MathJax
+            if (typeof MathJax !== 'undefined') {
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+            }
+        }
+
+        function calcularBayes() {
+            // Obtenir valors i convertir a probabilitats
+            const sensibilitat = parseFloat(document.getElementById('sensibilitat').value) / 100;
+            const prevalenca = parseFloat(document.getElementById('prevalenca').value) / 100;
+            const falsosPositius = parseFloat(document.getElementById('falsos-positius').value) / 100;
+
+            const cancer = translations[currentLang].cancer;
+            const noCancer = translations[currentLang].noCancer;
+
+            // Pas 1: Mostrar probabilitats
+            document.getElementById('pas1-contingut').innerHTML = `
+                <div class="formula">
+                    \\[P(Test+|${cancer}) = ${sensibilitat.toFixed(2)},\\]
+                    \\[P(${cancer}) = ${prevalenca.toFixed(4)},\\]
+                    \\[P(${noCancer}) = ${(1 - prevalenca).toFixed(4)},\\]
+                    \\[P(Test+|${noCancer}) = ${falsosPositius.toFixed(2)}\\]
+                </div>
+            `;
+            
+            // Pas 2: Calcular P(Test+)
+            const pTestPositiu = (sensibilitat * prevalenca) + (falsosPositius * (1 - prevalenca));
+            document.getElementById('pas2-contingut').innerHTML = `
+                <div class="formula">
+                    \\[P(Test+) = P(Test+|${cancer}) \\cdot P(${cancer}) + P(Test+|${noCancer}) \\cdot P(${noCancer})\\]
+                </div>
+                <div class="formula">
+                    \\[P(Test+) = (${sensibilitat.toFixed(2)} \\cdot ${prevalenca.toFixed(4)}) + (${falsosPositius.toFixed(2)} \\cdot ${(1 - prevalenca).toFixed(4)})\\]
+                </div>
+                <div class="formula">
+                    \\[P(Test+) = ${pTestPositiu.toFixed(4)}\\]
+                </div>
+            `;
+
+            // Pas 3: Aplicar Bayes
+            const pCancerTestPositiu = (sensibilitat * prevalenca) / pTestPositiu;
+            document.getElementById('pas3-contingut').innerHTML = `
+                <div class="formula">
+                    \\[P(${cancer}|Test+) = \\frac{P(Test+|${cancer}) \\cdot P(${cancer})}{P(Test+)}\\]
+                </div>
+                <div class="formula">
+                    \\[P(${cancer}|Test+) = \\frac{${sensibilitat.toFixed(2)} \\cdot ${prevalenca.toFixed(4)}}{${pTestPositiu.toFixed(4)}} = ${pCancerTestPositiu.toFixed(4)}\\]
+                </div>
+            `;
+
+            // Interpretació
+            document.getElementById('interpretacio').innerHTML = `
+                <p>${translations[currentLang].interpretation1} ${(pCancerTestPositiu * 100).toFixed(1)}%.</p>
+                <p>${translations[currentLang].interpretation2} ${(pCancerTestPositiu * 100).toFixed(1)} ${translations[currentLang].interpretation3}</p>
+            `;
+
+            // Mostrar tots els passos
+            document.getElementById('steps').style.display = 'block';
+
+            // Actualitzar MathJax
+            if (typeof MathJax !== 'undefined') {
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+            }
+        }
+
+        // Event listeners para los botones de idioma
+        document.getElementById('ca-btn').addEventListener('click', () => setLanguage('ca'));
+        document.getElementById('es-btn').addEventListener('click', () => setLanguage('es'));
+    </script>
+</body>
+</html>
