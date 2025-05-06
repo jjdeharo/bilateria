@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Método Pomodoro</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #4CAF50;
+            --background-color: #f9f9f9;
+            --text-color: #333;
+            --border-radius: 8px;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            flex: 1;
+        }
+        
+        .timer-display {
+            font-size: 5rem;
+            text-align: center;
+            margin: 20px 0;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            opacity: 0.9;
+        }
+        
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .settings {
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+        }
+        
+        .settings h3 {
+            margin-top: 0;
+        }
+        
+        .settings-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .settings-item {
+            flex: 1;
+            min-width: 120px;
+            position: relative;
+        }
+        
+        .settings label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .time-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            background: white;
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: fit-content;
+        }
+        
+        .time-control button {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            padding: 0;
+            background-color: var(--primary-color);
+        }
+        
+        .time-value {
+            font-size: 18px;
+            font-weight: bold;
+            padding: 0 15px;
+            min-width: 40px;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .time-value-editable {
+            border: 1px dashed #ccc;
+            border-radius: 4px;
+            padding: 2px 5px;
+            background-color: #f9f9f9;
+        }
+        
+        .time-input {
+            font-size: 18px;
+            font-weight: bold;
+            width: 40px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 2px 0;
+        }
+        
+        /* Quick guide button */
+        .quick-guide-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: var(--border-radius);
+            padding: 8px 16px;
+            position: fixed;
+            bottom: 100px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 100;
+            border: none;
+            font-weight: bold;
+            min-width: 120px;
+        }
+        
+        /* Info button */
+        .info-btn {
+            background-color: #3498db;
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 100;
+            border: none;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: var(--border-radius);
+            max-width: 80%;
+            max-height: 80%;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #ddd;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 1s;
+        }
+        
+        .status {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .pomodoro-count {
+            text-align: center;
+            font-size: 1rem;
+            color: #666;
+        }
+        
+        .mode-indicator {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .mode-work {
+            color: var(--primary-color);
+        }
+        
+        .mode-break {
+            color: var(--secondary-color);
+        }
+        
+        .language-switcher {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+        
+        .language-btn {
+            padding: 5px 10px;
+            margin-left: 5px;
+            background-color: #ddd;
+            color: #333;
+        }
+        
+        .language-btn.active {
+            background-color: #555;
+            color: white;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 480px) {
+            .timer-display {
+                font-size: 4rem;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher">
+        <button id="lang-es" class="language-btn active">ES</button>
+        <button id="lang-ca" class="language-btn">CA</button>
+    </div>
+    
+    <div class="container">
+        <h1 id="title">Método Pomodoro</h1>
+        
+        <div class="mode-indicator">
+            <span id="mode-text" class="mode-work">Modo: Trabajo</span>
+        </div>
+        
+        <div class="timer-display" id="timer">25:00</div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+        
+        <div class="buttons">
+            <button id="start-btn">Iniciar</button>
+            <button id="pause-btn" disabled>Pausar</button>
+            <button id="reset-btn">Reiniciar</button>
+            <button id="skip-btn">Saltar</button>
+        </div>
+        
+        <div class="status" id="status">Listo para comenzar</div>
+        
+        <div class="pomodoro-count" id="pomodoro-count">Pomodoros completados: 0</div>
+        
+        <div class="settings">
+            <h3 id="settings-title">Ajustes</h3>
+            <div class="settings-row">
+                <div class="settings-item">
+                    <label id="work-label">Tiempo de trabajo (min):</label>
+                    <div class="time-control">
+                        <button id="work-time-minus" class="minus-btn">-</button>
+                        <span id="work-time-value" class="time-value">25</span>
+                        <button id="work-time-plus" class="plus-btn">+</button>
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <label id="short-break-label">Descanso corto (min):</label>
+                    <div class="time-control">
+                        <button id="short-break-minus" class="minus-btn">-</button>
+                        <span id="short-break-value" class="time-value">5</span>
+                        <button id="short-break-plus" class="plus-btn">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="settings-row">
+                <div class="settings-item">
+                    <label id="long-break-label">Descanso largo (min):</label>
+                    <div class="time-control">
+                        <button id="long-break-minus" class="minus-btn">-</button>
+                        <span id="long-break-value" class="time-value">15</span>
+                        <button id="long-break-plus" class="plus-btn">+</button>
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <label id="cycles-label">Ciclos antes del descanso largo:</label>
+                    <div class="time-control">
+                        <button id="cycles-minus" class="minus-btn">-</button>
+                        <span id="cycles-value" class="time-value">4</span>
+                        <button id="cycles-plus" class="plus-btn">+</button>
+                    </div>
+                </div>
+            </div>
+            <button id="apply-settings" class="settings-btn">Aplicar</button>
+        </div>
+    </div>
+    
+    <button id="info-btn" class="info-btn">?</button>
+    
+    <div id="info-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" id="close-modal">&times;</button>
+            <h2 id="modal-title">¿Qué es el método Pomodoro?</h2>
+            <div id="modal-content">
+                <p>El método Pomodoro es una técnica de gestión del tiempo desarrollada por Francesco Cirillo a finales de los años 80. Utiliza un temporizador para dividir el trabajo en intervalos, tradicionalmente de 25 minutos, separados por breves descansos.</p>
+                
+                <h3>Cómo funciona:</h3>
+                <ol>
+                    <li>Elige una tarea para realizar.</li>
+                    <li>Configura el temporizador (normalmente a 25 minutos).</li>
+                    <li>Trabaja en la tarea hasta que suene el temporizador.</li>
+                    <li>Toma un breve descanso (5 minutos).</li>
+                    <li>Después de completar cuatro "pomodoros", toma un descanso más largo (15-30 minutos).</li>
+                </ol>
+                
+                <h3>Cómo usar esta aplicación:</h3>
+                <ol>
+                    <li>Personaliza los tiempos utilizando los controles + y - en la sección de Ajustes, o haciendo clic en el número para editarlo directamente.</li>
+                    <li>Pulsa "Aplicar" para guardar tus ajustes.</li>
+                    <li>Haz clic en "Iniciar" para comenzar el temporizador.</li>
+                    <li>Trabaja concentrado hasta que el temporizador termine.</li>
+                    <li>La aplicación cambiará automáticamente entre periodos de trabajo y descanso.</li>
+                    <li>Usa "Pausar" si necesitas detener temporalmente el temporizador.</li>
+                    <li>Usa "Reiniciar" para volver al inicio del intervalo actual.</li>
+                    <li>Usa "Saltar" si quieres pasar al siguiente intervalo (de trabajo a descanso o viceversa).</li>
+                </ol>
+                
+                <h3>Beneficios:</h3>
+                <ul>
+                    <li>Mejora la concentración y reduce las distracciones.</li>
+                    <li>Ayuda a combatir la procrastinación.</li>
+                    <li>Aumenta la conciencia sobre cómo utilizas tu tiempo.</li>
+                    <li>Reduce la fatiga mental al incluir descansos regulares.</li>
+                    <li>Mejora la planificación y estimación de tareas.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p><a href="https://labia.tiddlyhost.com" target="_blank">Laboratorio de aplicaciones educativas</a></p>
+        <p><a href="https://bilateria.org" target="_blank">Aplicación hecha por Juan José de Haro</a></p>
+        <p><a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Esta obra está bajo una licencia Creative Commons BY-SA</a></p>
+    </footer>
+
+    <script>
+        // Traducción
+        const translations = {
+            es: {
+                title: "Método Pomodoro",
+                modeWork: "Modo: Trabajo",
+                modeShortBreak: "Modo: Descanso corto",
+                modeLongBreak: "Modo: Descanso largo",
+                start: "Iniciar",
+                pause: "Pausar",
+                reset: "Reiniciar",
+                skip: "Saltar",
+                ready: "Listo para comenzar",
+                working: "¡Trabajando! Mantén el enfoque",
+                shortBreak: "Toma un breve descanso",
+                longBreak: "¡Buen trabajo! Toma un descanso largo",
+                completed: "Pomodoros completados: ",
+                settings: "Ajustes",
+                workTime: "Tiempo de trabajo (min):",
+                shortBreakTime: "Descanso corto (min):",
+                longBreakTime: "Descanso largo (min):",
+                cycles: "Ciclos antes del descanso largo:",
+                apply: "Aplicar",
+                sessionComplete: "¡Sesión completada!",
+                breakComplete: "¡Descanso terminado! ¿Listo para continuar?",
+                notification: "Notificación del Pomodoro"
+            },
+            ca: {
+                title: "Mètode Pomodoro",
+                modeWork: "Mode: Treball",
+                modeShortBreak: "Mode: Descans curt",
+                modeLongBreak: "Mode: Descans llarg",
+                start: "Iniciar",
+                pause: "Pausar",
+                reset: "Reiniciar",
+                skip: "Saltar",
+                ready: "Preparat per començar",
+                working: "Treballant! Mantingues el focus",
+                shortBreak: "Pren un breu descans",
+                longBreak: "Bona feina! Pren un descans llarg",
+                completed: "Pomodoros completats: ",
+                settings: "Configuració",
+                workTime: "Temps de treball (min):",
+                shortBreakTime: "Descans curt (min):",
+                longBreakTime: "Descans llarg (min):",
+                cycles: "Cicles abans del descans llarg:",
+                apply: "Aplicar",
+                sessionComplete: "Sessió completada!",
+                breakComplete: "Descans acabat! Preparat per continuar?",
+                notification: "Notificació del Pomodoro"
+            }
+        };
+        
+        // Detectar idioma del navegador
+        function detectLanguage() {
+            const browserLang = navigator.language || navigator.userLanguage;
+            return browserLang.startsWith('ca') ? 'ca' : 'es';
+        }
+        
+        let currentLang = detectLanguage();
+        
+        // Aplicar idioma
+        function applyLanguage(lang) {
+            currentLang = lang;
+            
+            // Actualizamos los textos principales
+            document.getElementById('title').textContent = translations[lang].title;
+            document.getElementById('start-btn').textContent = translations[lang].start;
+            document.getElementById('pause-btn').textContent = translations[lang].pause;
+            document.getElementById('reset-btn').textContent = translations[lang].reset;
+            document.getElementById('skip-btn').textContent = translations[lang].skip;
+            document.getElementById('status').textContent = translations[lang].ready;
+            document.getElementById('pomodoro-count').textContent = translations[lang].completed + pomodorosCompleted;
+            document.getElementById('settings-title').textContent = translations[lang].settings;
+            document.getElementById('work-label').textContent = translations[lang].workTime;
+            document.getElementById('short-break-label').textContent = translations[lang].shortBreakTime;
+            document.getElementById('long-break-label').textContent = translations[lang].longBreakTime;
+            document.getElementById('cycles-label').textContent = translations[lang].cycles;
+            document.getElementById('apply-settings').textContent = translations[lang].apply;
+            
+            // Actualizar el texto del modo actual
+            updateModeText();
+            
+            // Actualizar botones de idioma
+            document.getElementById('lang-es').classList.toggle('active', lang === 'es');
+            document.getElementById('lang-ca').classList.toggle('active', lang === 'ca');
+        }
+        
+        // Cambiar idioma con botones
+        document.getElementById('lang-es').addEventListener('click', () => applyLanguage('es'));
+        document.getElementById('lang-ca').addEventListener('click', () => applyLanguage('ca'));
+        
+        // Variables del temporizador
+        let workTime = 25;
+        let shortBreakTime = 5;
+        let longBreakTime = 15;
+        let pomodoroBeforeLongBreak = 4;
+        let pomodorosCompleted = 0;
+        let currentMode = 'work'; // 'work', 'shortBreak', 'longBreak'
+        let timerInterval;
+        let timeLeft = workTime * 60;
+        let isRunning = false;
+        let totalTime;
+        
+        // Elementos DOM
+        const timerDisplay = document.getElementById('timer');
+        const progressBar = document.getElementById('progress');
+        const startBtn = document.getElementById('start-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const skipBtn = document.getElementById('skip-btn');
+        const statusText = document.getElementById('status');
+        const pomodoroCountText = document.getElementById('pomodoro-count');
+        const modeText = document.getElementById('mode-text');
+        
+        // Actualizar texto del modo
+        function updateModeText() {
+            switch(currentMode) {
+                case 'work':
+                    modeText.textContent = translations[currentLang].modeWork;
+                    modeText.className = 'mode-work';
+                    break;
+                case 'shortBreak':
+                    modeText.textContent = translations[currentLang].modeShortBreak;
+                    modeText.className = 'mode-break';
+                    break;
+                case 'longBreak':
+                    modeText.textContent = translations[currentLang].modeLongBreak;
+                    modeText.className = 'mode-break';
+                    break;
+            }
+        }
+        
+        // Formatear tiempo en minutos:segundos
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        // Actualizar la visualización del temporizador
+        function updateTimerDisplay() {
+            timerDisplay.textContent = formatTime(timeLeft);
+            
+            // Actualizar barra de progreso
+            const progressPercentage = ((totalTime - timeLeft) / totalTime) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+        }
+        
+        // Cambiar modo (trabajo/descanso)
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            switch(mode) {
+                case 'work':
+                    timeLeft = workTime * 60;
+                    totalTime = timeLeft;
+                    statusText.textContent = translations[currentLang].working;
+                    document.documentElement.style.setProperty('--primary-color', '#e74c3c');
+                    break;
+                case 'shortBreak':
+                    timeLeft = shortBreakTime * 60;
+                    totalTime = timeLeft;
+                    statusText.textContent = translations[currentLang].shortBreak;
+                    document.documentElement.style.setProperty('--primary-color', '#4CAF50');
+                    break;
+                case 'longBreak':
+                    timeLeft = longBreakTime * 60;
+                    totalTime = timeLeft;
+                    statusText.textContent = translations[currentLang].longBreak;
+                    document.documentElement.style.setProperty('--primary-color', '#2196F3');
+                    break;
+            }
+            
+            updateModeText();
+            updateTimerDisplay();
+        }
+        
+        // Iniciar el temporizador
+        function startTimer() {
+            if (isRunning) return;
+            
+            isRunning = true;
+            startBtn.disabled = true;
+            pauseBtn.disabled = false;
+            
+            timerInterval = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerComplete();
+                } else {
+                    timeLeft--;
+                    updateTimerDisplay();
+                }
+            }, 1000);
+        }
+        
+        // Pausar el temporizador
+        function pauseTimer() {
+            if (!isRunning) return;
+            
+            isRunning = false;
+            clearInterval(timerInterval);
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+        }
+        
+        // Reiniciar el temporizador
+        function resetTimer() {
+            pauseTimer();
+            switchMode(currentMode);
+        }
+        
+        // Saltar al siguiente modo
+        function skipToNext() {
+            pauseTimer();
+            
+            if (currentMode === 'work') {
+                pomodorosCompleted++;
+                pomodoroCountText.textContent = translations[currentLang].completed + pomodorosCompleted;
+                
+                if (pomodorosCompleted % pomodoroBeforeLongBreak === 0) {
+                    switchMode('longBreak');
+                } else {
+                    switchMode('shortBreak');
+                }
+            } else {
+                switchMode('work');
+            }
+            
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+        }
+        
+        // Cuando el temporizador llega a 0
+        function timerComplete() {
+            isRunning = false;
+            
+            // Notificación
+            try {
+                if (Notification.permission === "granted") {
+                    let notificationText = '';
+                    
+                    if (currentMode === 'work') {
+                        notificationText = translations[currentLang].sessionComplete;
+                    } else {
+                        notificationText = translations[currentLang].breakComplete;
+                    }
+                    
+                    new Notification(translations[currentLang].notification, {
+                        body: notificationText
+                    });
+                }
+            } catch (e) {
+                console.log('Notifications not supported');
+            }
+            
+            // Sonido de alerta
+            try {
+                const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869.wav');
+                audio.play();
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+            
+            // Cambiar al siguiente modo
+            if (currentMode === 'work') {
+                pomodorosCompleted++;
+                pomodoroCountText.textContent = translations[currentLang].completed + pomodorosCompleted;
+                
+                if (pomodorosCompleted % pomodoroBeforeLongBreak === 0) {
+                    switchMode('longBreak');
+                } else {
+                    switchMode('shortBreak');
+                }
+            } else {
+                switchMode('work');
+            }
+            
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+        }
+        
+        // Actualizar el modal de información según el idioma
+        function updateInfoModal(lang) {
+            const modalTitle = document.getElementById('modal-title');
+            const modalContent = document.getElementById('modal-content');
+            
+            modalTitle.textContent = translations[lang].infoTitle;
+            
+            modalContent.innerHTML = `
+                <p>${translations[lang].infoIntro}</p>
+                
+                <h3>${translations[lang].howWorks}</h3>
+                <ol>
+                    <li>${translations[lang].howWorksStep1}</li>
+                    <li>${translations[lang].howWorksStep2}</li>
+                    <li>${translations[lang].howWorksStep3}</li>
+                    <li>${translations[lang].howWorksStep4}</li>
+                    <li>${translations[lang].howWorksStep5}</li>
+                </ol>
+                
+                <h3>${translations[lang].howUse}</h3>
+                <ol>
+                    <li>${translations[lang].howUseStep1}</li>
+                    <li>${translations[lang].howUseStep2}</li>
+                    <li>${translations[lang].howUseStep3}</li>
+                    <li>${translations[lang].howUseStep4}</li>
+                    <li>${translations[lang].howUseStep5}</li>
+                    <li>${translations[lang].howUseStep6}</li>
+                    <li>${translations[lang].howUseStep7}</li>
+                    <li>${translations[lang].howUseStep8}</li>
+                </ol>
+                
+                <h3>${translations[lang].benefits}</h3>
+                <ul>
+                    <li>${translations[lang].benefit1}</li>
+                    <li>${translations[lang].benefit2}</li>
+                    <li>${translations[lang].benefit3}</li>
+                    <li>${translations[lang].benefit4}</li>
+                    <li>${translations[lang].benefit5}</li>
+                </ul>
+            `;
+        }
+        
+        // Actualiza el modal de guía rápida según el idioma
+        function updateQuickGuideModal(lang) {
+            const modalTitle = document.getElementById('quick-guide-title');
+            const modalContent = document.getElementById('quick-guide-content');
+            
+            if (!modalTitle || !modalContent) {
+                console.error('Modal elements not found');
+                return;
+            }
+            
+            modalTitle.textContent = translations[lang].quickGuideTitle;
+            
+            modalContent.innerHTML = `
+                <ol>
+                    <li>${translations[lang].quickGuideStep1}</li>
+                    <li>${translations[lang].quickGuideStep2}</li>
+                    <li>${translations[lang].quickGuideStep3}</li>
+                    <li>${translations[lang].quickGuideStep4}</li>
+                    <li>${translations[lang].quickGuideStep5}</li>
+                </ol>
+                <p><strong>${translations[lang].quickGuideTip}</strong></p>
+            `;
+        }
+        
+        // Hacer que los valores de tiempo sean editables
+        function makeTimeValuesEditable() {
+            const timeValues = document.querySelectorAll('.time-value');
+            
+            timeValues.forEach(value => {
+                value.addEventListener('click', function() {
+                    const currentValue = this.textContent;
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.className = 'time-input';
+                    input.value = currentValue;
+                    input.min = this.id.includes('work') || this.id.includes('cycles') ? 1 : 
+                                this.id.includes('short') ? 1 : 5;
+                    input.max = this.id.includes('work') ? 120 : 
+                                this.id.includes('short') ? 30 : 
+                                this.id.includes('long') ? 60 : 10;
+                    
+                    this.innerHTML = '';
+                    this.appendChild(input);
+                    input.focus();
+                    this.classList.add('time-value-editable');
+                    
+                    input.addEventListener('blur', function() {
+                        const newValue = parseInt(this.value);
+                        if (!isNaN(newValue) && newValue >= input.min && newValue <= input.max) {
+                            value.textContent = newValue;
+                        } else {
+                            value.textContent = currentValue;
+                        }
+                        value.classList.remove('time-value-editable');
+                    });
+                    
+                    input.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            this.blur();
+                        }
+                    });
+                });
+            });
+        }
+        
+        // Funciones de control para incrementar/decrementar valores
+        function setupTimeControls() {
+            // Tiempo de trabajo
+            document.getElementById('work-time-plus').addEventListener('click', () => {
+                const valueElement = document.getElementById('work-time-value');
+                let value = parseInt(valueElement.textContent);
+                if (value < 120) {
+                    valueElement.textContent = value + 1;
+                }
+            });
+            
+            document.getElementById('work-time-minus').addEventListener('click', () => {
+                const valueElement = document.getElementById('work-time-value');
+                let value = parseInt(valueElement.textContent);
+                if (value > 1) {
+                    valueElement.textContent = value - 1;
+                }
+            });
+            
+            // Descanso corto
+            document.getElementById('short-break-plus').addEventListener('click', () => {
+                const valueElement = document.getElementById('short-break-value');
+                let value = parseInt(valueElement.textContent);
+                if (value < 30) {
+                    valueElement.textContent = value + 1;
+                }
+            });
+            
+            document.getElementById('short-break-minus').addEventListener('click', () => {
+                const valueElement = document.getElementById('short-break-value');
+                let value = parseInt(valueElement.textContent);
+                if (value > 1) {
+                    valueElement.textContent = value - 1;
+                }
+            });
+            
+            // Descanso largo
+            document.getElementById('long-break-plus').addEventListener('click', () => {
+                const valueElement = document.getElementById('long-break-value');
+                let value = parseInt(valueElement.textContent);
+                if (value < 60) {
+                    valueElement.textContent = value + 1;
+                }
+            });
+            
+            document.getElementById('long-break-minus').addEventListener('click', () => {
+                const valueElement = document.getElementById('long-break-value');
+                let value = parseInt(valueElement.textContent);
+                if (value > 5) {
+                    valueElement.textContent = value - 1;
+                }
+            });
+            
+            // Ciclos
+            document.getElementById('cycles-plus').addEventListener('click', () => {
+                const valueElement = document.getElementById('cycles-value');
+                let value = parseInt(valueElement.textContent);
+                if (value < 10) {
+                    valueElement.textContent = value + 1;
+                }
+            });
+            
+            document.getElementById('cycles-minus').addEventListener('click', () => {
+                const valueElement = document.getElementById('cycles-value');
+                let value = parseInt(valueElement.textContent);
+                if (value > 1) {
+                    valueElement.textContent = value - 1;
+                }
+            });
+            
+            // Hacer que los valores sean editables manualmente
+            makeTimeValuesEditable();
+        }
+        
+        // Funcionalidad del modal de información
+        function setupInfoModal() {
+            const infoModal = document.getElementById('info-modal');
+            const infoBtn = document.getElementById('info-btn');
+            const closeInfoBtn = document.getElementById('close-modal');
+            
+            if (!infoModal || !infoBtn || !closeInfoBtn) {
+                console.error('Info modal elements not found');
+                return;
+            }
+            
+            infoBtn.addEventListener('click', function() {
+                infoModal.style.display = 'flex';
+            });
+            
+            closeInfoBtn.addEventListener('click', function() {
+                infoModal.style.display = 'none';
+            });
+            
+            window.addEventListener('click', function(e) {
+                if (e.target === infoModal) {
+                    infoModal.style.display = 'none';
+                }
+            });
+        }
+        
+        // Aplicar configuración
+        function applySettings() {
+            const newWorkTime = parseInt(document.getElementById('work-time-value').textContent);
+            const newShortBreakTime = parseInt(document.getElementById('short-break-value').textContent);
+            const newLongBreakTime = parseInt(document.getElementById('long-break-value').textContent);
+            const newCycles = parseInt(document.getElementById('cycles-value').textContent);
+            
+            if (newWorkTime && newShortBreakTime && newLongBreakTime && newCycles) {
+                workTime = newWorkTime;
+                shortBreakTime = newShortBreakTime;
+                longBreakTime = newLongBreakTime;
+                pomodoroBeforeLongBreak = newCycles;
+                
+                pauseTimer();
+                switchMode(currentMode);
+            }
+        }
+        
+        // Event listeners
+        startBtn.addEventListener('click', startTimer);
+        pauseBtn.addEventListener('click', pauseTimer);
+        resetBtn.addEventListener('click', resetTimer);
+        skipBtn.addEventListener('click', skipToNext);
+        document.getElementById('apply-settings').addEventListener('click', applySettings);
+        
+        // Solicitar permisos para notificaciones
+        function requestNotificationPermission() {
+            if ('Notification' in window) {
+                Notification.requestPermission();
+            }
+        }
+        
+        // Inicialización
+        function init() {
+            totalTime = workTime * 60;
+            updateTimerDisplay();
+            requestNotificationPermission();
+            applyLanguage(currentLang);
+            setupTimeControls();
+            setupInfoModal();
+        }
+        
+        // Iniciar la aplicación
+        init();
+    </script>
+</body>
+</html>

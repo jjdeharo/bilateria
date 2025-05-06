@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temporizador configurable</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #4CAF50;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --background-color: #f9f9f9;
+            --text-color: #333;
+            --border-radius: 8px;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .language-switcher {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+        
+        .language-btn {
+            padding: 5px 10px;
+            margin-left: 5px;
+            background-color: #ddd;
+            color: #333;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .language-btn.active {
+            background-color: #555;
+            color: white;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            flex: 1;
+        }
+        
+        .timer-display {
+            font-size: 5rem;
+            text-align: center;
+            margin: 20px 0;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .mode-indicator {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .mode-study {
+            color: var(--primary-color);
+        }
+        
+        .mode-break {
+            color: var(--secondary-color);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #ddd;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 1s;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            opacity: 0.9;
+        }
+        
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .finish-btn {
+            background-color: var(--warning-color);
+        }
+        
+        .danger-btn {
+            background-color: var(--danger-color);
+        }
+        
+        .status {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .config-panel {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: var(--border-radius);
+        }
+        
+        .config-panel h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        
+        .config-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .config-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .config-group label {
+            margin-right: 5px;
+            min-width: 120px;
+        }
+        
+        .config-group input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 60px;
+            text-align: center;
+        }
+        
+        .reset-container {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #ccc;
+            text-align: center;
+        }
+        
+        .subject-selector {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: var(--border-radius);
+        }
+        
+        .subject-selector h3 {
+            margin-top: 0;
+        }
+        
+        .subject-input {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        
+        .subject-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+            font-size: 1rem;
+        }
+        
+        .subject-input button {
+            border-radius: 0 4px 4px 0;
+            padding: 10px 15px;
+        }
+        
+        .subject-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .subject-tag {
+            padding: 5px 10px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        
+        .subject-tag.selected {
+            background-color: var(--secondary-color);
+        }
+        
+        .subject-tag .remove {
+            margin-left: 5px;
+            font-weight: bold;
+            opacity: 0.7;
+        }
+        
+        .subject-tag .remove:hover {
+            opacity: 1;
+        }
+        
+        .tab-container {
+            margin-top: 30px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+        
+        .tab-btn {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #555;
+            cursor: pointer;
+        }
+        
+        .tab-btn.active {
+            border-bottom: 3px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .session-list {
+            margin-top: 15px;
+        }
+        
+        .session-item {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: var(--border-radius);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .session-info {
+            flex: 1;
+        }
+        
+        .session-subject {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .session-time {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .session-duration {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-right: 10px;
+        }
+        
+        .session-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .session-actions button {
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            background-color: #ddd;
+            color: #333;
+        }
+        
+        .session-actions .delete-btn {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .stats-container {
+            margin-top: 15px;
+        }
+        
+        .stats-item {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: var(--border-radius);
+        }
+        
+        .stats-subject {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        
+        .stats-bar {
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+        
+        .stats-bar-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+        }
+        
+        .stats-info {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .empty-message {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            font-style: italic;
+        }
+        
+        .info-btn {
+            background-color: #3498db;
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 100;
+            border: none;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: var(--border-radius);
+            max-width: 80%;
+            max-height: 80%;
+            width: 600px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Estilo para el paso a paso de selección de materias */
+        .instruction-highlight {
+            background-color: #ffffd1;
+            padding: 8px;
+            border-left: 3px solid #ffd700;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        
+        @media (max-width: 600px) {
+            .timer-display {
+                font-size: 3.5rem;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+            
+            .session-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .session-actions {
+                margin-top: 10px;
+                align-self: flex-end;
+            }
+            
+            .config-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher">
+        <button id="lang-es" class="language-btn active">ES</button>
+        <button id="lang-ca" class="language-btn">CA</button>
+    </div>
+    
+    <div class="container">
+        <h1 id="title">Temporizador Técnica 50/10</h1>
+        
+        <div class="config-panel">
+            <h3 id="config-title">Configuración de tiempos</h3>
+            <div class="config-row">
+                <div class="config-group">
+                    <label id="study-time-label" for="study-time">Tiempo de estudio:</label>
+                    <input type="number" id="study-time" min="1" max="240" value="50">
+                    <span id="minutes-label">minutos</span>
+                </div>
+                <div class="config-group">
+                    <label id="break-time-label" for="break-time">Tiempo de descanso:</label>
+                    <input type="number" id="break-time" min="1" max="60" value="10">
+                    <span id="minutes-label-break">minutos</span>
+                </div>
+            </div>
+            <button id="apply-config-btn">Aplicar configuración</button>
+            
+            <div class="reset-container">
+                <p id="reset-text">¿Quieres borrar todos los datos guardados?</p>
+                <button id="reset-all-btn" class="danger-btn">Restaurar valores por defecto</button>
+            </div>
+        </div>
+        
+        <div class="mode-indicator">
+            <span id="mode-text" class="mode-study">Modo: Estudio (50 min)</span>
+        </div>
+        
+        <div class="timer-display" id="timer">50:00</div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+        
+        <div class="buttons">
+            <button id="start-btn">Iniciar</button>
+            <button id="pause-btn" disabled>Pausar</button>
+            <button id="reset-btn">Reiniciar</button>
+            <button id="skip-btn">Saltar</button>
+            <button id="finish-btn" class="finish-btn" disabled>Finalizar y guardar</button>
+        </div>
+        
+        <div class="status" id="status">Listo para comenzar</div>
+        
+        <div class="subject-selector">
+            <h3 id="subject-title">Selecciona o añade materia de estudio</h3>
+            
+            <div class="subject-input">
+                <input type="text" id="subject-input" placeholder="Nombre de la materia">
+                <button id="add-subject-btn">Añadir</button>
+            </div>
+            
+            <div class="subject-list" id="subject-list">
+                <!-- Las materias se agregarán dinámicamente aquí -->
+            </div>
+        </div>
+        
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button id="sessions-tab-btn" class="tab-btn active">Sesiones</button>
+                <button id="stats-tab-btn" class="tab-btn">Estadísticas</button>
+            </div>
+            
+            <div id="sessions-tab" class="tab-content active">
+                <div id="session-list" class="session-list">
+                    <!-- Las sesiones se agregarán dinámicamente aquí -->
+                </div>
+                <div id="empty-sessions" class="empty-message">No hay sesiones registradas</div>
+            </div>
+            
+            <div id="stats-tab" class="tab-content">
+                <div id="stats-container" class="stats-container">
+                    <!-- Las estadísticas se agregarán dinámicamente aquí -->
+                </div>
+                <div id="empty-stats" class="empty-message">No hay datos de estadísticas disponibles</div>
+            </div>
+        </div>
+    </div>
+    
+    <button id="info-btn" class="info-btn">?</button>
+    
+    <div id="info-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" id="close-modal">&times;</button>
+            <h2 id="modal-title">Técnica de estudio 50/10</h2>
+            <div id="modal-content">
+                <!-- El contenido se generará dinámicamente según el idioma -->
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p><a href="https://labia.tiddlyhost.com" target="_blank">Laboratorio de aplicaciones educativas</a></p>
+        <p><a href="https://bilateria.org" target="_blank">Aplicación hecha por Juan José de Haro</a></p>
+        <p><a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Esta obra está bajo una licencia Creative Commons BY-SA</a></p>
+    </footer>
+
+    <script>
+        // Traducción
+        const translations = {
+            es: {
+                title: "Temporizador Técnica 50/10",
+                modeStudy: "Modo: Estudio ({0} min)",
+                modeBreak: "Modo: Descanso ({0} min)",
+                start: "Iniciar",
+                pause: "Pausar",
+                reset: "Reiniciar",
+                skip: "Saltar",
+                finish: "Finalizar y guardar",
+                ready: "Listo para comenzar",
+                studying: "¡Estudiando! Mantén el enfoque",
+                breaking: "Tiempo de descanso. Relájate un poco",
+                subjectTitle: "Selecciona o añade materia de estudio",
+                addSubject: "Añadir",
+                subjectPlaceholder: "Nombre de la materia",
+                sessionsTab: "Sesiones",
+                statsTab: "Estadísticas",
+                emptySessionsMsg: "No hay sesiones registradas",
+                emptyStatsMsg: "No hay datos de estadísticas disponibles",
+                deleteBtn: "Eliminar",
+                minutesShort: "min",
+                totalTime: "Tiempo total:",
+                hours: "horas",
+                infoTitle: "Técnica de estudio personalizable",
+                sessionComplete: "¡Sesión de estudio completada!",
+                breakComplete: "¡Descanso terminado! ¿Listo para continuar?",
+                noSubject: "Sin materia seleccionada",
+                notification: "Temporizador de estudio",
+                todaySessionTitle: "Hoy",
+                previousSessionTitle: "Anteriores",
+                sessionDeleted: "Sesión eliminada",
+                confirmDelete: "¿Estás seguro de querer eliminar esta sesión?",
+                configTitle: "Configuración de tiempos",
+                studyTimeLabel: "Tiempo de estudio:",
+                breakTimeLabel: "Tiempo de descanso:",
+                minutesLabel: "minutos",
+                applyConfig: "Aplicar configuración",
+                configApplied: "Configuración aplicada",
+                sessionFinished: "Sesión finalizada manualmente",
+                resetText: "¿Quieres borrar todos los datos guardados?",
+                resetAllBtn: "Restaurar valores por defecto",
+                resetConfirm: "¿Estás seguro? Se borrarán todas las sesiones, materias y configuración guardadas.",
+                resetComplete: "Valores restaurados correctamente",
+                subjectSelectionTitle: "Para seleccionar una materia correctamente:",
+                subjectSelectionSteps: [
+                    "Escribe el nombre de la materia en el campo de texto.",
+                    "Haz clic en \"Añadir\".",
+                    "IMPORTANTE: Después debes hacer clic sobre el nombre de la materia en la lista para seleccionarla.",
+                    "Sabrás que está seleccionada porque cambiará a color verde.",
+                    "Si no seleccionas una materia, aparecerá \"Sin materia seleccionada\"."
+                ],
+                newFeaturesTitle: "Nuevo: Configuración personalizada y finalización anticipada",
+                newFeaturesSteps: [
+                    "Puedes configurar el tiempo de estudio y descanso a tu gusto.",
+                    "La configuración se guarda automáticamente en tu navegador.",
+                    "Si necesitas finalizar antes del tiempo completo, usa el botón \"Finalizar y guardar\" para registrar el tiempo estudiado hasta ese momento.",
+                    "Puedes restaurar todos los valores por defecto usando el botón \"Restaurar valores por defecto\"."
+                ],
+                // Contenido del modal
+                modalDescription: "La técnica de estudio 50/10 es un método de gestión del tiempo que ayuda a mantener el enfoque y la productividad. Consiste en alternar periodos de estudio concentrado de 50 minutos con descansos de 10 minutos.",
+                howItWorksTitle: "¿Cómo funciona?",
+                howItWorksSteps: [
+                    "Selecciona una materia o tema de estudio.",
+                    "Configura el temporizador a 50 minutos.",
+                    "Estudia sin distracciones durante todo el periodo.",
+                    "Al terminar, toma un descanso de 10 minutos.",
+                    "Repite el ciclo según sea necesario."
+                ],
+                benefitsTitle: "Beneficios",
+                benefitsList: [
+                    "Mejor concentración durante periodos más largos.",
+                    "Reducción de la fatiga mental gracias a los descansos regulares.",
+                    "Mejor retención del material estudiado.",
+                    "Facilita el seguimiento del tiempo dedicado a cada materia.",
+                    "Ayuda a combatir la procrastinación."
+                ],
+                howToUseTitle: "Cómo usar esta aplicación",
+                generalInstructions: [
+                    "Añade las materias que estás estudiando.",
+                    "Selecciona una materia antes de iniciar el temporizador.",
+                    "Pulsa \"Iniciar\" para comenzar la sesión de estudio.",
+                    "Trabaja concentrado hasta que suene el temporizador.",
+                    "Toma un descanso cuando cambie a modo descanso.",
+                    "Revisa tus estadísticas para ver tu progreso en cada materia."
+                ],
+                dataSaved: "Los datos de tus sesiones se guardan automáticamente en tu navegador, por lo que podrás hacer seguimiento de tu progreso a lo largo del tiempo.",
+                resetInfo: "Si deseas borrar todos los datos y volver a la configuración inicial, utiliza el botón \"Restaurar valores por defecto\" en la sección de configuración."
+            },
+            ca: {
+                title: "Temporitzador Tècnica 50/10",
+                modeStudy: "Mode: Estudi ({0} min)",
+                modeBreak: "Mode: Descans ({0} min)",
+                start: "Iniciar",
+                pause: "Pausar",
+                reset: "Reiniciar",
+                skip: "Saltar",
+                finish: "Finalitzar i desar",
+                ready: "Preparat per començar",
+                studying: "Estudiant! Mantingues el focus",
+                breaking: "Temps de descans. Relaxa't una mica",
+                subjectTitle: "Selecciona o afegeix matèria d'estudi",
+                addSubject: "Afegir",
+                subjectPlaceholder: "Nom de la matèria",
+                sessionsTab: "Sessions",
+                statsTab: "Estadístiques",
+                emptySessionsMsg: "No hi ha sessions registrades",
+                emptyStatsMsg: "No hi ha dades d'estadístiques disponibles",
+                deleteBtn: "Eliminar",
+                minutesShort: "min",
+                totalTime: "Temps total:",
+                hours: "hores",
+                infoTitle: "Tècnica d'estudi personalitzable",
+                sessionComplete: "Sessió d'estudi completada!",
+                breakComplete: "Descans acabat! Preparat per continuar?",
+                noSubject: "Sense matèria seleccionada",
+                notification: "Temporitzador d'estudi",
+                todaySessionTitle: "Avui",
+                previousSessionTitle: "Anteriors",
+                sessionDeleted: "Sessió eliminada",
+                confirmDelete: "Estàs segur de voler eliminar aquesta sessió?",
+                configTitle: "Configuració de temps",
+                studyTimeLabel: "Temps d'estudi:",
+                breakTimeLabel: "Temps de descans:",
+                minutesLabel: "minuts",
+                applyConfig: "Aplicar configuració",
+                configApplied: "Configuració aplicada",
+                sessionFinished: "Sessió finalitzada manualment",
+                resetText: "Vols esborrar totes les dades desades?",
+                resetAllBtn: "Restaurar valors per defecte",
+                resetConfirm: "Estàs segur? S'esborraran totes les sessions, matèries i configuració desades.",
+                resetComplete: "Valors restaurats correctament",
+                subjectSelectionTitle: "Per seleccionar una matèria correctament:",
+                subjectSelectionSteps: [
+                    "Escriu el nom de la matèria al camp de text.",
+                    "Fes clic a \"Afegir\".",
+                    "IMPORTANT: Després has de fer clic sobre el nom de la matèria a la llista per seleccionar-la.",
+                    "Sabràs que està seleccionada perquè canviarà a color verd.",
+                    "Si no selecciones una matèria, apareixerà \"Sense matèria seleccionada\"."
+                ],
+                newFeaturesTitle: "Nou: Configuració personalitzada i finalització anticipada",
+                newFeaturesSteps: [
+                    "Pots configurar el temps d'estudi i descans al teu gust.",
+                    "La configuració es desa automàticament al teu navegador.",
+                    "Si necessites finalitzar abans del temps complet, utilitza el botó \"Finalitzar i desar\" per registrar el temps estudiat fins a aquest moment.",
+                    "Pots restaurar tots els valors per defecte utilitzant el botó \"Restaurar valors per defecte\"."
+                ],
+                // Contenido del modal en catalán
+                modalDescription: "La tècnica d'estudi 50/10 és un mètode de gestió del temps que ajuda a mantenir el focus i la productivitat. Consisteix en alternar períodes d'estudi concentrat de 50 minuts amb descansos de 10 minuts.",
+                howItWorksTitle: "Com funciona?",
+                howItWorksSteps: [
+                    "Selecciona una matèria o tema d'estudi.",
+                    "Configura el temporitzador a 50 minuts.",
+                    "Estudia sense distraccions durant tot el període.",
+                    "En acabar, pren un descans de 10 minuts.",
+                    "Repeteix el cicle segons sigui necessari."
+                ],
+                benefitsTitle: "Beneficis",
+                benefitsList: [
+                    "Millor concentració durant períodes més llargs.",
+                    "Reducció de la fatiga mental gràcies als descansos regulars.",
+                    "Millor retenció del material estudiat.",
+                    "Facilita el seguiment del temps dedicat a cada matèria.",
+                    "Ajuda a combatre la procrastinació."
+                ],
+                howToUseTitle: "Com utilitzar aquesta aplicació",
+                generalInstructions: [
+                    "Afegeix les matèries que estàs estudiant.",
+                    "Selecciona una matèria abans d'iniciar el temporitzador.",
+                    "Prem \"Iniciar\" per començar la sessió d'estudi.",
+                    "Treballa concentrat fins que soni el temporitzador.",
+                    "Pren un descans quan canviï a mode descans.",
+                    "Revisa les teves estadístiques per veure el teu progrés en cada matèria."
+                ],
+                dataSaved: "Les dades de les teves sessions es desen automàticament al teu navegador, de manera que podràs fer seguiment del teu progrés al llarg del temps.",
+                resetInfo: "Si desitges esborrar totes les dades i tornar a la configuració inicial, utilitza el botó \"Restaurar valors per defecte\" a la secció de configuració."
+            }
+        };
+        
+        // Detectar idioma del navegador
+        function detectLanguage() {
+            const browserLang = navigator.language || navigator.userLanguage;
+            return browserLang.startsWith('ca') ? 'ca' : 'es';
+        }
+        
+        let currentLang = detectLanguage();
+        
+        // Variables del temporizador
+        let studyTime = 50; // 50 minutos (ahora puede ser configurable)
+        let breakTime = 10; // 10 minutos (ahora puede ser configurable)
+        let currentMode = 'study'; // 'study' o 'break'
+        let timerInterval;
+        let timeLeft = studyTime * 60;
+        let startTime = 0; // para calcular la duración real
+        let isRunning = false;
+        let totalTime;
+        let selectedSubject = null;
+        let subjects = [];
+        let sessions = [];
+        
+        // Elementos DOM principales
+        const timerDisplay = document.getElementById('timer');
+        const progressBar = document.getElementById('progress');
+        const startBtn = document.getElementById('start-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const skipBtn = document.getElementById('skip-btn');
+        const finishBtn = document.getElementById('finish-btn');
+        const resetAllBtn = document.getElementById('reset-all-btn');
+        const statusText = document.getElementById('status');
+        const modeText = document.getElementById('mode-text');
+        
+        // Función para formatear el tiempo en minutos:segundos
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        // Función para reemplazar placeholders en los textos
+        function formatString(str, ...args) {
+            return str.replace(/{(\d+)}/g, function(match, number) { 
+                return typeof args[number] != 'undefined' ? args[number] : match;
+            });
+        }
+        
+        // Guardar la configuración en localStorage
+        function saveTimerConfig() {
+            const config = {
+                studyTime: studyTime,
+                breakTime: breakTime
+            };
+            localStorage.setItem('study50_10_config', JSON.stringify(config));
+        }
+        
+        // Cargar la configuración desde localStorage
+        function loadTimerConfig() {
+            const savedConfig = localStorage.getItem('study50_10_config');
+            if (savedConfig) {
+                const config = JSON.parse(savedConfig);
+                studyTime = config.studyTime;
+                breakTime = config.breakTime;
+                
+                // Actualizar los campos de entrada
+                document.getElementById('study-time').value = studyTime;
+                document.getElementById('break-time').value = breakTime;
+                
+                // Actualizar la visualización
+                updateModeText();
+                if (currentMode === 'study') {
+                    timeLeft = studyTime * 60;
+                } else {
+                    timeLeft = breakTime * 60;
+                }
+                totalTime = timeLeft;
+                updateTimerDisplay();
+            }
+        }
+        
+        // Aplicar la configuración
+        function applyConfiguration() {
+            const newStudyTime = parseInt(document.getElementById('study-time').value, 10);
+            const newBreakTime = parseInt(document.getElementById('break-time').value, 10);
+            
+            if (isNaN(newStudyTime) || newStudyTime < 1 || newStudyTime > 240) {
+                alert('El tiempo de estudio debe estar entre 1 y 240 minutos');
+                return;
+            }
+            
+            if (isNaN(newBreakTime) || newBreakTime < 1 || newBreakTime > 60) {
+                alert('El tiempo de descanso debe estar entre 1 y 60 minutos');
+                return;
+            }
+            
+            studyTime = newStudyTime;
+            breakTime = newBreakTime;
+            
+            // Guardar la configuración
+            saveTimerConfig();
+            
+            // Reiniciar el temporizador con la nueva configuración
+            pauseTimer();
+            
+            // Actualizar los modos con los nuevos tiempos
+            updateModeText();
+            
+            // Reiniciar con la nueva configuración
+            switchMode(currentMode);
+            
+            // Mostrar mensaje de confirmación
+            statusText.textContent = translations[currentLang].configApplied;
+            setTimeout(() => {
+                statusText.textContent = translations[currentLang].ready;
+            }, 2000);
+        }
+        
+        // Restablecer todos los valores por defecto
+        function resetAllData() {
+            if (confirm(translations[currentLang].resetConfirm)) {
+                // Detener el temporizador si está en marcha
+                if (isRunning) {
+                    pauseTimer();
+                }
+                
+                // Borrar datos de localStorage
+                localStorage.removeItem('study50_10_config');
+                localStorage.removeItem('study50_10_subjects');
+                localStorage.removeItem('study50_10_sessions');
+                
+                // Restablecer variables a valores por defecto
+                studyTime = 50;
+                breakTime = 10;
+                selectedSubject = null;
+                subjects = [];
+                sessions = [];
+                
+                // Actualizar campos de entrada
+                document.getElementById('study-time').value = studyTime;
+                document.getElementById('break-time').value = breakTime;
+                
+                // Reiniciar el temporizador
+                startTime = 0;
+                currentMode = 'study';
+                timeLeft = studyTime * 60;
+                totalTime = timeLeft;
+                
+                // Actualizar interfaz
+                updateModeText();
+                updateTimerDisplay();
+                renderSubjects();
+                renderSessions();
+                renderStats();
+                
+                // Deshabilitar botones
+                startBtn.disabled = false;
+                pauseBtn.disabled = true;
+                finishBtn.disabled = true;
+                
+                // Mostrar mensaje de confirmación
+                statusText.textContent = translations[currentLang].resetComplete;
+                setTimeout(() => {
+                    statusText.textContent = translations[currentLang].ready;
+                }, 2000);
+            }
+        }
+        
+        // Actualizar el texto del modo con los tiempos actuales
+        function updateModeText() {
+            if (currentMode === 'study') {
+                modeText.textContent = formatString(translations[currentLang].modeStudy, studyTime);
+            } else {
+                modeText.textContent = formatString(translations[currentLang].modeBreak, breakTime);
+            }
+        }
+        
+        // Actualizar la visualización del temporizador
+        function updateTimerDisplay() {
+            timerDisplay.textContent = formatTime(timeLeft);
+            
+            // Actualizar barra de progreso
+            const progressPercentage = ((totalTime - timeLeft) / totalTime) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+        }
+        
+        // Cambiar modo (estudio/descanso)
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            switch(mode) {
+                case 'study':
+                    timeLeft = studyTime * 60;
+                    totalTime = timeLeft;
+                    statusText.textContent = translations[currentLang].studying;
+                    modeText.textContent = formatString(translations[currentLang].modeStudy, studyTime);
+                    modeText.className = 'mode-study';
+                    document.documentElement.style.setProperty('--primary-color', '#4a90e2');
+                    break;
+                case 'break':
+                    timeLeft = breakTime * 60;
+                    totalTime = timeLeft;
+                    statusText.textContent = translations[currentLang].breaking;
+                    modeText.textContent = formatString(translations[currentLang].modeBreak, breakTime);
+                    modeText.className = 'mode-break';
+                    document.documentElement.style.setProperty('--primary-color', '#4CAF50');
+                    break;
+            }
+            
+            updateTimerDisplay();
+        }
+        
+        // Iniciar el temporizador
+        function startTimer() {
+            if (isRunning) return;
+            
+            // Si no hay materia seleccionada, usar un valor por defecto
+            if (!selectedSubject) {
+                selectedSubject = translations[currentLang].noSubject;
+            }
+            
+            isRunning = true;
+            startBtn.disabled = true;
+            pauseBtn.disabled = false;
+            finishBtn.disabled = false;
+            
+            // Guardar el tiempo de inicio (para calcular duración real)
+            if (startTime === 0) {
+                startTime = Date.now();
+            }
+            
+            timerInterval = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerComplete();
+                } else {
+                    timeLeft--;
+                    updateTimerDisplay();
+                }
+            }, 1000);
+        }
+        
+        // Pausar el temporizador
+        function pauseTimer() {
+            if (!isRunning) return;
+            
+            isRunning = false;
+            clearInterval(timerInterval);
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+        }
+        
+        // Reiniciar el temporizador
+        function resetTimer() {
+            pauseTimer();
+            startTime = 0;
+            finishBtn.disabled = true;
+            switchMode(currentMode);
+        }
+        
+        // Saltar al siguiente modo
+        function skipToNext() {
+            pauseTimer();
+            
+            if (currentMode === 'study') {
+                // Guardar la sesión de estudio
+                if (selectedSubject) {
+                    saveStudySession(selectedSubject, studyTime);
+                }
+                switchMode('break');
+            } else {
+                switchMode('study');
+            }
+            
+            startTime = 0;
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+            finishBtn.disabled = true;
+        }
+        
+        // Finalizar la sesión manualmente y guardar el tiempo transcurrido
+        function finishSession() {
+            if (currentMode !== 'study') return;
+            
+            pauseTimer();
+            
+            // Calcular tiempo estudiado
+            const endTime = Date.now();
+            const elapsedSeconds = Math.floor((endTime - startTime) / 1000);
+            const elapsedMinutes = Math.ceil(elapsedSeconds / 60);
+            
+            // Guardar la sesión con el tiempo real estudiado
+            if (selectedSubject && elapsedMinutes > 0) {
+                saveStudySession(selectedSubject, elapsedMinutes);
+                
+                // Mensaje de confirmación
+                statusText.textContent = translations[currentLang].sessionFinished;
+                setTimeout(() => {
+                    statusText.textContent = translations[currentLang].ready;
+                }, 2000);
+            }
+            
+            // Reiniciar para una nueva sesión
+            startTime = 0;
+            switchMode('study');
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+            finishBtn.disabled = true;
+        }
+        
+        // Cuando el temporizador llega a 0
+        function timerComplete() {
+            isRunning = false;
+            
+            // Notificación
+            try {
+                if (Notification.permission === "granted") {
+                    let notificationText = '';
+                    
+                    if (currentMode === 'study') {
+                        notificationText = translations[currentLang].sessionComplete;
+                    } else {
+                        notificationText = translations[currentLang].breakComplete;
+                    }
+                    
+                    new Notification(translations[currentLang].notification, {
+                        body: notificationText
+                    });
+                }
+            } catch (e) {
+                console.log('Notifications not supported');
+            }
+            
+            // Sonido de alerta
+            try {
+                const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869.wav');
+                audio.play();
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+            
+            // Guardar la sesión y cambiar al siguiente modo
+            if (currentMode === 'study') {
+                // Guardar la sesión de estudio
+                if (selectedSubject) {
+                    saveStudySession(selectedSubject, studyTime);
+                }
+                switchMode('break');
+            } else {
+                switchMode('study');
+            }
+            
+            startTime = 0;
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+            finishBtn.disabled = true;
+        }
+        
+        // Gestión de materias de estudio
+        function loadSubjects() {
+            const savedSubjects = localStorage.getItem('study50_10_subjects');
+            if (savedSubjects) {
+                subjects = JSON.parse(savedSubjects);
+                renderSubjects();
+            }
+        }
+        
+        function saveSubjects() {
+            localStorage.setItem('study50_10_subjects', JSON.stringify(subjects));
+        }
+        
+        function addSubject() {
+            const subjectInput = document.getElementById('subject-input');
+            const subjectName = subjectInput.value.trim();
+            
+            if (subjectName && !subjects.includes(subjectName)) {
+                subjects.push(subjectName);
+                saveSubjects();
+                renderSubjects();
+                subjectInput.value = '';
+            }
+        }
+        
+        function removeSubject(subject) {
+            const index = subjects.indexOf(subject);
+            if (index !== -1) {
+                subjects.splice(index, 1);
+                if (selectedSubject === subject) {
+                    selectedSubject = null;
+                }
+                saveSubjects();
+                renderSubjects();
+            }
+        }
+        
+        function selectSubject(subject) {
+            selectedSubject = subject;
+            renderSubjects();
+        }
+        
+        function renderSubjects() {
+            const subjectList = document.getElementById('subject-list');
+            subjectList.innerHTML = '';
+            
+            subjects.forEach(subject => {
+                const subjectTag = document.createElement('div');
+                subjectTag.className = 'subject-tag';
+                if (subject === selectedSubject) {
+                    subjectTag.classList.add('selected');
+                }
+                
+                subjectTag.innerHTML = `
+                    <span class="subject-name">${subject}</span>
+                    <span class="remove">&times;</span>
+                `;
+                
+                subjectTag.querySelector('.subject-name').addEventListener('click', () => {
+                    selectSubject(subject);
+                });
+                
+                subjectTag.querySelector('.remove').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    removeSubject(subject);
+                });
+                
+                subjectList.appendChild(subjectTag);
+            });
+        }
+        
+        // Gestión de sesiones de estudio
+        function loadSessions() {
+            const savedSessions = localStorage.getItem('study50_10_sessions');
+            if (savedSessions) {
+                sessions = JSON.parse(savedSessions);
+                renderSessions();
+                renderStats();
+            }
+        }
+        
+        function saveSessions() {
+            localStorage.setItem('study50_10_sessions', JSON.stringify(sessions));
+        }
+        
+        function saveStudySession(subject, duration) {
+            const session = {
+                id: Date.now(),
+                subject: subject,
+                duration: duration,
+                date: new Date().toISOString()
+            };
+            
+            sessions.push(session);
+            saveSessions();
+            renderSessions();
+            renderStats();
+        }
+        
+        function deleteSession(sessionId) {
+            if (confirm(translations[currentLang].confirmDelete)) {
+                const index = sessions.findIndex(s => s.id === sessionId);
+                if (index !== -1) {
+                    sessions.splice(index, 1);
+                    saveSessions();
+                    renderSessions();
+                    renderStats();
+                    
+                    // Mostrar mensaje de confirmación
+                    statusText.textContent = translations[currentLang].sessionDeleted;
+                    setTimeout(() => {
+                        statusText.textContent = translations[currentLang].ready;
+                    }, 2000);
+                }
+            }
+        }
+        
+        function renderSessions() {
+            const sessionList = document.getElementById('session-list');
+            const emptyMessage = document.getElementById('empty-sessions');
+            
+            sessionList.innerHTML = '';
+            
+            if (sessions.length === 0) {
+                emptyMessage.style.display = 'block';
+                return;
+            }
+            
+            emptyMessage.style.display = 'none';
+            
+            // Agrupar sesiones por día (hoy y anteriores)
+            const today = new Date().toDateString();
+            const todaySessions = [];
+            const previousSessions = [];
+            
+            sessions.forEach(session => {
+                const sessionDate = new Date(session.date).toDateString();
+                if (sessionDate === today) {
+                    todaySessions.push(session);
+                } else {
+                    previousSessions.push(session);
+                }
+            });
+            
+            // Ordenar por fecha (más recientes primero)
+            todaySessions.sort((a, b) => new Date(b.date) - new Date(a.date));
+            previousSessions.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // Renderizar sesiones de hoy
+            if (todaySessions.length > 0) {
+                const todayHeader = document.createElement('h3');
+                todayHeader.textContent = translations[currentLang].todaySessionTitle;
+                sessionList.appendChild(todayHeader);
+                
+                renderSessionGroup(todaySessions, sessionList);
+            }
+            
+            // Renderizar sesiones anteriores
+            if (previousSessions.length > 0) {
+                const previousHeader = document.createElement('h3');
+                previousHeader.textContent = translations[currentLang].previousSessionTitle;
+                sessionList.appendChild(previousHeader);
+                
+                renderSessionGroup(previousSessions, sessionList);
+            }
+        }
+        
+        function renderSessionGroup(sessions, container) {
+            sessions.forEach(session => {
+                const sessionItem = document.createElement('div');
+                sessionItem.className = 'session-item';
+                
+                const date = new Date(session.date);
+                const formattedTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const formattedDate = date.toLocaleDateString();
+                
+                sessionItem.innerHTML = `
+                    <div class="session-info">
+                        <div class="session-subject">${session.subject}</div>
+                        <div class="session-time">${formattedDate} - ${formattedTime}</div>
+                    </div>
+                    <span class="session-duration">${session.duration} ${translations[currentLang].minutesShort}</span>
+                    <div class="session-actions">
+                        <button class="delete-btn">${translations[currentLang].deleteBtn}</button>
+                    </div>
+                `;
+                
+                sessionItem.querySelector('.delete-btn').addEventListener('click', () => {
+                    deleteSession(session.id);
+                });
+                
+                container.appendChild(sessionItem);
+            });
+        }
+        
+        // Estadísticas
+        function renderStats() {
+            const statsContainer = document.getElementById('stats-container');
+            const emptyMessage = document.getElementById('empty-stats');
+            
+            statsContainer.innerHTML = '';
+            
+            if (sessions.length === 0) {
+                emptyMessage.style.display = 'block';
+                return;
+            }
+            
+            emptyMessage.style.display = 'none';
+            
+            // Agrupar sesiones por materia
+            const subjectStats = {};
+            let totalMinutes = 0;
+            
+            sessions.forEach(session => {
+                totalMinutes += session.duration;
+                
+                if (!subjectStats[session.subject]) {
+                    subjectStats[session.subject] = {
+                        duration: 0,
+                        count: 0
+                    };
+                }
+                
+                subjectStats[session.subject].duration += session.duration;
+                subjectStats[session.subject].count++;
+            });
+            
+            // Ordenar por tiempo total (mayor a menor)
+            const sortedSubjects = Object.keys(subjectStats).sort((a, b) => 
+                subjectStats[b].duration - subjectStats[a].duration
+            );
+            
+            // Renderizar cada materia
+            sortedSubjects.forEach(subject => {
+                const stat = subjectStats[subject];
+                const percentage = Math.round((stat.duration / totalMinutes) * 100);
+                
+                const statItem = document.createElement('div');
+                statItem.className = 'stats-item';
+                
+                statItem.innerHTML = `
+                    <div class="stats-subject">${subject}</div>
+                    <div class="stats-bar">
+                        <div class="stats-bar-fill" style="width: ${percentage}%"></div>
+                    </div>
+                    <div class="stats-info">
+                        <span>${stat.duration} ${translations[currentLang].minutesShort} (${stat.count} ${translations[currentLang].sessionsTab.toLowerCase()})</span>
+                        <span>${percentage}%</span>
+                    </div>
+                `;
+                
+                statsContainer.appendChild(statItem);
+            });
+            
+            // Renderizar total
+            const totalHours = (totalMinutes / 60).toFixed(1);
+            const totalStat = document.createElement('div');
+            totalStat.className = 'stats-item';
+            totalStat.innerHTML = `
+                <div class="stats-subject">${translations[currentLang].totalTime} ${totalHours} ${translations[currentLang].hours}</div>
+            `;
+            
+            statsContainer.appendChild(totalStat);
+        }
+        
+        // Gestión de pestañas
+        function setupTabs() {
+            const sessionsTabBtn = document.getElementById('sessions-tab-btn');
+            const statsTabBtn = document.getElementById('stats-tab-btn');
+            const sessionsTab = document.getElementById('sessions-tab');
+            const statsTab = document.getElementById('stats-tab');
+            
+            sessionsTabBtn.addEventListener('click', () => {
+                sessionsTabBtn.classList.add('active');
+                statsTabBtn.classList.remove('active');
+                sessionsTab.classList.add('active');
+                statsTab.classList.remove('active');
+            });
+            
+            statsTabBtn.addEventListener('click', () => {
+                statsTabBtn.classList.add('active');
+                sessionsTabBtn.classList.remove('active');
+                statsTab.classList.add('active');
+                sessionsTab.classList.remove('active');
+            });
+        }
+        
+        // Generar el contenido del modal según el idioma
+        function generateModalContent(lang) {
+            const trans = translations[lang];
+            const modalContent = document.getElementById('modal-content');
+            
+            let html = `
+                <p>${trans.modalDescription}</p>
+                
+                <h3>${trans.howItWorksTitle}</h3>
+                <ol>`;
+            
+            // Pasos de cómo funciona
+            trans.howItWorksSteps.forEach(step => {
+                html += `<li>${step}</li>`;
+            });
+            
+            html += `</ol>
+                
+                <h3>${trans.benefitsTitle}</h3>
+                <ul>`;
+            
+            // Lista de beneficios
+            trans.benefitsList.forEach(benefit => {
+                html += `<li>${benefit}</li>`;
+            });
+            
+            html += `</ul>
+                
+                <h3>${trans.howToUseTitle}</h3>
+                <div class="instruction-highlight">
+                    <h4>${trans.subjectSelectionTitle}</h4>
+                    <ol>`;
+            
+            // Pasos para seleccionar materia
+            trans.subjectSelectionSteps.forEach(step => {
+                html += `<li>${step}</li>`;
+            });
+            
+            html += `</ol>
+                </div>
+                
+                <h4>${trans.newFeaturesTitle}</h4>
+                <ol>`;
+            
+            // Nuevas funciones
+            trans.newFeaturesSteps.forEach(step => {
+                html += `<li>${step}</li>`;
+            });
+            
+            html += `</ol>
+                
+                <ol>`;
+            
+            // Instrucciones generales
+            trans.generalInstructions.forEach(instruction => {
+                html += `<li>${instruction}</li>`;
+            });
+            
+            html += `</ol>
+                
+                <p>${trans.dataSaved}</p>`;
+                
+            html += `<p>${trans.resetInfo}</p>`;
+            
+            modalContent.innerHTML = html;
+        }
+        
+        // Modal de información
+        function setupInfoModal() {
+            const infoModal = document.getElementById('info-modal');
+            const infoBtn = document.getElementById('info-btn');
+            const closeModalBtn = document.getElementById('close-modal');
+            
+            // Generar el contenido inicial del modal
+            generateModalContent(currentLang);
+            
+            infoBtn.addEventListener('click', function() {
+                infoModal.style.display = 'flex';
+            });
+            
+            closeModalBtn.addEventListener('click', function() {
+                infoModal.style.display = 'none';
+            });
+            
+            window.addEventListener('click', function(e) {
+                if (e.target === infoModal) {
+                    infoModal.style.display = 'none';
+                }
+            });
+        }
+        
+        // Gestión de idioma
+        function applyLanguage(lang) {
+            currentLang = lang;
+            
+            // Actualizar textos principales
+            document.getElementById('title').textContent = translations[lang].title;
+            document.getElementById('start-btn').textContent = translations[lang].start;
+            document.getElementById('pause-btn').textContent = translations[lang].pause;
+            document.getElementById('reset-btn').textContent = translations[lang].reset;
+            document.getElementById('skip-btn').textContent = translations[lang].skip;
+            document.getElementById('finish-btn').textContent = translations[lang].finish;
+            document.getElementById('status').textContent = translations[lang].ready;
+            document.getElementById('subject-title').textContent = translations[lang].subjectTitle;
+            document.getElementById('subject-input').placeholder = translations[lang].subjectPlaceholder;
+            document.getElementById('add-subject-btn').textContent = translations[lang].addSubject;
+            document.getElementById('sessions-tab-btn').textContent = translations[lang].sessionsTab;
+            document.getElementById('stats-tab-btn').textContent = translations[lang].statsTab;
+            document.getElementById('empty-sessions').textContent = translations[lang].emptySessionsMsg;
+            document.getElementById('empty-stats').textContent = translations[lang].emptyStatsMsg;
+            document.getElementById('modal-title').textContent = translations[lang].infoTitle;
+            document.getElementById('config-title').textContent = translations[lang].configTitle;
+            document.getElementById('study-time-label').textContent = translations[lang].studyTimeLabel;
+            document.getElementById('break-time-label').textContent = translations[lang].breakTimeLabel;
+            document.getElementById('minutes-label').textContent = translations[lang].minutesLabel;
+            document.getElementById('minutes-label-break').textContent = translations[lang].minutesLabel;
+            document.getElementById('apply-config-btn').textContent = translations[lang].applyConfig;
+            document.getElementById('reset-text').textContent = translations[lang].resetText;
+            document.getElementById('reset-all-btn').textContent = translations[lang].resetAllBtn;
+            
+            // Actualizar el contenido del modal completo
+            generateModalContent(lang);
+            
+            // Actualizar selección de modo
+            updateModeText();
+            
+            // Actualizar botones de idioma
+            document.getElementById('lang-es').classList.toggle('active', lang === 'es');
+            document.getElementById('lang-ca').classList.toggle('active', lang === 'ca');
+            
+            // Volver a renderizar elementos dinámicos con el nuevo idioma
+            renderSubjects();
+            renderSessions();
+            renderStats();
+        }
+        
+        // Solicitar permisos para notificaciones
+        function requestNotificationPermission() {
+            if ('Notification' in window) {
+                Notification.requestPermission();
+            }
+        }
+        
+        // Inicialización
+        function init() {
+            // Cargar la configuración guardada
+            loadTimerConfig();
+            
+            totalTime = studyTime * 60;
+            timeLeft = totalTime;
+            updateTimerDisplay();
+            
+            // Configurar event listeners
+            startBtn.addEventListener('click', startTimer);
+            pauseBtn.addEventListener('click', pauseTimer);
+            resetBtn.addEventListener('click', resetTimer);
+            skipBtn.addEventListener('click', skipToNext);
+            finishBtn.addEventListener('click', finishSession);
+            document.getElementById('apply-config-btn').addEventListener('click', applyConfiguration);
+            document.getElementById('reset-all-btn').addEventListener('click', resetAllData);
+            
+            document.getElementById('add-subject-btn').addEventListener('click', addSubject);
+            document.getElementById('subject-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    addSubject();
+                }
+            });
+            
+            document.getElementById('lang-es').addEventListener('click', () => applyLanguage('es'));
+            document.getElementById('lang-ca').addEventListener('click', () => applyLanguage('ca'));
+            
+            // Cargar datos guardados
+            loadSubjects();
+            loadSessions();
+            
+            // Configurar pestañas y modal
+            setupTabs();
+            setupInfoModal();
+            
+            // Aplicar idioma y solicitar permisos
+            applyLanguage(currentLang);
+            requestNotificationPermission();
+        }
+        
+        // Iniciar la aplicación
+        init();
+    </script>
+</body>
+</html>

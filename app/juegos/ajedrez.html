@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajedrez para Tablet Horizontal</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            touch-action: manipulation;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #333;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 1000px;
+            padding: 10px;
+            perspective: 1000px;
+        }
+        
+        #chessboard-container {
+            position: relative;
+            width: 100%;
+            max-width: 90vh;
+            aspect-ratio: 1/1;
+        }
+        
+        #chessboard {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            width: 100%;
+            height: 100%;
+            border: 3px solid #555;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+            transition: transform 0.8s ease;
+            transform-style: preserve-3d;
+        }
+        
+        .square {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 5vw;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            backface-visibility: hidden;
+        }
+        
+        @media (min-width: 600px) {
+            .square {
+                font-size: 3rem;
+            }
+        }
+        
+        .white {
+            background-color: #f0d9b5;
+        }
+        
+        .black {
+            background-color: #b58863;
+        }
+        
+        .selected {
+            background-color: #a9a9ff !important;
+        }
+        
+        .possible-move {
+            position: relative;
+        }
+        
+        .possible-move::after {
+            content: '';
+            position: absolute;
+            width: 30%;
+            height: 30%;
+            border-radius: 50%;
+            background-color: rgba(0, 255, 0, 0.5);
+        }
+        
+        .possible-capture {
+            background-color: rgba(255, 0, 0, 0.3) !important;
+        }
+        
+        .in-check {
+            background-color: rgba(255, 0, 0, 0.5) !important;
+        }
+        
+        #controls {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            padding: 15px 0;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        #reset-btn {
+            padding: 12px 25px;
+            font-size: 1.2rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        #reset-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: #444;
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+        
+        .toggle-label {
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #4CAF50;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        
+        .promotion-dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .promotion-title {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .promotion-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .promotion-option {
+            font-size: 3rem;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .promotion-option:active {
+            background-color: #f0f0f0;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .square:active {
+            transform: scale(0.95);
+        }
+        
+        .player-turn {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: bold;
+            height: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div class="player-turn" id="turn-indicator">Turno de las Blancas</div>
+        
+        <div id="chessboard-container">
+            <div id="chessboard"></div>
+        </div>
+        
+        <div id="controls">
+            <button id="reset-btn">Reiniciar Juego</button>
+            <div class="toggle-container">
+                <span class="toggle-label">Voltear tablero:</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="flip-toggle" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div id="promotion-dialog" class="promotion-dialog hidden">
+        <div class="promotion-title">Promocionar peón a:</div>
+        <div id="promotion-options" class="promotion-options"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chessboard = document.getElementById('chessboard');
+            const turnIndicator = document.getElementById('turn-indicator');
+            const resetBtn = document.getElementById('reset-btn');
+            const promotionDialog = document.getElementById('promotion-dialog');
+            const promotionOptions = document.getElementById('promotion-options');
+            const flipToggle = document.getElementById('flip-toggle');
+            
+            let board = [];
+            let selectedPiece = null;
+            let possibleMoves = [];
+            let turn = 'white';
+            let gameOver = false;
+            let enPassantTarget = null;
+            let castlingRights = {
+                white: { kingside: true, queenside: true },
+                black: { kingside: true, queenside: true }
+            };
+            let promotionPending = null;
+            let autoFlipBoard = true;
+            let statusDisplay = '';
+            
+            // Inicializar el tablero
+            function initializeBoard() {
+                board = [
+                    ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+                    ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+                    ['', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', ''],
+                    ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+                    ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']
+                ];
+                
+                turn = 'white';
+                gameOver = false;
+                enPassantTarget = null;
+                castlingRights = {
+                    white: { kingside: true, queenside: true },
+                    black: { kingside: true, queenside: true }
+                };
+                promotionPending = null;
+                
+                renderBoard();
+                updateGameInfo();
+                rotateBoard();
+            }
+            
+            // Rotar el tablero según el turno y la preferencia del usuario
+            function rotateBoard() {
+                if (autoFlipBoard) {
+                    chessboard.style.transform = turn === 'white' ? 'rotate(0deg)' : 'rotate(180deg)';
+                } else {
+                    chessboard.style.transform = 'rotate(0deg)';
+                }
+            }
+            
+            // Renderizar el tablero
+            function renderBoard() {
+                chessboard.innerHTML = '';
+                
+                const kingInCheck = findKingInCheck();
+                
+                // Determinar el orden de las filas según el turno y la preferencia de volteo
+                const rows = (autoFlipBoard && turn === 'black') ? [7,6,5,4,3,2,1,0] : [0,1,2,3,4,5,6,7];
+                const cols = (autoFlipBoard && turn === 'black') ? [7,6,5,4,3,2,1,0] : [0,1,2,3,4,5,6,7];
+                
+                for (const row of rows) {
+                    for (const col of cols) {
+                        const square = document.createElement('div');
+                        // Determinar el color de la casilla
+                        const isWhiteSquare = (autoFlipBoard && turn === 'black') ? 
+                            (row + col) % 2 !== 0 : (row + col) % 2 === 0;
+                        square.className = `square ${isWhiteSquare ? 'white' : 'black'}`;
+                        square.dataset.row = row;
+                        square.dataset.col = col;
+                        
+                        // Marcar casilla seleccionada
+                        if (selectedPiece && selectedPiece.row === row && selectedPiece.col === col) {
+                            square.classList.add('selected');
+                        }
+                        
+                        // Marcar movimientos posibles
+                        const isPossibleMove = possibleMoves.some(move => move.row === row && move.col === col);
+                        if (isPossibleMove) {
+                            const targetPiece = board[row][col];
+                            if (targetPiece) {
+                                square.classList.add('possible-capture');
+                            } else {
+                                square.classList.add('possible-move');
+                            }
+                        }
+                        
+                        // Marcar rey en jaque
+                        if (kingInCheck && board[row][col].toLowerCase() === 'k' && 
+                            ((turn === 'white' && board[row][col] === 'K') || 
+                             (turn === 'black' && board[row][col] === 'k'))) {
+                            square.classList.add('in-check');
+                        }
+                        
+                        // Añadir pieza si existe
+                        const piece = board[row][col];
+                        if (piece) {
+                            square.textContent = getPieceSymbol(piece);
+                            square.style.color = piece === piece.toUpperCase() ? 'white' : 'black';
+                        }
+                        
+                        square.addEventListener('click', () => handleSquareClick(row, col));
+                        chessboard.appendChild(square);
+                    }
+                }
+            }
+            
+            // Obtener símbolo Unicode para la pieza
+            function getPieceSymbol(piece) {
+                const symbols = {
+                    'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚', 'p': '♟',
+                    'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔', 'P': '♙'
+                };
+                return symbols[piece] || '';
+            }
+            
+            // Función para encontrar todas las piezas que están dando jaque al rey
+            function getCheckingPieces(board, kingColor) {
+                const isWhite = kingColor === 'white';
+                const kingSymbol = isWhite ? 'K' : 'k';
+                let kingPos = null;
+                const checkingPieces = [];
+
+                // Encontrar la posición del rey
+                for (let row = 0; row < 8; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        if (board[row][col] === kingSymbol) {
+                            kingPos = { row, col };
+                            break;
+                        }
+                    }
+                    if (kingPos) break;
+                }
+
+                if (!kingPos) return checkingPieces;
+
+                // Verificar todas las direcciones posibles de ataque
+                const directions = [
+                    {r: -1, c: 0},  // arriba
+                    {r: 1, c: 0},   // abajo
+                    {r: 0, c: -1},  // izquierda
+                    {r: 0, c: 1},   // derecha
+                    {r: -1, c: -1}, // arriba-izquierda
+                    {r: -1, c: 1},  // arriba-derecha
+                    {r: 1, c: -1},  // abajo-izquierda
+                    {r: 1, c: 1}    // abajo-derecha
+                ];
+
+                for (const dir of directions) {
+                    for (let i = 1; i < 8; i++) {
+                        const newRow = kingPos.row + dir.r * i;
+                        const newCol = kingPos.col + dir.c * i;
+                        
+                        if (!isInBounds(newRow, newCol)) break;
+                        
+                        const piece = board[newRow][newCol];
+                        if (!piece) continue;
+                        
+                        // Si es una pieza del mismo color, no puede ser atacante
+                        if ((isWhite && piece === piece.toUpperCase()) || 
+                            (!isWhite && piece === piece.toLowerCase())) {
+                            break;
+                        }
+
+                        // Verificar si la pieza puede atacar al rey desde esta dirección
+                        const pieceType = piece.toLowerCase();
+                        if (pieceType === 'q' || 
+                            (pieceType === 'r' && (dir.r === 0 || dir.c === 0)) || 
+                            (pieceType === 'b' && (dir.r !== 0 && dir.c !== 0)) ||
+                            (pieceType === 'p' && i === 1 && 
+                             ((isWhite && dir.r === -1 && Math.abs(dir.c) === 1) || 
+                              (!isWhite && dir.r === 1 && Math.abs(dir.c) === 1))) ||
+                            (pieceType === 'k' && i === 1)) {
+                            checkingPieces.push({ row: newRow, col: newCol });
+                            break;
+                        }
+                        
+                        break;
+                    }
+                }
+
+                // Verificar caballos (ataque especial)
+                const knightMoves = [
+                    {r: -2, c: -1}, {r: -2, c: 1},
+                    {r: -1, c: -2}, {r: -1, c: 2},
+                    {r: 1, c: -2}, {r: 1, c: 2},
+                    {r: 2, c: -1}, {r: 2, c: 1}
+                ];
+                
+                for (const move of knightMoves) {
+                    const knightRow = kingPos.row + move.r;
+                    const knightCol = kingPos.col + move.c;
+                    
+                    if (isInBounds(knightRow, knightCol) && 
+                        board[knightRow][knightCol].toLowerCase() === 'n' && 
+                        ((isWhite && board[knightRow][knightCol] === 'n') || 
+                         (!isWhite && board[knightRow][knightCol] === 'N'))) {
+                        checkingPieces.push({ row: knightRow, col: knightCol });
+                    }
+                }
+
+                return checkingPieces;
+            }
+
+            // Función auxiliar para verificar si una posición está entre otras dos
+            function isBetween(pos1, pos2, testPos) {
+                // Misma fila
+                if (pos1.row === pos2.row && pos1.row === testPos.row) {
+                    const minCol = Math.min(pos1.col, pos2.col);
+                    const maxCol = Math.max(pos1.col, pos2.col);
+                    return testPos.col > minCol && testPos.col < maxCol;
+                }
+                // Misma columna
+                else if (pos1.col === pos2.col && pos1.col === testPos.col) {
+                    const minRow = Math.min(pos1.row, pos2.row);
+                    const maxRow = Math.max(pos1.row, pos2.row);
+                    return testPos.row > minRow && testPos.row < maxRow;
+                }
+                // Misma diagonal
+                else if (Math.abs(pos1.row - pos2.row) === Math.abs(pos1.col - pos2.col)) {
+                    const rowDir = pos2.row > pos1.row ? 1 : -1;
+                    const colDir = pos2.col > pos1.col ? 1 : -1;
+                    let currentRow = pos1.row + rowDir;
+                    let currentCol = pos1.col + colDir;
+                    
+                    while (currentRow !== pos2.row && currentCol !== pos2.col) {
+                        if (currentRow === testPos.row && currentCol === testPos.col) {
+                            return true;
+                        }
+                        currentRow += rowDir;
+                        currentCol += colDir;
+                    }
+                }
+                
+                return false;
+            }
+
+            // Función para verificar si un movimiento elimina el jaque
+            function isMoveLegalDuringCheck(testBoard, color, originalBoard, fromRow, fromCol, toRow, toCol) {
+                const checkingPieces = getCheckingPieces(originalBoard, color);
+                const movingPiece = originalBoard[fromRow][fromCol].toLowerCase();
+                
+                // Si hay más de una pieza dando jaque, solo mover el rey es válido
+                if (checkingPieces.length > 1) {
+                    return movingPiece === 'k';
+                }
+                
+                // Si el rey se está moviendo, verificar que la nueva posición no esté bajo ataque
+                if (movingPiece === 'k') {
+                    return !isSquareUnderAttack(toRow, toCol, color === 'white' ? 'black' : 'white', testBoard);
+                }
+                
+                // Verificar si el movimiento captura la pieza atacante
+                if (checkingPieces.length === 1) {
+                    const attacker = checkingPieces[0];
+                    if (toRow === attacker.row && toCol === attacker.col) {
+                        return true;
+                    }
+                }
+                
+                // Verificar si el movimiento bloquea el ataque (solo para piezas que atacan en línea)
+                if (checkingPieces.length === 1) {
+                    const attacker = checkingPieces[0];
+                    const attackerPiece = originalBoard[attacker.row][attacker.col].toLowerCase();
+                    const kingPos = findKingPosition(originalBoard, color);
+                    
+                    if (attackerPiece === 'q' || attackerPiece === 'r' || attackerPiece === 'b') {
+                        if (isBetween(kingPos, attacker, {row: toRow, col: toCol})) {
+                            return true;
+                        }
+                    }
+                }
+                
+                return false;
+            }
+
+            // Función auxiliar para encontrar la posición del rey
+            function findKingPosition(board, color) {
+                const isWhite = color === 'white';
+                const kingSymbol = isWhite ? 'K' : 'k';
+                
+                for (let row = 0; row < 8; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        if (board[row][col] === kingSymbol) {
+                            return { row, col };
+                        }
+                    }
+                }
+                return null;
+            }
+            
+            // Manejar clic en casilla
+            function handleSquareClick(row, col) {
+                if (gameOver || promotionPending) return;
+                
+                const piece = board[row][col];
+                const kingInCheck = isKingInCheck(board, turn);
+                
+                // Si hay una pieza seleccionada y se hace clic en un movimiento posible
+                if (selectedPiece) {
+                    const move = possibleMoves.find(m => m.row === row && m.col === col);
+                    
+                    if (move) {
+                        // Realizar el movimiento
+                        const moveResult = movePiece(selectedPiece.row, selectedPiece.col, row, col);
+                        
+                        // Si hay promoción pendiente, no cambiar el turno todavía
+                        if (!promotionPending) {
+                            selectedPiece = null;
+                            possibleMoves = [];
+                            renderBoard();
+                            rotateBoard();
+                        }
+                        return;
+                    }
+                }
+                
+                // Si no hay pieza seleccionada o se hace clic en una pieza del mismo color
+                if (piece && ((piece === piece.toUpperCase() && turn === 'white') || 
+                              (piece !== piece.toUpperCase() && turn === 'black'))) {
+                    selectedPiece = { row, col };
+                    
+                    // Obtener todos los movimientos posibles sin filtrar
+                    const allPossibleMoves = getPossibleMoves(row, col);
+                    
+                    // Filtrar movimientos que no resuelven el jaque (si hay jaque)
+                    possibleMoves = allPossibleMoves.filter(move => {
+                        const testBoard = cloneBoard();
+                        testBoard[move.row][move.col] = testBoard[row][col];
+                        testBoard[row][col] = '';
+                        
+                        // Si el movimiento es enroque, mover la torre también
+                        if (piece.toLowerCase() === 'k' && Math.abs(move.col - col) === 2) {
+                            if (move.col > col) { // Enroque corto
+                                testBoard[row][5] = testBoard[row][7];
+                                testBoard[row][7] = '';
+                            } else { // Enroque largo
+                                testBoard[row][3] = testBoard[row][0];
+                                testBoard[row][0] = '';
+                            }
+                        }
+                        
+                        // Si el rey está en jaque, verificar si el movimiento lo resuelve
+                        if (kingInCheck) {
+                            return isMoveLegalDuringCheck(
+                                testBoard, turn, board, 
+                                row, col, move.row, move.col
+                            );
+                        }
+                        
+                        // Si no está en jaque, solo verificar que no deje al rey en jaque
+                        return !isKingInCheck(testBoard, turn);
+                    });
+                    
+                    renderBoard();
+                } else {
+                    selectedPiece = null;
+                    possibleMoves = [];
+                    renderBoard();
+                }
+            }
+            
+            // Clonar el tablero para pruebas
+            function cloneBoard() {
+                return board.map(row => [...row]);
+            }
+            
+            // Obtener movimientos posibles para una pieza
+            function getPossibleMoves(row, col) {
+                const piece = board[row][col];
+                const moves = [];
+                
+                if (!piece) return moves;
+                
+                const isWhite = piece === piece.toUpperCase();
+                const color = isWhite ? 'white' : 'black';
+                const direction = isWhite ? -1 : 1;
+                const opponentColor = isWhite ? 'black' : 'white';
+                
+                switch (piece.toLowerCase()) {
+                    case 'p': // Peón
+                        // Movimiento hacia adelante
+                        if (isInBounds(row + direction, col) && board[row + direction][col] === '') {
+                            moves.push({ row: row + direction, col });
+                            
+                            // Movimiento inicial de dos casillas
+                            if ((isWhite && row === 6) || (!isWhite && row === 1)) {
+                                if (board[row + 2 * direction][col] === '' && board[row + direction][col] === '') {
+                                    moves.push({ row: row + 2 * direction, col, enPassant: true });
+                                }
+                            }
+                        }
+                        
+                        // Capturas diagonales
+                        for (const dc of [-1, 1]) {
+                            const newCol = col + dc;
+                            const newRow = row + direction;
+                            
+                            if (isInBounds(newRow, newCol)) {
+                                const target = board[newRow][newCol];
+                                // Captura normal
+                                if (target && ((isWhite && target === target.toLowerCase()) || 
+                                              (!isWhite && target === target.toUpperCase()))) {
+                                    moves.push({ row: newRow, col: newCol });
+                                }
+                                // Captura al paso
+                                if (enPassantTarget && enPassantTarget.row === newRow && enPassantTarget.col === newCol) {
+                                    moves.push({ row: newRow, col: newCol, enPassantCapture: true });
+                                }
+                            }
+                        }
+                        break;
+                        
+                    case 'r': // Torre
+                        addStraightMoves(row, col, moves, isWhite);
+                        break;
+                        
+                    case 'n': // Caballo
+                        const knightMoves = [
+                            {r: -2, c: -1}, {r: -2, c: 1},
+                            {r: -1, c: -2}, {r: -1, c: 2},
+                            {r: 1, c: -2}, {r: 1, c: 2},
+                            {r: 2, c: -1}, {r: 2, c: 1}
+                        ];
+                        
+                        for (const move of knightMoves) {
+                            const newRow = row + move.r;
+                            const newCol = col + move.c;
+                            
+                            if (isInBounds(newRow, newCol)) {
+                                const target = board[newRow][newCol];
+                                if (!target || (isWhite && target === target.toLowerCase()) || 
+                                              (!isWhite && target === target.toUpperCase())) {
+                                    moves.push({ row: newRow, col: newCol });
+                                }
+                            }
+                        }
+                        break;
+                        
+                    case 'b': // Alfil
+                        addDiagonalMoves(row, col, moves, isWhite);
+                        break;
+                        
+                    case 'q': // Reina
+                        addStraightMoves(row, col, moves, isWhite);
+                        addDiagonalMoves(row, col, moves, isWhite);
+                        break;
+                        
+                    case 'k': // Rey
+                        // Movimientos normales
+                        for (let r = -1; r <= 1; r++) {
+                            for (let c = -1; c <= 1; c++) {
+                                if (r === 0 && c === 0) continue;
+                                
+                                const newRow = row + r;
+                                const newCol = col + c;
+                                
+                                if (isInBounds(newRow, newCol)) {
+                                    const target = board[newRow][newCol];
+                                    if (!target || (isWhite && target === target.toLowerCase()) || 
+                                                  (!isWhite && target === target.toUpperCase())) {
+                                        moves.push({ row: newRow, col: newCol });
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Enroque
+                        if (!isKingInCheck(board, color)) {
+                            // Enroque corto (kingside)
+                            if (castlingRights[color].kingside && 
+                                board[row][5] === '' && board[row][6] === '' && 
+                                board[row][7].toLowerCase() === 'r' && 
+                                ((isWhite && board[row][7] === 'R') || (!isWhite && board[row][7] === 'r'))) {
+                                
+                                // Verificar que las casillas intermedias no estén bajo ataque
+                                let canCastle = true;
+                                for (let c = col + 1; c < 7; c++) {
+                                    if (isSquareUnderAttack(row, c, opponentColor)) {
+                                        canCastle = false;
+                                        break;
+                                    }
+                                }
+                                
+                                if (canCastle) {
+                                    moves.push({ row, col: col + 2, castle: 'kingside' });
+                                }
+                            }
+                            
+                            // Enroque largo (queenside)
+                            if (castlingRights[color].queenside && 
+                                board[row][3] === '' && board[row][2] === '' && board[row][1] === '' && 
+                                board[row][0].toLowerCase() === 'r' && 
+                                ((isWhite && board[row][0] === 'R') || (!isWhite && board[row][0] === 'r'))) {
+                                
+                                // Verificar que las casillas intermedias no estén bajo ataque
+                                let canCastle = true;
+                                for (let c = col - 1; c > 0; c--) {
+                                    if (isSquareUnderAttack(row, c, opponentColor)) {
+                                        canCastle = false;
+                                        break;
+                                    }
+                                }
+                                
+                                if (canCastle) {
+                                    moves.push({ row, col: col - 2, castle: 'queenside' });
+                                }
+                            }
+                        }
+                        break;
+                }
+                
+                return moves;
+            }
+            
+            // Verificar si una casilla está bajo ataque
+            function isSquareUnderAttack(row, col, byColor, customBoard = null) {
+                const boardToUse = customBoard || board;
+                const isWhite = byColor === 'white';
+                
+                // Verificar ataques de peones
+                const pawnDirection = isWhite ? -1 : 1;
+                for (const dc of [-1, 1]) {
+                    const newRow = row + pawnDirection;
+                    const newCol = col + dc;
+                    
+                    if (isInBounds(newRow, newCol)) {
+                        const piece = boardToUse[newRow][newCol];
+                        if (piece && piece.toLowerCase() === 'p' && 
+                            ((isWhite && piece === 'P') || (!isWhite && piece === 'p'))) {
+                            return true;
+                        }
+                    }
+                }
+                
+                // Verificar ataques de caballos
+                const knightMoves = [
+                    {r: -2, c: -1}, {r: -2, c: 1},
+                    {r: -1, c: -2}, {r: -1, c: 2},
+                    {r: 1, c: -2}, {r: 1, c: 2},
+                    {r: 2, c: -1}, {r: 2, c: 1}
+                ];
+                
+                for (const move of knightMoves) {
+                    const newRow = row + move.r;
+                    const newCol = col + move.c;
+                    
+                    if (isInBounds(newRow, newCol)) {
+                        const piece = boardToUse[newRow][newCol];
+                        if (piece && piece.toLowerCase() === 'n' && 
+                            ((isWhite && piece === 'N') || (!isWhite && piece === 'n'))) {
+                            return true;
+                        }
+                    }
+                }
+                
+                // Verificar ataques en línea recta (torre/reina)
+                const straightDirections = [
+                    {r: -1, c: 0}, {r: 1, c: 0}, {r: 0, c: -1}, {r: 0, c: 1}
+                ];
+                
+                for (const dir of straightDirections) {
+                    for (let i = 1; i < 8; i++) {
+                        const newRow = row + dir.r * i;
+                        const newCol = col + dir.c * i;
+                        
+                        if (!isInBounds(newRow, newCol)) break;
+                        
+                        const piece = boardToUse[newRow][newCol];
+                        if (piece) {
+                            if ((piece.toLowerCase() === 'q' || piece.toLowerCase() === 'r') && 
+                                ((isWhite && piece === piece.toUpperCase()) || 
+                                 (!isWhite && piece === piece.toLowerCase()))) {
+                                return true;
+                            }
+                            break;
+                        }
+                    }
+                }
+                
+                // Verificar ataques diagonales (alfil/reina)
+                const diagonalDirections = [
+                    {r: -1, c: -1}, {r: -1, c: 1}, {r: 1, c: -1}, {r: 1, c: 1}
+                ];
+                
+                for (const dir of diagonalDirections) {
+                    for (let i = 1; i < 8; i++) {
+                        const newRow = row + dir.r * i;
+                        const newCol = col + dir.c * i;
+                        
+                        if (!isInBounds(newRow, newCol)) break;
+                        
+                        const piece = boardToUse[newRow][newCol];
+                        if (piece) {
+                            if ((piece.toLowerCase() === 'q' || piece.toLowerCase() === 'b') && 
+                                ((isWhite && piece === piece.toUpperCase()) || 
+                                 (!isWhite && piece === piece.toLowerCase()))) {
+                                return true;
+                            }
+                            break;
+                        }
+                    }
+                }
+                
+                // Verificar ataques del rey (a una casilla de distancia)
+                for (let r = -1; r <= 1; r++) {
+                    for (let c = -1; c <= 1; c++) {
+                        if (r === 0 && c === 0) continue;
+                        
+                        const newRow = row + r;
+                        const newCol = col + c;
+                        
+                        if (isInBounds(newRow, newCol)) {
+                            const piece = boardToUse[newRow][newCol];
+                            if (piece && piece.toLowerCase() === 'k' && 
+                                ((isWhite && piece === 'K') || (!isWhite && piece === 'k'))) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                
+                return false;
+            }
+            
+            // Añadir movimientos rectos (torre/reina)
+            function addStraightMoves(row, col, moves, isWhite) {
+                const directions = [
+                    {r: -1, c: 0}, // arriba
+                    {r: 1, c: 0},  // abajo
+                    {r: 0, c: -1}, // izquierda
+                    {r: 0, c: 1}   // derecha
+                ];
+                
+                for (const dir of directions) {
+                    for (let i = 1; i < 8; i++) {
+                        const newRow = row + dir.r * i;
+                        const newCol = col + dir.c * i;
+                        
+                        if (!isInBounds(newRow, newCol)) break;
+                        
+                        const target = board[newRow][newCol];
+                        
+                        if (!target) {
+                            moves.push({ row: newRow, col: newCol });
+                        } else {
+                            if ((isWhite && target === target.toLowerCase()) || 
+                                (!isWhite && target === target.toUpperCase())) {
+                                moves.push({ row: newRow, col: newCol });
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // Añadir movimientos diagonales (alfil/reina)
+            function addDiagonalMoves(row, col, moves, isWhite) {
+                const directions = [
+                    {r: -1, c: -1}, // arriba-izquierda
+                    {r: -1, c: 1},  // arriba-derecha
+                    {r: 1, c: -1},  // abajo-izquierda
+                    {r: 1, c: 1}    // abajo-derecha
+                ];
+                
+                for (const dir of directions) {
+                    for (let i = 1; i < 8; i++) {
+                        const newRow = row + dir.r * i;
+                        const newCol = col + dir.c * i;
+                        
+                        if (!isInBounds(newRow, newCol)) break;
+                        
+                        const target = board[newRow][newCol];
+                        
+                        if (!target) {
+                            moves.push({ row: newRow, col: newCol });
+                        } else {
+                            if ((isWhite && target === target.toLowerCase()) || 
+                                (!isWhite && target === target.toUpperCase())) {
+                                moves.push({ row: newRow, col: newCol });
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // Verificar si una posición está dentro del tablero
+            function isInBounds(row, col) {
+                return row >= 0 && row < 8 && col >= 0 && col < 8;
+            }
+            
+            // Mover una pieza
+            function movePiece(fromRow, fromCol, toRow, toCol) {
+                const piece = board[fromRow][fromCol];
+                const isWhite = piece === piece.toUpperCase();
+                const color = isWhite ? 'white' : 'black';
+                const captured = board[toRow][toCol];
+                
+                // Realizar el movimiento
+                board[toRow][toCol] = piece;
+                board[fromRow][fromCol] = '';
+                
+                // Manejar enroque
+                if (piece.toLowerCase() === 'k' && Math.abs(toCol - fromCol) === 2) {
+                    // Enroque corto (kingside)
+                    if (toCol > fromCol) {
+                        board[toRow][5] = board[toRow][7];
+                        board[toRow][7] = '';
+                    } 
+                    // Enroque largo (queenside)
+                    else {
+                        board[toRow][3] = board[toRow][0];
+                        board[toRow][0] = '';
+                    }
+                    
+                    // Desactivar futuros enroques para este color
+                    castlingRights[color] = { kingside: false, queenside: false };
+                }
+                
+                // Manejar captura al paso
+                const enPassantMove = possibleMoves.find(move => 
+                    move.row === toRow && move.col === toCol && move.enPassantCapture);
+                
+                if (enPassantMove) {
+                    board[fromRow][toCol] = '';
+                }
+                
+                // Manejar promoción de peón
+                if (piece.toLowerCase() === 'p' && (toRow === 0 || toRow === 7)) {
+                    promotionPending = { row: toRow, col: toCol, color };
+                    showPromotionDialog(color);
+                    return false; // Indica que el movimiento no está completo todavía
+                }
+                
+                // Actualizar derechos de enroque si se mueve el rey o una torre
+                if (piece.toLowerCase() === 'k') {
+                    castlingRights[color] = { kingside: false, queenside: false };
+                }
+                
+                if (piece.toLowerCase() === 'r') {
+                    if (fromCol === 0) { // Torre de queenside
+                        castlingRights[color].queenside = false;
+                    } else if (fromCol === 7) { // Torre de kingside
+                        castlingRights[color].kingside = false;
+                    }
+                }
+                
+                // Establecer objetivo de captura al paso si un peón avanza dos casillas
+                enPassantTarget = null;
+                if (piece.toLowerCase() === 'p' && Math.abs(toRow - fromRow) === 2) {
+                    enPassantTarget = { row: fromRow + (toRow - fromRow) / 2, col: fromCol };
+                }
+                
+                // Cambiar turno
+                turn = turn === 'white' ? 'black' : 'white';
+                
+                // Verificar jaque mate o ahogado
+                checkGameStatus();
+                
+                updateGameInfo();
+                return true;
+            }
+            
+            // Mostrar diálogo de promoción
+            function showPromotionDialog(color) {
+                promotionOptions.innerHTML = '';
+                const pieces = color === 'white' ? ['Q', 'R', 'B', 'N'] : ['q', 'r', 'b', 'n'];
+                const pieceNames = { Q: 'Reina', R: 'Torre', B: 'Alfil', N: 'Caballo' };
+                
+                pieces.forEach(p => {
+                    const option = document.createElement('div');
+                    option.className = 'promotion-option';
+                    option.textContent = getPieceSymbol(p);
+                    option.style.color = color === 'white' ? 'white' : 'black';
+                    option.title = pieceNames[p.toUpperCase()];
+                    option.dataset.piece = p;
+                    option.addEventListener('click', () => completePromotion(p));
+                    promotionOptions.appendChild(option);
+                });
+                
+                promotionDialog.classList.remove('hidden');
+            }
+            
+            // Completar la promoción
+            function completePromotion(piece) {
+                const { row, col, color } = promotionPending;
+                board[row][col] = piece;
+                
+                promotionDialog.classList.add('hidden');
+                promotionPending = null;
+                
+                // Cambiar turno
+                turn = turn === 'white' ? 'black' : 'white';
+                
+                // Verificar jaque mate o ahogado
+                checkGameStatus();
+                
+                selectedPiece = null;
+                possibleMoves = [];
+                renderBoard();
+                rotateBoard();
+                updateGameInfo();
+            }
+            
+            // Verificar si el rey está en jaque
+            function isKingInCheck(testBoard, color) {
+                const isWhite = color === 'white';
+                let kingPos = null;
+                
+                // Encontrar la posición del rey
+                for (let row = 0; row < 8; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        const piece = testBoard[row][col];
+                        if (piece && piece.toLowerCase() === 'k' && 
+                            ((isWhite && piece === 'K') || (!isWhite && piece === 'k'))) {
+                            kingPos = { row, col };
+                            break;
+                        }
+                    }
+                    if (kingPos) break;
+                }
+                
+                if (!kingPos) return false; // Esto no debería pasar en un juego válido
+                
+                return isSquareUnderAttack(kingPos.row, kingPos.col, isWhite ? 'black' : 'white', testBoard);
+            }
+            
+            // Encontrar qué rey está en jaque (para resaltado)
+            function findKingInCheck() {
+                for (const color of ['white', 'black']) {
+                    if (isKingInCheck(board, color)) {
+                        return color;
+                    }
+                }
+                return null;
+            }
+            
+            // Verificar estado del juego (jaque mate o ahogado)
+            function checkGameStatus() {
+                const opponentColor = turn === 'white' ? 'black' : 'white';
+                const hasLegalMoves = hasAnyLegalMove(opponentColor);
+                
+                if (isKingInCheck(board, opponentColor)) {
+                    if (!hasLegalMoves) {
+                        gameOver = true;
+                        statusDisplay = `¡Jaque mate! Ganador: ${opponentColor === 'white' ? 'Negras' : 'Blancas'}`;
+                    } else {
+                        statusDisplay = `¡Jaque! ${opponentColor === 'white' ? 'Blancas' : 'Negras'} en jaque`;
+                    }
+                } else if (!hasLegalMoves) {
+                    gameOver = true;
+                    statusDisplay = '¡Ahogado! Empate';
+                } else {
+                    statusDisplay = 'Juego en curso';
+                }
+            }
+            
+            // Verificar si hay al menos un movimiento legal
+            function hasAnyLegalMove(color) {
+                const isWhite = color === 'white';
+                const kingInCheck = isKingInCheck(board, color);
+                
+                for (let row = 0; row < 8; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        const piece = board[row][col];
+                        if (piece && ((isWhite && piece === piece.toUpperCase()) || 
+                                     (!isWhite && piece === piece.toLowerCase()))) {
+                            const moves = getPossibleMoves(row, col);
+                            
+                            for (const move of moves) {
+                                const testBoard = cloneBoard();
+                                testBoard[move.row][move.col] = testBoard[row][col];
+                                testBoard[row][col] = '';
+                                
+                                // Si el movimiento es enroque, mover la torre también
+                                if (piece.toLowerCase() === 'k' && Math.abs(move.col - col) === 2) {
+                                    if (move.col > col) { // Enroque corto
+                                        testBoard[row][5] = testBoard[row][7];
+                                        testBoard[row][7] = '';
+                                    } else { // Enroque largo
+                                        testBoard[row][3] = testBoard[row][0];
+                                        testBoard[row][0] = '';
+                                    }
+                                }
+                                
+                                // Si el rey está en jaque, solo permitir movimientos que lo saquen del jaque
+                                if (kingInCheck) {
+                                    if (isMoveLegalDuringCheck(
+                                        testBoard, color, board, 
+                                        row, col, move.row, move.col
+                                    )) {
+                                        return true;
+                                    }
+                                } else {
+                                    if (!isKingInCheck(testBoard, color)) {
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                return false;
+            }
+            
+            // Actualizar la información del juego
+            function updateGameInfo() {
+                turnIndicator.textContent = turn === 'white' ? 'Turno de las Blancas' : 'Turno de las Negras';
+                
+                if (gameOver) {
+                    turnIndicator.textContent = statusDisplay;
+                }
+            }
+            
+            // Manejar cambio en el toggle de volteo
+            flipToggle.addEventListener('change', (e) => {
+                autoFlipBoard = e.target.checked;
+                rotateBoard();
+                renderBoard();
+            });
+            
+            // Reiniciar el juego
+            resetBtn.addEventListener('click', initializeBoard);
+            
+            // Inicializar el juego
+            initializeBoard();
+        });
+    </script>
+</body>
+</html>
