@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Sonidos por Edad</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        h1, h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 30px;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .intro {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        button {
+            padding: 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .sound-info {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .currently-playing {
+            margin-top: 20px;
+            font-weight: bold;
+            text-align: center;
+            height: 24px;
+            color: #e74c3c;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .controls button {
+            background-color: #e74c3c;
+            margin: 0 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        .controls button:hover {
+            background-color: #c0392b;
+        }
+        .controls button:active {
+            transform: scale(0.98);
+        }
+        .controls button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.3);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .controls button.clicked::after {
+            opacity: 1;
+            animation: button-flash 0.5s forwards;
+        }
+        @keyframes button-flash {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        .volume-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .volume-control label {
+            margin-right: 10px;
+        }
+        .note {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-top: 20px;
+            font-style: italic;
+        }
+        .screen {
+            display: none;
+        }
+        .screen.active {
+            display: block;
+        }
+        .test-section {
+            text-align: center;
+            padding: 20px;
+        }
+        .big-button {
+            padding: 20px 40px;
+            font-size: 18px;
+            margin: 20px auto;
+            display: block;
+            background-color: #2ecc71;
+        }
+        .big-button:hover {
+            background-color: #27ae60;
+        }
+        .frequency-display {
+            margin: 20px 0;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .test-instructions {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border-left: 5px solid #3498db;
+        }
+        .result-area {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            display: none;
+        }
+        .progress-bar-container {
+            width: 100%;
+            height: 20px;
+            background-color: #ecf0f1;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #3498db;
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.2s;
+        }
+        .home-menu {
+            display: flex;
+            flex-direction: column;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px 0;
+        }
+        .mode-card {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .mode-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        .mode-card h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .mode-card p {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .mode-button {
+            font-size: 16px;
+            padding: 12px 25px;
+            text-align: center;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: block;
+            margin: 0 auto;
+        }
+        .mode-button:hover {
+            background-color: #2980b9;
+        }
+        .back-button {
+            background-color: #7f8c8d;
+            margin-top: 20px;
+        }
+        .back-button:hover {
+            background-color: #6c7a89;
+        }
+        .app-title {
+            font-size: 2.5em;
+            margin: 20px 0;
+            color: #2c3e50;
+            text-align: center;
+        }
+        .app-subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="screen active" id="home-screen">
+        <h1 class="app-title">Generador de Sonidos por Edad</h1>
+        <p class="app-subtitle">Una herramienta para explorar cómo la audición cambia con la edad</p>
+        
+        <div class="home-menu">
+            <div class="mode-card">
+                <h2>Modo Test</h2>
+                <p>Realiza un test profesional que determina con precisión tu umbral de audición de alta frecuencia. El test efectúa un barrido continuo desde 20,000 Hz hasta 2,000 Hz en un minuto.</p>
+                <p>Ideal para: obtener una medición precisa de tu capacidad auditiva y una evaluación personalizada.</p>
+                <button class="mode-button" onclick="showScreen('test-screen')">Iniciar Modo Test</button>
+            </div>
+            
+            <div class="mode-card">
+                <h2>Modo Manual</h2>
+                <p>Prueba diferentes frecuencias específicas correspondientes a distintos rangos de edad. Este modo te permite seleccionar individualmente cada frecuencia para determinar cuáles puedes escuchar y cuáles no.</p>
+                <p>Ideal para: comparaciones rápidas y exploración libre de diferentes frecuencias.</p>
+                <button class="mode-button" onclick="showScreen('manual-screen')">Iniciar Modo Manual</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen" id="manual-screen">
+        <div class="container">
+            <h1>Generador de Sonidos por Edad</h1>
+            
+            <div class="intro">
+                <p>Esta aplicación genera sonidos que solo pueden ser escuchados por determinados rangos de edad. A medida que envejecemos, perdemos la capacidad de escuchar frecuencias altas.</p>
+                <p>Sube el volumen y prueba los diferentes botones para ver cuáles puedes escuchar según tu edad. Usa auriculares para mejores resultados.</p>
+            </div>
+
+            <div class="volume-control">
+                <label for="volume">Volumen:</label>
+                <input type="range" id="volume" min="0" max="1" step="0.1" value="0.5">
+            </div>
+
+            <div class="buttons">
+                <button onclick="playSound(19000, 'Niños (menores de 10 años)')">Sonido para Niños (menores de 10 años) - 19,000 Hz</button>
+                <button onclick="playSound(17000, 'Adolescentes (10-19 años)')">Sonido para Adolescentes (10-19 años) - 17,000 Hz</button>
+                <button onclick="playSound(16000, 'Jóvenes Adultos (20-29 años)')">Sonido para Jóvenes Adultos (20-29 años) - 16,000 Hz</button>
+                <button onclick="playSound(14000, 'Adultos (30-39 años)')">Sonido para Adultos (30-39 años) - 14,000 Hz</button>
+                <button onclick="playSound(12000, 'Adultos Medios (40-49 años)')">Sonido para Adultos Medios (40-49 años) - 12,000 Hz</button>
+                <button onclick="playSound(8000, 'Adultos Mayores (50+ años)')">Sonido para Adultos Mayores (50+ años) - 8,000 Hz</button>
+            </div>
+
+            <div class="currently-playing" id="currently-playing"></div>
+
+            <div class="controls">
+                <button onclick="stopSound()">Detener Sonido</button>
+            </div>
+
+            <div class="sound-info">
+                <h3>¿Cómo funciona?</h3>
+                <p>Con la edad, perdemos gradualmente la capacidad de escuchar frecuencias altas (presbiacusia). Los niños y adolescentes generalmente pueden escuchar frecuencias de hasta 20,000 Hz, mientras que muchos adultos mayores de 50 años pueden tener dificultades para escuchar frecuencias superiores a 12,000 Hz.</p>
+                <p>Esta aplicación genera tonos puros a diferentes frecuencias que corresponden aproximadamente a los límites auditivos de diferentes grupos de edad.</p>
+                <p class="note">Nota: La capacidad auditiva varía de persona a persona. Estos rangos son aproximados y pueden no aplicar exactamente a cada individuo. Además, la calidad de tus altavoces o auriculares también afecta qué frecuencias puedes escuchar.</p>
+            </div>
+            
+            <button class="back-button" onclick="showScreen('home-screen')">Volver al Inicio</button>
+        </div>
+    </div>
+
+    <div class="screen" id="test-screen">
+        <div class="container">
+            <h1>Test de Audición</h1>
+            
+            <div class="test-instructions">
+                <p>Este test determinará hasta qué frecuencia puedes escuchar. El test realizará un barrido continuo desde 20,000 Hz hasta 2,000 Hz en exactamente 1 minuto (60 segundos).</p>
+                <p>Instrucciones:</p>
+                <ol>
+                    <li>Asegúrate de usar auriculares y estar en un ambiente silencioso</li>
+                    <li>Ajusta el volumen a un nivel cómodo</li>
+                    <li>Presiona "Iniciar Test" para comenzar</li>
+                    <li>Cuando escuches un sonido, presiona el botón "¡Lo escucho!" inmediatamente</li>
+                    <li>Al final, recibirás un informe sobre tu capacidad auditiva</li>
+                </ol>
+            </div>
+
+            <div class="volume-control">
+                <label for="test-volume">Volumen:</label>
+                <input type="range" id="test-volume" min="0" max="1" step="0.1" value="0.5">
+            </div>
+
+            <div class="test-section">
+                <div class="frequency-display" id="test-frequency">Frecuencia: <span id="current-frequency">-</span> Hz</div>
+                
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="test-progress"></div>
+                </div>
+                
+                <button class="big-button" id="start-test-btn" onclick="startTest()">Iniciar Test</button>
+                <button class="big-button" id="hear-btn" onclick="hearSound()" style="display: none; background-color: #e74c3c;">¡Lo escucho!</button>
+            </div>
+
+            <div class="result-area" id="test-results">
+                <h2>Resultados del Test</h2>
+                <div id="results-content"></div>
+            </div>
+            
+            <button class="back-button" onclick="showScreen('home-screen')">Volver al Inicio</button>
+        </div>
+    </div>
+
+    <script>
+        // Variables generales
+        let audioContext;
+        let oscillator;
+        let gainNode;
+        
+        // Variables para el modo test
+        let testRunning = false;
+        let currentTestFrequency = 20000;
+        let detectedFrequency = 0;
+        let testStartTime;
+        let testOscillator;
+        let testGainNode;
+        let testAnimationFrame;
+        
+        // Parámetros de la prueba
+        const maxTestFreq = 20000; // Frecuencia inicial (Hz)
+        const minTestFreq = 2000;  // Frecuencia final (Hz)
+        const testDuration = 60;   // Duración total en segundos
+        
+        // Mapeo de frecuencias a grupos de edad para el informe final
+        const ageRanges = [
+            { minFreq: 19000, age: "Audición excepcional (muy raro en humanos)" },
+            { minFreq: 18000, age: "Niños (menores de 10 años)" },
+            { minFreq: 17000, age: "Niños/Adolescentes (10-15 años)" },
+            { minFreq: 16000, age: "Adolescentes (15-19 años)" },
+            { minFreq: 15000, age: "Adultos jóvenes (20-29 años)" },
+            { minFreq: 14000, age: "Adultos jóvenes con buena audición" },
+            { minFreq: 13000, age: "Adultos (30-39 años)" },
+            { minFreq: 12000, age: "Adultos (35-45 años)" },
+            { minFreq: 10000, age: "Adultos (40-49 años)" },
+            { minFreq: 8000, age: "Adultos (45-55 años)" },
+            { minFreq: 6000, age: "Adultos mayores (50-65 años)" },
+            { minFreq: 4000, age: "Adultos mayores (65+ años)" },
+            { minFreq: 0, age: "Posible pérdida auditiva significativa" }
+        ];
+        
+        // Cambiar entre pantallas
+        function showScreen(screenId) {
+            // Detener cualquier sonido en reproducción
+            stopSound();
+            stopTestSound();
+            
+            // Ocultar todas las pantallas
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Mostrar la pantalla seleccionada
+            document.getElementById(screenId).classList.add('active');
+        }
+        
+        // Inicializar contexto de audio al primer clic (requerido por políticas de navegadores)
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Crear nodo de ganancia para control de volumen
+                gainNode = audioContext.createGain();
+                gainNode.connect(audioContext.destination);
+                
+                // Configurar volumen inicial
+                const volumeControl = document.getElementById('volume');
+                gainNode.gain.value = volumeControl.value;
+                
+                // Escuchar cambios de volumen
+                volumeControl.addEventListener('input', function() {
+                    gainNode.gain.value = this.value;
+                });
+                
+                // Configurar controlador de volumen para el modo de prueba
+                const testVolumeControl = document.getElementById('test-volume');
+                testVolumeControl.addEventListener('input', function() {
+                    if (testGainNode) {
+                        testGainNode.gain.value = this.value;
+                    }
+                });
+            }
+        }
+        
+        // Modo manual: reproducir un sonido específico
+        function playSound(frequency, ageGroup) {
+            // Inicializar audio si es necesario
+            initAudio();
+            
+            // Detener sonido anterior si existe
+            stopSound();
+            
+            // Crear nuevo oscilador
+            oscillator = audioContext.createOscillator();
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            
+            // Conectar oscilador a nodo de ganancia
+            oscillator.connect(gainNode);
+            
+            // Iniciar oscilador
+            oscillator.start();
+            
+            // Mostrar información
+            document.getElementById('currently-playing').textContent = 
+                `Reproduciendo: ${ageGroup} (${frequency} Hz)`;
+        }
+        
+        // Detener sonido en modo manual
+        function stopSound() {
+            if (oscillator) {
+                oscillator.stop();
+                oscillator.disconnect();
+                oscillator = null;
+                document.getElementById('currently-playing').textContent = '';
+                
+                // Añadir efecto visual al botón
+                const stopButton = document.querySelector('.controls button');
+                stopButton.classList.add('clicked');
+                
+                // Quitar la clase después de la animación
+                setTimeout(() => {
+                    stopButton.classList.remove('clicked');
+                }, 500);
+            }
+        }
+        
+        // Iniciar el test de audición con barrido continuo
+        function startTest() {
+            // Inicializar audio si es necesario
+            initAudio();
+            
+            // Reiniciar variables
+            currentTestFrequency = maxTestFreq;
+            detectedFrequency = 0;
+            testRunning = true;
+            testStartTime = audioContext.currentTime;
+            
+            // Mostrar botón de "¡Lo escucho!" y ocultar botón de iniciar
+            document.getElementById('start-test-btn').style.display = 'none';
+            document.getElementById('hear-btn').style.display = 'block';
+            document.getElementById('test-results').style.display = 'none';
+            
+            // Configurar nodos de audio para el test
+            testGainNode = audioContext.createGain();
+            testGainNode.connect(audioContext.destination);
+            testGainNode.gain.value = document.getElementById('test-volume').value;
+            
+            // Crear oscilador con barrido continuo de frecuencia
+            testOscillator = audioContext.createOscillator();
+            testOscillator.type = 'sine';
+            testOscillator.frequency.setValueAtTime(maxTestFreq, testStartTime);
+            // Crear una rampa de frecuencia lineal durante toda la duración del test
+            testOscillator.frequency.linearRampToValueAtTime(
+                minTestFreq, 
+                testStartTime + testDuration
+            );
+            
+            // Conectar y empezar
+            testOscillator.connect(testGainNode);
+            testOscillator.start();
+            
+            // Iniciar actualización de UI
+            updateTestUILoop();
+        }
+        
+        // Actualizar UI en tiempo real durante el test
+        function updateTestUILoop() {
+            if (!testRunning) return;
+            
+            const elapsedTime = audioContext.currentTime - testStartTime;
+            
+            // Calcular la frecuencia actual basada en el tiempo transcurrido
+            const progress = Math.min(elapsedTime / testDuration, 1);
+            currentTestFrequency = maxTestFreq - progress * (maxTestFreq - minTestFreq);
+            currentTestFrequency = Math.round(currentTestFrequency); // Redondear para la visualización
+            
+            // Actualizar la interfaz
+            document.getElementById('current-frequency').textContent = currentTestFrequency;
+            document.getElementById('test-progress').style.width = `${progress * 100}%`;
+            
+            // Si el test ha terminado
+            if (progress >= 1 && testRunning) {
+                endTest();
+                return;
+            }
+            
+            // Continuar el bucle de actualización
+            testAnimationFrame = requestAnimationFrame(updateTestUILoop);
+        }
+        
+        // El usuario indica que escuchó el sonido
+        function hearSound() {
+            if (!testRunning) return;
+            
+            // Guardar la frecuencia actual como la detectada
+            detectedFrequency = currentTestFrequency;
+            
+            // Terminar el test
+            endTest();
+        }
+        
+        // Finalizar el test y mostrar resultados
+        function endTest() {
+            // Detener el test
+            stopTestSound();
+            
+            // Mostrar resultados
+            const resultsContainer = document.getElementById('results-content');
+            const resultsArea = document.getElementById('test-results');
+            
+            let resultText = '';
+            
+            if (detectedFrequency === 0 || detectedFrequency <= minTestFreq) {
+                resultText = `<p>No se detectó ninguna respuesta o la prueba terminó. Es posible que necesites ajustar el volumen o usar mejores auriculares.</p>`;
+            } else {
+                // Encontrar el rango de edad correspondiente
+                let ageGroup = "Desconocido";
+                for (let i = 0; i < ageRanges.length; i++) {
+                    if (detectedFrequency >= ageRanges[i].minFreq) {
+                        ageGroup = ageRanges[i].age;
+                        break;
+                    }
+                }
+                
+                resultText = `
+                    <p>¡Tu audición de alta frecuencia alcanza aproximadamente <strong>${detectedFrequency} Hz</strong>!</p>
+                    <p>Esto corresponde típicamente a: <strong>${ageGroup}</strong></p>
+                    <p>Comparación:</p>
+                    <ul>
+                        <li>El rango auditivo humano teórico es de 20 Hz a 20,000 Hz</li>
+                        <li>La mayoría de las personas mayores de 20 años no pueden oír por encima de 17,000 Hz</li>
+                        <li>A los 40 años, muchas personas no pueden oír por encima de 12,000 Hz</li>
+                        <li>A los 65 años, muchas personas no pueden oír por encima de 8,000 Hz</li>
+                    </ul>
+                    <p><em>Nota: Este es un test básico y no reemplaza una evaluación profesional de la audición. Los resultados pueden variar según la calidad de tus auriculares y el volumen utilizado.</em></p>
+                `;
+            }
+            
+            // Actualizar el contenido y mostrar el área de resultados
+            resultsContainer.innerHTML = resultText;
+            resultsArea.style.display = 'block';
+            
+            // Desplazar la página hasta los resultados
+            setTimeout(() => {
+                resultsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+        
+        // Detener el sonido de prueba
+        function stopTestSound() {
+            testRunning = false;
+            
+            if (testOscillator) {
+                testOscillator.stop();
+                testOscillator.disconnect();
+                testOscillator = null;
+            }
+            
+            if (testAnimationFrame) {
+                cancelAnimationFrame(testAnimationFrame);
+                testAnimationFrame = null;
+            }
+            
+            // Restaurar la interfaz
+            document.getElementById('start-test-btn').style.display = 'block';
+            document.getElementById('hear-btn').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clave Dicotómica de Insectos / Clau Dicotòmica d'Insectes</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #2196F3;
+            --accent-color: #FF9800;
+            --light-bg: #f5f9f6;
+            --dark-text: #333;
+            --footer-bg: #f0f0f0;
+            --footer-text: #555;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-text);
+            background-color: var(--light-bg);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        .intro {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+        }
+
+        .question-container, .result-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .question-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .option {
+            flex: 1;
+            min-width: 250px;
+            background-color: #e9f5e9;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+
+        .option:hover {
+            background-color: #d4ebd4;
+            border-color: var(--primary-color);
+            transform: scale(1.03);
+        }
+
+        .option img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .result-container {
+            display: none;
+            text-align: center;
+        }
+
+        .result-container img {
+            max-width: 300px;
+            height: auto;
+            border-radius: 8px;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-info {
+            background-color: #f0f8ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .button:hover {
+            background-color: #0b7dda;
+            transform: scale(1.05);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .visible {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background-color: var(--accent-color);
+            width: 0%;
+            transition: width 0.5s ease;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Estilos para selector de idioma */
+        .language-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang-btn {
+            background-color: white;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        .lang-btn:hover, .lang-btn.active {
+            background-color: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+
+        /* Clases para control de idioma */
+        [data-lang="es"], [data-lang="ca"] {
+            display: none;
+        }
+
+        html[lang="es"] [data-lang="es"] {
+            display: block;
+        }
+
+        html[lang="ca"] [data-lang="ca"] {
+            display: block;
+        }
+
+        /* Estilos para el footer */
+        footer {
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            text-align: center;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            border-top: 1px solid #ddd;
+        }
+
+        footer a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        footer a:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        .download-btn {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin-top: 5px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 0.9em;
+        }
+
+        .download-btn:hover {
+            background-color: var(--primary-color);
+            transform: scale(1.02);
+            text-decoration: none;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="language-selector">
+            <button class="lang-btn" onclick="changeLanguage('es')">ES</button>
+            <button class="lang-btn" onclick="changeLanguage('ca')">CA</button>
+        </div>
+
+        <header>
+            <div data-lang="es">
+                <h1>¡Descubre los Órdenes de Insectos!</h1>
+                <p>Una clave dicotómica interactiva para identificar insectos</p>
+            </div>
+            <div data-lang="ca">
+                <h1>Descobreix els Ordres d'Insectes!</h1>
+                <p>Una clau dicotòmica interactiva per identificar insectes</p>
+            </div>
+        </header>
+
+        <div class="intro">
+            <p data-lang="es">¡Hola científico/a! Usa esta clave dicotómica para identificar diferentes órdenes de insectos. En cada paso, elige una de las dos opciones que mejor describa al insecto que estás observando.</p>
+            <p data-lang="ca">Hola científic/a! Utilitza aquesta clau dicotòmica per identificar diferents ordres d'insectes. A cada pas, tria una de les dues opcions que millor descrigui l'insecte que estàs observant.</p>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progress">0%</div>
+        </div>
+
+        <!-- Preguntas de la clave dicotómica -->
+        <div id="question1" class="question-container visible">
+            <h2 data-lang="es">¿Cómo son las alas del insecto?</h2>
+            <h2 data-lang="ca">Com són les ales de l'insecte?</h2>
+            <div class="options">
+                <div class="option" onclick="showQuestion('question2')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/151376442/medium.jpeg" alt="Alas membranosas grandes">
+                    <p data-lang="es">Alas membranosas y grandes</p>
+                    <p data-lang="ca">Ales membranoses i grans</p>
+                </div>
+                <div class="option" onclick="showQuestion('question7')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/145908483/medium.jpeg" alt="Alas modificadas o poco visibles">
+                    <p data-lang="es">Alas modificadas, endurecidas o poco visibles</p>
+                    <p data-lang="ca">Ales modificades, endurides o poc visibles</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="question2" class="question-container hidden">
+            <h2 data-lang="es">¿Cómo son las alas y el cuerpo?</h2>
+            <h2 data-lang="ca">Com són les ales i el cos?</h2>
+            <div class="options">
+                <div class="option" onclick="showQuestion('question5')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/151376442/medium.jpeg" alt="Libélula">
+                    <p data-lang="es">Dos pares de alas membranosas transparentes y cuerpo alargado</p>
+                    <p data-lang="ca">Dos parells d'ales membranoses transparents i cos allargat</p>
+                </div>
+                <div class="option" onclick="showQuestion('question4')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/395145069/medium.jpeg" alt="Mariposa">
+                    <p data-lang="es">Alas cubiertas de escamas o transparentes con muchas venas</p>
+                    <p data-lang="ca">Ales cobertes d'escames o transparents amb moltes venes</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="question13" class="question-container hidden">
+            <h2 data-lang="es">¿El insecto tiene alas duras (élitros) o pico bucal?</h2>
+            <h2 data-lang="ca">L'insecte té ales dures (èlitres) o bec bucal?</h2>
+            <div class="options">
+                <div class="option" onclick="showQuestion('question14')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/288536879/medium.jpeg" alt="Ortóptero/Blatodeo">
+                    <p data-lang="es">No tiene élitros duros ni pico bucal prominente</p>
+                    <p data-lang="ca">No té èlitres durs ni bec bucal prominent</p>
+                </div>
+                <div class="option" onclick="showQuestion('question12')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/145908483/medium.jpeg" alt="Escarabajo/Chinche">
+                    <p data-lang="es">Tiene élitros duros o pico bucal prominente</p>
+                    <p data-lang="ca">Té èlitres durs o bec bucal prominent</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="question12" class="question-container hidden">
+            <h2 data-lang="es">¿Cómo son sus alas anteriores?</h2>
+            <h2 data-lang="ca">Com són les seves ales anteriors?</h2>
+            <div class="options">
+                <div class="option" onclick="showResult('coleoptera')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/145908483/medium.jpeg" alt="Escarabajo">
+                    <p data-lang="es">Alas anteriores duras (élitros) que se juntan en línea recta</p>
+                    <p data-lang="ca">Ales anteriors dures (èlitres) que s'uneixen en línia recta</p>
+                </div>
+                <div class="option" onclick="showResult('hemiptera')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/196746014/medium.jpeg" alt="Chinche">
+                    <p data-lang="es">Pico bucal prominente en la parte delantera de la cabeza</p>
+                    <p data-lang="ca">Bec bucal prominent a la part davantera del cap</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="question4" class="question-container hidden">
+            <h2 data-lang="es">¿Cómo son sus alas?</h2>
+            <h2 data-lang="ca">Com són les seves ales?</h2>
+            <div class="options">
+                <div class="option" onclick="showResult('lepidoptera')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/395145069/medium.jpeg" alt="Mariposa">
+                    <p data-lang="es">Alas cubiertas de pequeñas escamas coloridas</p>
+                    <p data-lang="ca">Ales cobertes de petites escames colorides</p>
+                </div>
+                <div class="option" onclick="showQuestion('question5')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/242615470/medium.jpeg" alt="Insecto con alas membranosas">
+                    <p data-lang="es">Alas membranosas transparentes</p>
+                    <p data-lang="ca">Ales membranoses transparents</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="question5" class="question-container hidden">
+            <h2 data-lang="es">¿Cuántos pares de alas tiene?</h2>
+            <h2 data-lang="ca">Quants parells d'ales té?</h2>
+            <div class="options">
+                <div class="option" onclick="showQuestion('question6')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/151376442/medium.jpeg" alt="Libélula">
+                    <p data-lang="es">Dos pares de alas similares y grandes</p>
+                    <p data-lang="ca">Dos parells d'ales similars i grans</p>
+                </div>
+                <div class="option" onclick="showResult('diptera')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/242615470/medium.jpeg" alt="Mosca">
+                    <p data-lang="es">Un solo par de alas (el segundo par está reducido a unos pequeños balancines)</p>
+                    <p data-lang="ca">Un sol parell d'ales (el segon parell està reduït a uns petits balancins)</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="question6" class="question-container hidden">
+            <h2 data-lang="es">¿Cómo es su cuerpo?</h2>
+            <h2 data-lang="ca">Com és el seu cos?</h2>
+            <div class="options">
+                <div class="option" onclick="showResult('odonata')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/151376442/medium.jpeg" alt="Libélula">
+                    <p data-lang="es">Cuerpo alargado, ojos grandes, alas extendidas en reposo</p>
+                    <p data-lang="ca">Cos allargat, ulls grans, ales esteses en repòs</p>
+                </div>
+                <div class="option" onclick="showResult('neuroptera')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/205150247/medium.jpeg" alt="Crisopa">
+                    <p data-lang="es">Alas con muchas venas formando una red, antenas largas</p>
+                    <p data-lang="ca">Ales amb moltes venes formant una xarxa, antenes llargues</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="question7" class="question-container hidden">
+            <h2 data-lang="es">¿Tiene apéndices en forma de pinzas en la parte posterior del abdomen?</h2>
+            <h2 data-lang="ca">Té apèndixs en forma de pinces a la part posterior de l'abdomen?</h2>
+            <div class="options">
+                <div class="option" onclick="showResult('dermaptera')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/146037797/medium.jpeg" alt="Tijereta">
+                    <p data-lang="es">Tiene pinzas (fórceps) al final del abdomen</p>
+                    <p data-lang="ca">Té pinces (fòrceps) al final de l'abdomen</p>
+                </div>
+                <div class="option" onclick="showQuestion('question13')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/145908483/medium.jpeg" alt="Insecto sin pinzas">
+                    <p data-lang="es">No tiene pinzas en el abdomen</p>
+                    <p data-lang="ca">No té pinces a l'abdomen</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="question14" class="question-container hidden">
+            <h2 data-lang="es">¿El insecto tiene patas desarrolladas para saltar?</h2>
+            <h2 data-lang="ca">L'insecte té potes desenvolupades per saltar?</h2>
+            <div class="options">
+                <div class="option" onclick="showResult('orthoptera')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/288536879/medium.jpeg" alt="Saltamontes">
+                    <p data-lang="es">Patas traseras largas y desarrolladas para saltar</p>
+                    <p data-lang="ca">Potes posteriors llargues i desenvolupades per saltar</p>
+                </div>
+                <div class="option" onclick="showQuestion('question9')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/285736458/medium.jpeg" alt="Insecto sin patas saltadoras">
+                    <p data-lang="es">Patas traseras normales, no adaptadas para saltar</p>
+                    <p data-lang="ca">Potes posteriors normals, no adaptades per saltar</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="question9" class="question-container hidden">
+            <h2 data-lang="es">¿Cómo es su cuerpo?</h2>
+            <h2 data-lang="ca">Com és el seu cos?</h2>
+            <div class="options">
+                <div class="option" onclick="showQuestion('question10')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/285736458/medium.jpeg" alt="Cucaracha/Termita">
+                    <p data-lang="es">Cuerpo blando, sin estrechamiento notable en el cuerpo</p>
+                    <p data-lang="ca">Cos tou, sense estrenyiment notable al cos</p>
+                </div>
+                <div class="option" onclick="showQuestion('question11')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/182441486/medium.jpeg" alt="Insecto con cintura">
+                    <p data-lang="es">Cuerpo con "cintura de avispa" (estrechamiento entre tórax y abdomen)</p>
+                    <p data-lang="ca">Cos amb "cintura de vespa" (estrenyiment entre tòrax i abdomen)</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="question10" class="question-container hidden">
+            <h2 data-lang="es">¿Vive en colonias organizadas?</h2>
+            <h2 data-lang="ca">Viu en colònies organitzades?</h2>
+            <div class="options">
+                <div class="option" onclick="showResult('blattodea2')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/166764945/medium.jpeg" alt="Termita">
+                    <p data-lang="es">Vive en colonias organizadas, color blanquecino o amarillento</p>
+                    <p data-lang="ca">Viu en colònies organitzades, color blanquinós o groguenc</p>
+                </div>
+                <div class="option" onclick="showResult('blattodea1')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/285736458/medium.jpeg" alt="Cucaracha">
+                    <p data-lang="es">No vive en colonias organizadas, patas adaptadas para correr rápido</p>
+                    <p data-lang="ca">No viu en colònies organitzades, potes adaptades per córrer ràpid</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="question11" class="question-container hidden">
+            <h2 data-lang="es">¿Cómo son sus patas delanteras?</h2>
+            <h2 data-lang="ca">Com són les seves potes davanteres?</h2>
+            <div class="options">
+                <div class="option" onclick="showResult('mantodea')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/314594057/medium.jpeg" alt="Mantis">
+                    <p data-lang="es">Patas delanteras modificadas para atrapar presas</p>
+                    <p data-lang="ca">Potes davanteres modificades per atrapar preses</p>
+                </div>
+                <div class="option" onclick="showResult('hymenoptera')">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/182441486/medium.jpeg" alt="Abeja">
+                    <p data-lang="es">Patas delanteras normales, no modificadas para atrapar presas</p>
+                    <p data-lang="ca">Potes davanteres normals, no modificades per atrapar preses</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resultados -->
+        <div id="dermaptera-result" class="result-container">
+            <h2 data-lang="es">¡Has identificado un insecto del orden Dermaptera!</h2>
+            <h2 data-lang="ca">Has identificat un insecte de l'ordre Dermaptera!</h2>
+            <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/146037797/medium.jpeg" alt="Dermaptera">
+            <div class="result-info">
+                <div data-lang="es">
+                    <h3>Características del orden Dermaptera (Tijeretas):</h3>
+                    <ul>
+                        <li>Tienen pinzas (fórceps) al final del abdomen.</li>
+                        <li>Alas anteriores cortas y endurecidas, posteriores membranosas y plegadas.</li>
+                        <li>Cuerpo alargado y aplanado.</li>
+                        <li>Son principalmente nocturnos.</li>
+                    </ul>
+                    <p>Ejemplos: Tijeretas</p>
+                    
+                    <h4>¿Sabías que...?</h4>
+                    <p>Las tijeretas son insectos muy especiales porque cuidan de sus crías, algo muy raro entre los insectos. Las madres limpian sus huevos para evitar hongos y los protegen de depredadores. Si te encuentras una tijereta debajo de una piedra o maceta, podría estar cuidando de sus pequeños. A pesar de su aspecto amenazante con esas pinzas, son inofensivas para las personas y de hecho ayudan a controlar plagas como pulgones y ácaros en nuestros jardines, ¡son grandes aliadas de los jardineros!</p>
+                </div>
+                <div data-lang="ca">
+                    <h3>Característiques de l'ordre Dermaptera (Tisoretes):</h3>
+                    <ul>
+                        <li>Tenen pinces (fòrceps) al final de l'abdomen.</li>
+                        <li>Ales anteriors curtes i endurides, posteriors membranoses i plegades.</li>
+                        <li>Cos allargat i aplanat.</li>
+                        <li>Són principalment nocturns.</li>
+                    </ul>
+                    <p>Exemples: Tisoretes</p>
+                    
+                    <h4>Sabies que...?</h4>
+                    <p>Les tisoretes són insectes molt especials perquè cuiden de les seves cries, una cosa molt rara entre els insectes. Les mares netegen els seus ous per evitar fongs i els protegeixen dels depredadors. Si et trobes una tisoreta sota una pedra o test, podria estar cuidant dels seus petits. Malgrat el seu aspecte amenaçador amb aquestes pinces, són inofensives per a les persones i de fet ajuden a controlar plagues com ara pugons i àcars als nostres jardins, són grans aliades dels jardiners!</p>
+                </div>
+            </div>
+            <button class="button" onclick="resetQuiz()" data-lang="es">Volver a empezar</button>
+            <button class="button" onclick="resetQuiz()" data-lang="ca">Tornar a començar</button>
+        </div>
+
+        <div id="hymenoptera-result" class="result-container">
+            <h2 data-lang="es">¡Has identificado un insecto del orden Hymenoptera!</h2>
+            <h2 data-lang="ca">Has identificat un insecte de l'ordre Hymenoptera!</h2>
+            <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/182441486/medium.jpeg" alt="Hymenoptera">
+            <div class="result-info">
+                <div data-lang="es">
+                    <h3>Características del orden Hymenoptera (Abejas, Avispas, Hormigas):</h3>
+                    <ul>
+                        <li>Tienen "cintura de avispa" (estrechamiento entre tórax y abdomen).</li>
+                        <li>Dos pares de alas membranosas (algunas especies no tienen alas).</li>
+                        <li>Muchas especies viven en colonias sociales complejas.</li>
+                        <li>Algunas especies tienen aguijón para defensa.</li>
+                    </ul>
+                    <p>Ejemplos: Abejas, avispas, hormigas, abejorros</p>
+                    
+                    <h4>¿Sabías que...?</h4>
+                    <p>¡Los himenópteros son los insectos más inteligentes! Las abejas pueden comunicarse entre ellas a través de una "danza" para indicar dónde hay flores con néctar y polen. Las hormigas crean verdaderas "ciudades" subterráneas con "granjeros" que cultivan hongos, "soldados" que defienden el hormiguero y hasta "ganaderos" que cuidan pulgones para obtener un líquido dulce que les encanta. Una colmena de abejas puede tener hasta 50.000 individuos, todos trabajando juntos, y para producir 1 kg de miel, las abejas deben visitar ¡más de 4 millones de flores!</p>
+                </div>
+                <div data-lang="ca">
+                    <h3>Característiques de l'ordre Hymenoptera (Abelles, Vespes, Formigues):</h3>
+                    <ul>
+                        <li>Tenen "cintura de vespa" (estrenyiment entre tòrax i abdomen).</li>
+                        <li>Dos parells d'ales membranoses (algunes espècies no tenen ales).</li>
+                        <li>Moltes espècies viuen en colònies socials complexes.</li>
+                        <li>Algunes espècies tenen fibló per a defensa.</li>
+                    </ul>
+                    <p>Exemples: Abelles, vespes, formigues, borinots</p>
+                    
+                    <h4>Sabies que...?</h4>
+                    <p>Els himenòpters són els insectes més intel·ligents! Les abelles poden comunicar-se entre elles a través d'una "dansa" per indicar on hi ha flors amb nèctar i pol·len. Les formigues creen veritables "ciutats" subterrànies amb "pagesos" que cultiven fongs, "soldats" que defensen el formiguer i fins i tot "ramaders" que cuiden pugons per obtenir un líquid dolç que els encanta. Un rusc d'abelles pot tenir fins a 50.000 individus, tots treballant junts, i per produir 1 kg de mel, les abelles han de visitar més de 4 milions de flors!</p>
+                </div>
+            </div>
+            <button class="button" onclick="resetQuiz()" data-lang="es">Volver a empezar</button>
+            <button class="button" onclick="resetQuiz()" data-lang="ca">Tornar a començar</button>
+        </div>
+
+        <div id="coleoptera-result" class="result-container">
+            <h2 data-lang="es">¡Has identificado un insecto del orden Coleoptera!</h2>
+            <h2 data-lang="ca">Has identificat un insecte de l'ordre Coleoptera!</h2>
+            <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/145908483/medium.jpeg" alt="Coleoptera">
+            <div class="result-info">
+                <div data-lang="es">
+                    <h3>Características del orden Coleoptera (Escarabajos):</h3>
+                    <ul>
+                        <li>Alas anteriores endurecidas (élitros) que protegen a las alas posteriores.</li>
+                        <li>Piezas bucales masticadoras.</li>
+                        <li>Cuerpo generalmente duro y compacto.</li>
+                        <li>Es el orden más numeroso de insectos, con más de 400,000 especies.</li>
+                    </ul>
+                    <p>Ejemplos: Escarabajos, mariquitas, luciérnagas</p>
+                    
+                    <h4>¿Sabías que...?</h4>
+                    <p>Los coleópteros son el grupo de animales más diverso del planeta - ¡1 de cada 4 animales conocidos es un escarabajo! El escarabajo titán puede medir hasta 17 cm, mientras que los escarabajos más pequeños apenas alcanzan 0.25 mm. Las luciérnagas (que son escarabajos) producen luz fría con una eficiencia del 100% mediante una reacción química. El escarabajo pelotero era sagrado para los antiguos egipcios porque empuja bolas de estiércol que asociaban con el movimiento del sol. Algunos escarabajos pueden levantar objetos 850 veces su propio peso, ¡como si un humano levantara 65 coches a la vez!</p>
+                </div>
+                <div data-lang="ca">
+                    <h3>Característiques de l'ordre Coleoptera (Escarabats):</h3>
+                    <ul>
+                        <li>Ales anteriors endurides (èlitres) que protegeixen les ales posteriors.</li>
+                        <li>Peces bucals masticadores.</li>
+                        <li>Cos generalment dur i compacte.</li>
+                        <li>És l'ordre més nombrós d'insectes, amb més de 400.000 espècies.</li>
+                    </ul>
+                    <p>Exemples: Escarabats, marietes, cuques de llum</p>
+                    
+                    <h4>Sabies que...?</h4>
+                    <p>Els coleòpters són el grup d'animals més divers del planeta - 1 de cada 4 animals coneguts és un escarabat! L'escarabat tità pot mesurar fins a 17 cm, mentre que els escarabats més petits amb prou feines arriben a 0,25 mm. Les cuques de llum (que són escarabats) produeixen llum freda amb una eficiència del 100% mitjançant una reacció química. L'escarabat piloter era sagrat per als antics egipcis perquè empeny boles de fems que associaven amb el moviment del sol. Alguns escarabats poden aixecar objectes 850 vegades el seu propi pes, com si un humà aixequés 65 cotxes alhora!</p>
+                </div>
+            </div>
+            <button class="button" onclick="resetQuiz()" data-lang="es">Volver a empezar</button>
+            <button class="button" onclick="resetQuiz()" data-lang="ca">Tornar a començar</button>
+        </div>
+
+        <div id="lepidoptera-result" class="result-container">
+            <h2 data-lang="es">¡Has identificado un insecto del orden Lepidoptera!</h2>
+            <h2 data-lang="ca">Has identificat un insecte de l'ordre Lepidoptera!</h2>
+            <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/395145069/medium.jpeg" alt="Lepidoptera">
+            <div class="result-info">
+                <div data-lang="es">
+                    <h3>Características del orden Lepidoptera (Mariposas y Polillas):</h3>
+                    <ul>
+                        <li>Alas cubiertas de pequeñas escamas coloridas.</li>
+                        <li>Tienen una probóscide (trompa) para alimentarse de líquidos como el néctar.</li>
+                        <li>Las larvas (orugas) son muy diferentes a los adultos.</li>
+                        <li>Sufren una metamorfosis completa.</li>
+                    </ul>
+                    <p>Ejemplos: Mariposas y polillas</p>
+                    
+                    <h4>¿Sabías que...?</h4>
+                    <p>Las mariposas pueden ver colores que los humanos no podemos percibir, como la luz ultravioleta. ¡Tienen los ojos compuestos por hasta 17.000 pequeñas unidades! La mariposa monarca realiza una migración increíble de más de 4.000 km desde Canadá hasta México cada año. Las polillas y mariposas tienen escamas diminutas en sus alas que funcionan como pequeños paneles solares para calentarse. La mariposa Morpho azul no tiene pigmento azul - su color proviene de la estructura física de las escamas que reflejan solo la luz azul. Las orugas de algunas mariposas pueden comer plantas venenosas y almacenar las toxinas para protegerse de los depredadores cuando sean adultas.</p>
+                </div>
+                <div data-lang="ca">
+                    <h3>Característiques de l'ordre Lepidoptera (Papallones i Arnes):</h3>
+                    <ul>
+                        <li>Ales cobertes de petites escames colorides.</li>
+                        <li>Tenen una probòscide (trompa) per alimentar-se de líquids com el nèctar.</li>
+                        <li>Les larves (erugues) són molt diferents dels adults.</li>
+                        <li>Pateixen una metamorfosi completa.</li>
+                    </ul>
+                    <p>Exemples: Papallones i arnes</p>
+                    
+                    <h4>Sabies que...?</h4>
+                    <p>Les papallones poden veure colors que els humans no podem percebre, com la llum ultraviolada. Tenen els ulls compostos per fins a 17.000 petites unitats! La papallona monarca realitza una migració increïble de més de 4.000 km des de Canadà fins a Mèxic cada any. Les arnes i papallones tenen escames diminutes a les seves ales que funcionen com petits panells solars per escalfar-se. La papallona Morpho blava no té pigment blau - el seu color prové de l'estructura física de les escames que reflecteixen només la llum blava. Les erugues d'algunes papallones poden menjar plantes verinoses i emmagatzemar les toxines per protegir-se dels depredadors quan siguin adultes.</p>
+                </div>
+            </div>
+            <button class="button" onclick="resetQuiz()" data-lang="es">Volver a empezar</button>
+            <button class="button" onclick="resetQuiz()" data-lang="ca">Tornar a començar</button>
+        </div>
+
+        <div id="diptera-result" class="result-container">
+            <h2 data-lang="es">¡Has identificado un insecto del orden Diptera!</h2>
+            <h2 data-lang="ca">Has identificat un insecte de l'ordre Diptera!</h2>
+            <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/242615470/medium.jpeg" alt="Diptera">
+            <div class="result-info">
+                <div data-lang="es">
+                    <h3>Características del orden Diptera (Moscas y Mosquitos):</h3>
+                    <ul>
+                        <li>Solo tienen un par de alas funcionales.</li>
+                        <li>El segundo par está convertido en balancines (halterios).</li>
+                        <li>Muchas especies tienen ojos compuestos grandes.</li>
+                        <li>Piezas bucales adaptadas para succionar o perforar.</li>
+                    </ul>
+                    <p>Ejemplos: Moscas, mosquitos, tábanos</p>
+                    
+                    <h4>¿Sabías que...?</h4>
+                    <p>Los dípteros son los acróbatas aéreos del mundo de los insectos. Pueden batir sus alas hasta 1.000 veces por segundo y son los únicos insectos capaces de volar hacia atrás y quedarse suspendidos en el aire. Los mosquitos tienen un sofisticado sistema para detectar el CO2 que exhalamos a distancias de hasta 50 metros. Las larvas de mosca (gusanos) son cruciales para descomponer materia orgánica - sin ellas, estaríamos enterrados en hojas y animales muertos. Las moscas domésticas pueden saborear con sus patas, por eso las ves "bailando" sobre la comida. ¡Las moscas de la fruta han viajado al espacio en experimentos científicos, y sus corazones laten hasta 1.000 veces por minuto!</p>
+                </div>
+                <div data-lang="ca">
+                    <h3>Característiques de l'ordre Diptera (Mosques i Mosquits):</h3>
+                    <ul>
+                        <li>Només tenen un parell d'ales funcionals.</li>
+                        <li>El segon parell està convertit en balancins (halteris).</li>
+                        <li>Moltes espècies tenen ulls compostos grans.</li>
+                        <li>Peces bucals adaptades per succionar o perforar.</li>
+                    </ul>
+                    <p>Exemples: Mosques, mosquits, tàvecs</p>
+                    
+                    <h4>Sabies que...?</h4>
+                    <p>Els dípters són els acròbates aeris del món dels insectes. Poden batre les seves ales fins a 1.000 vegades per segon i són els únics insectes capaços de volar cap enrere i quedar-se suspesos a l'aire. Els mosquits tenen un sofisticat sistema per detectar el CO2 que exhalem a distàncies de fins a 50 metres. Les larves de mosca (cucs) són crucials per descompondre matèria orgànica - sense elles, estaríem enterrats en fulles i animals morts. Les mosques domèstiques poden tastar amb les seves potes, per això les veus "ballant" sobre el menjar. Les mosques de la fruita han viatjat a l'espai en experiments científics, i els seus cors baten fins a 1.000 vegades per minut!</p>
+                </div>
+            </div>
+            <button class="button" onclick="resetQuiz()" data-lang="es">Volver a empezar</button>
+            <button class="button" onclick="resetQuiz()" data-lang="ca">Tornar a començar</button>
+        </div>
+
+        <div id="hemiptera-result" class="result-container">
+            <h2 data-lang="es">¡Has identificado un insecto del orden Hemiptera!</h2>
+            <h2 data-lang="ca">Has identificat un insecte de l'ordre Hemiptera!</h2>
+            <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/196746014/medium.jpeg" alt="Hemiptera">
+            <div class="result-info">
+                <div data-lang="es">
+                    <h3>Características del orden Hemiptera (Chinches):</h3>
+                    <ul>
+                        <li>Tienen un pico articulado (rostro) para perforar y succionar.</li>
+                        <li>Alas anteriores a menudo parcialmente endurecidas (hemiélitros).</li>
+                        <li>Muchas especies se alimentan de plantas, algunas de sangre.</li>
+                        <li>Algunas especies acuáticas respiran mediante un tubo respiratorio.</li>
+                    </ul>
+                    <p>Ejemplos: Chinches, pulgones, cigarras, cochinillas</p>
+                    
+                    <h4>¿Sabías que...?</h4>
+                    <p>Las cigarras (que son hemípteros) pueden producir sonidos tan fuertes como una motosierra - llegando a 120 decibelios. Algunas especies de cigarras pasan 17 años viviendo bajo tierra antes de emerger todas a la vez. Los chinches acuáticos gigantes pueden cazar pequeños peces e incluso ranas. Los patinadores de agua pueden caminar sobre el agua gracias a la tensión superficial y las diminutas vellosidades repelentes al agua en sus patas. Algunos hemípteros como el insecto asesino pueden inyectar veneno que disuelve los tejidos internos de sus presas. Los pulgones pueden reproducirse sin necesidad de apareamiento - las hembras dan a luz a más hembras en un proceso llamado partenogénesis.</p>
+                </div>
+                <div data-lang="ca">
+                    <h3>Característiques de l'ordre Hemiptera (Xinxes):</h3>
+                    <ul>
+                        <li>Tenen un bec articulat (rostre) per perforar i succionar.</li>
+                        <li>Ales anteriors sovint parcialment endurides (hemiélitres).</li>
+                        <li>Moltes espècies s'alimenten de plantes, algunes de sang.</li>
+                        <li>Algunes espècies aquàtiques respiren mitjançant un tub respiratori.</li>
+                    </ul>
+                    <p>Exemples: Xinxes, pugons, cigales, cotxinilles</p>
+                    
+                    <h4>Sabies que...?</h4>
+                    <p>Les cigales (que són hemípters) poden produir sons tan forts com una motoserra - arribant a 120 decibels. Algunes espècies de cigales passen 17 anys vivint sota terra abans d'emergir totes alhora. Les xinxes aquàtiques gegants poden caçar petits peixos i fins i tot granotes. Els patinadors d'aigua poden caminar sobre l'aigua gràcies a la tensió superficial i les diminutes vellositats repel·lents a l'aigua a les seves potes. Alguns hemípters com l'insecte assassí poden injectar verí que dissol els teixits interns de les seves preses. Els pugons poden reproduir-se sense necessitat d'aparellament - les femelles donen a llum a més femelles en un procés anomenat partenogènesi.</p>
+                </div>
+            </div>
+            <button class="button" onclick="resetQuiz()" data-lang="es">Volver a empezar</button>
+            <button class="button" onclick="resetQuiz()" data-lang="ca">Tornar a començar</button>
+        </div>
+
+        <div id="orthoptera-result" class="result-container">
+            <h2 data-lang="es">¡Has identificado un insecto del orden Orthoptera!</h2>
+            <h2 data-lang="ca">Has identificat un insecte de l'ordre Orthoptera!</h2>
+            <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/288536879/medium.jpeg" alt="Orthoptera">
+            <div class="result-info">
+                <div data-lang="es">
+                    <h3>Características del orden Orthoptera (Saltamontes y Grillos):</h3>
+                    <ul>
+                        <li>Patas traseras largas y fuertes adaptadas para saltar.</li>
+                        <li>Antenas generalmente largas.</li>
+                        <li>Muchas especies producen sonidos frotando partes de su cuerpo.</li>
+                        <li>Piezas bucales masticadoras.</li>
+                    </ul>
+                    <p>Ejemplos: Saltamontes, grillos, langostas</p>
+                    
+                    <h4>¿Sabías que...?</h4>
+                    <p>Los saltamontes pueden saltar distancias equivalentes a 20 veces la longitud de su cuerpo - sería como si tú saltaras la longitud de un campo de fútbol de una sola vez. Los grillos no oyen con sus oídos sino con unos órganos especiales ubicados en sus patas delanteras. Puedes calcular la temperatura exterior contando los chirridos de un grillo: cuenta cuántos chirridos hace en 14 segundos, súmale 40 y obtendrás la temperatura en grados Fahrenheit. Las langostas del desierto pueden formar enjambres tan grandes que contienen hasta 80 millones de individuos por kilómetro cuadrado, y pueden viajar hasta 130 km en un solo día. En algunos países como México, los saltamontes se consumen como alimento rico en proteínas.</p>
+                </div>
+                <div data-lang="ca">
+                    <h3>Característiques de l'ordre Orthoptera (Saltamartins i Grills):</h3>
+                    <ul>
+                        <li>Potes posteriors llargues i fortes adaptades per saltar.</li>
+                        <li>Antenes generalment llargues.</li>
+                        <li>Moltes espècies produeixen sons fregant parts del seu cos.</li>
+                        <li>Peces bucals masticadores.</li>
+                    </ul>
+                    <p>Exemples: Saltamartins, grills, llagostes</p>
+                    
+                    <h4>Sabies que...?</h4>
+                    <p>Els saltamartins poden saltar distàncies equivalents a 20 vegades la longitud del seu cos - seria com si tu saltessis la longitud d'un camp de futbol d'una sola vegada. Els grills no senten amb les seves orelles sinó amb uns òrgans especials situats a les seves potes davanteres. Pots calcular la temperatura exterior comptant els xiulets d'un grill: compta quants xiulets fa en 14 segons, suma-hi 40 i obtindràs la temperatura en graus Fahrenheit. Les llagostes del desert poden formar eixams tan grans que contenen fins a 80 milions d'individus per quilòmetre quadrat, i poden viatjar fins a 130 km en un sol dia. En alguns països com Mèxic, els saltamartins es consumeixen com a aliment ric en proteïnes.</p>
+                </div>
+            </div>
+            <button class="button" onclick="resetQuiz()" data-lang="es">Volver a empezar</button>
+            <button class="button" onclick="resetQuiz()" data-lang="ca">Tornar a començar</button>
+        </div>
+
+        <div id="odonata-result" class="result-container">
+            <h2 data-lang="es">¡Has identificado un insecto del orden Odonata!</h2>
+            <h2 data-lang="ca">Has identificat un insecte de l'ordre Odonata!</h2>
+            <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/151376442/medium.jpeg" alt="Odonata">
+            <div class="result-info">
+                <div data-lang="es">
+                    <h3>Características del orden Odonata (Libélulas y Caballitos del Diablo):</h3>
+                    <ul>
+                        <li>Dos pares de alas membranosas, generalmente transparentes con muchas venas.</li>
+                        <li>Ojos compuestos muy grandes.</li>
+                        <li>Cuerpo alargado.</li>
+                        <li>Son depredadores muy ágiles en vuelo.</li>
+                    </ul>
+                    <p>Ejemplos: Libélulas, caballitos del diablo</p>
+                    
+                    <h4>¿Sabías que...?</h4>
+                    <p>Las libélulas son uno de los insectos más antiguos del planeta - existen desde hace 300 millones de años, mucho antes que los dinosaurios. En la prehistoria había libélulas gigantes con alas de 70 cm de envergadura. Son los insectos voladores más veloces, alcanzando hasta 60 km/h. Pueden volar hacia adelante, hacia atrás, lateralmente e incluso quedarse suspendidas en el aire. Sus enormes ojos contienen hasta 30.000 facetas y pueden ver en casi todas direcciones simultáneamente, excepto directamente detrás de ellas. Son depredadoras increíblemente eficientes, capturando hasta el 95% de sus presas una vez las localizan. Las libélulas ayudan a controlar las poblaciones de mosquitos y son indicadores de la buena salud de los ecosistemas acuáticos.</p>
+                </div>
+                <div data-lang="ca">
+                    <h3>Característiques de l'ordre Odonata (Libèl·lules i Espiadimonis):</h3>
+                    <ul>
+                        <li>Dos parells d'ales membranoses, generalment transparents amb moltes venes.</li>
+                        <li>Ulls compostos molt grans.</li>
+                        <li>Cos allargat.</li>
+                        <li>Són depredadors molt àgils en vol.</li>
+                    </ul>
+                    <p>Exemples: Libèl·lules, espiadimonis</p>
+                    
+                    <h4>Sabies que...?</h4>
+                    <p>Les libèl·lules són un dels insectes més antics del planeta - existeixen des de fa 300 milions d'anys, molt abans que els dinosaures. A la prehistòria hi havia libèl·lules gegants amb ales de 70 cm d'envergadura. Són els insectes voladors més veloces, assolint fins a 60 km/h. Poden volar cap endavant, cap enrere, lateralment i fins i tot quedar-se suspeses a l'aire. Els seus enormes ulls contenen fins a 30.000 facetes i poden veure en gairebé totes direccions simultàniament, excepte directament darrere d'elles. Són depredadores increïblement eficients, capturant fins al 95% de les seves preses un cop les localitzen. Les libèl·lules ajuden a controlar les poblacions de mosquits i són indicadors de la bona salut dels ecosistemes aquàtics.</p>
+                </div>
+            </div>
+            <button class="button" onclick="resetQuiz()" data-lang="es">Volver a empezar</button>
+            <button class="button" onclick="resetQuiz()" data-lang="ca">Tornar a començar</button>
+        </div>
+
+        <div id="blattodea1-result" class="result-container">
+            <h2 data-lang="es">¡Has identificado un insecto del orden Blattodea (Cucarachas)!</h2>
+            <h2 data-lang="ca">Has identificat un insecte de l'ordre Blattodea (Paneroles)!</h2>
+            <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/285736458/medium.jpeg" alt="Blattodea Cucaracha">
+            <div class="result-info">
+                <div data-lang="es">
+                    <h3>Características de las cucarachas:</h3>
+                    <ul>
+                        <li>Cuerpo aplanado y ovalado.</li>
+                        <li>Patas adaptadas para correr rápidamente.</li>
+                        <li>Antenas largas y filiformes.</li>
+                        <li>Omnívoros, se alimentan de una gran variedad de materiales.</li>
+                    </ul>
+                    <p>Ejemplos: Cucaracha americana, cucaracha alemana</p>
+                    
+                    <h4>¿Sabías que...?</h4>
+                    <p>Las cucarachas son verdaderas supervivientes: pueden vivir hasta un mes sin comida, sobrevivir una semana sin su cabeza (mueren solo porque no pueden beber agua), soportar radiación 15 veces más letal que para los humanos, y aguantar sumergidas en agua durante 30 minutos. Son tan rápidas que pueden correr a 5 km/h, el equivalente a un humano corriendo a 320 km/h. Aunque tienen mala fama, son importantes descomponedores en la naturaleza. Existen desde hace más de 300 millones de años, prácticamente sin cambios en su estructura, lo que demuestra lo perfectamente adaptadas que están. De las 4.600 especies conocidas, solo unas 30 se asocian con los humanos y solo 4 se consideran plagas.</p>
+                </div>
+                <div data-lang="ca">
+                    <h3>Característiques de les paneroles:</h3>
+                    <ul>
+                        <li>Cos aplanat i ovalat.</li>
+                        <li>Potes adaptades per córrer ràpidament.</li>
+                        <li>Antenes llargues i filiformes.</li>
+                        <li>Omnívors, s'alimenten d'una gran varietat de materials.</li>
+                    </ul>
+                    <p>Exemples: Panerola americana, panerola alemanya</p>
+                    
+                    <h4>Sabies que...?</h4>
+                    <p>Les paneroles són veritables supervivents: poden viure fins a un mes sense menjar, sobreviure una setmana sense el seu cap (moren només perquè no poden beure aigua), suportar radiació 15 vegades més letal que per als humans, i aguantar submergides en aigua durant 30 minuts. Són tan ràpides que poden córrer a 5 km/h, l'equivalent a un humà corrent a 320 km/h. Tot i que tenen mala fama, són importants descomponedors a la natura. Existeixen des de fa més de 300 milions d'anys, pràcticament sense canvis en la seva estructura, el que demostra com estan perfectament adaptades. De les 4.600 espècies conegudes, només unes 30 s'associen amb els humans i només 4 es consideren plagues.</p>
+                </div>
+            </div>
+            <button class="button" onclick="resetQuiz()" data-lang="es">Volver a empezar</button>
+            <button class="button" onclick="resetQuiz()" data-lang="ca">Tornar a començar</button>
+        </div>
+
+        <div id="blattodea2-result" class="result-container">
+            <h2 data-lang="es">¡Has identificado un insecto del orden Blattodea (Termitas)!</h2>
+            <h2 data-lang="ca">Has identificat un insecte de l'ordre Blattodea (Tèrmits)!</h2>
+            <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/166764945/medium.jpeg" alt="Blattodea Termita">
+            <div class="result-info">
+                <div data-lang="es">
+                    <h3>Características de las termitas:</h3>
+                    <ul>
+                        <li>Viven en colonias organizadas con diferentes castas.</li>
+                        <li>Se alimentan de madera y otros materiales vegetales.</li>
+                        <li>Construyen nidos complejos.</li>
+                        <li>Cuerpo generalmente blanquecino o amarillento.</li>
+                    </ul>
+                    <p>Ejemplos: Termita subterránea, termita de madera seca</p>
+                    
+                    <h4>¿Sabías que...?</h4>
+                    <p>Las termitas son verdaderas arquitectas de la naturaleza. Construyen termiteros que, en proporción, serían como si los humanos construyéramos edificios más altos que el Burj Khalifa (el edificio más alto del mundo). Una sola colonia puede contener millones de individuos y su reina puede vivir hasta 50 años, poniendo hasta 30.000 huevos al día. Las termitas tienen microorganismos en su sistema digestivo que les permiten digerir la celulosa (madera), algo que casi ningún otro animal puede hacer. Son tan importantes para los ecosistemas que pueden reciclar hasta un tercio de toda la madera muerta en bosques tropicales. En algunas culturas africanas, las termitas se comen como alimento rico en proteínas, y sus termiteros se utilizan como hornos tradicionales debido a su capacidad para mantener el calor.</p>
+                </div>
+                <div data-lang="ca">
+                    <h3>Característiques dels tèrmits:</h3>
+                    <ul>
+                        <li>Viuen en colònies organitzades amb diferents castes.</li>
+                        <li>S'alimenten de fusta i altres materials vegetals.</li>
+                        <li>Construeixen nius complexos.</li>
+                        <li>Cos generalment blanquinós o groguenc.</li>
+                    </ul>
+                    <p>Exemples: Tèrmit subterrani, tèrmit de fusta seca</p>
+                    
+                    <h4>Sabies que...?</h4>
+                    <p>Els tèrmits són veritables arquitectes de la natura. Construeixen termiteres que, en proporció, serien com si els humans construíssim edificis més alts que el Burj Khalifa (l'edifici més alt del món). Una sola colònia pot contenir milions d'individus i la seva reina pot viure fins a 50 anys, posant fins a 30.000 ous al dia. Els tèrmits tenen microorganismes al seu sistema digestiu que els permeten digerir la cel·lulosa (fusta), una cosa que gairebé cap altre animal pot fer. Són tan importants per als ecosistemes que poden reciclar fins a un terç de tota la fusta morta en boscos tropicals. En algunes cultures africanes, els tèrmits es mengen com a aliment ric en proteïnes, i les seves termiteres s'utilitzen com a forns tradicionals a causa de la seva capacitat per mantenir la calor.</p>
+                </div>
+            </div>
+            <button class="button" onclick="resetQuiz()" data-lang="es">Volver a empezar</button>
+            <button class="button" onclick="resetQuiz()" data-lang="ca">Tornar a començar</button>
+        </div>
+
+        <div id="mantodea-result" class="result-container">
+            <h2 data-lang="es">¡Has identificado un insecto del orden Mantodea!</h2>
+            <h2 data-lang="ca">Has identificat un insecte de l'ordre Mantodea!</h2>
+            <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/314594057/medium.jpeg" alt="Mantodea">
+            <div class="result-info">
+                <div data-lang="es">
+                    <h3>Características del orden Mantodea (Mantis Religiosas):</h3>
+                    <ul>
+                        <li>Patas delanteras modificadas para atrapar presas.</li>
+                        <li>Cabeza triangular y móvil.</li>
+                        <li>Son depredadores que cazan al acecho.</li>
+                        <li>Pueden girar la cabeza hasta 180 grados.</li>
+                    </ul>
+                    <p>Ejemplos: Mantis religiosa, mantis orquídea</p>
+                    
+                    <h4>¿Sabías que...?</h4>
+                    <p>Las mantis religiosas tienen una vista extraordinaria con sus grandes ojos compuestos que les permiten percibir hasta 30 imágenes por segundo (los humanos solo vemos 6). Son de los pocos insectos que pueden girar la cabeza para mirar por encima del hombro, detectando movimientos incluso detrás de ellas. Sus patas delanteras son tan rápidas al cazar que se mueven a 1/20 de segundo, demasiado rápido para que el ojo humano lo perciba. Existen mantis de varios colores según su hábitat, desde verdes hasta rosas o marrones. Algunas especies, como la mantis orquídea, imitan flores para atraer a insectos polinizadores y cazarlos. Aunque tienen aspecto extraterrestre, son inofensivas para los humanos y muy beneficiosas en jardines y huertos, donde controlan plagas de forma natural.</p>
+                </div>
+                <div data-lang="ca">
+                    <h3>Característiques de l'ordre Mantodea (Pregadéus):</h3>
+                    <ul>
+                        <li>Potes davanteres modificades per atrapar preses.</li>
+                        <li>Cap triangular i mòbil.</li>
+                        <li>Són depredadors que cacen a l'aguait.</li>
+                        <li>Poden girar el cap fins a 180 graus.</li>
+                    </ul>
+                    <p>Exemples: Pregadéu, mantis orquídia</p>
+                    
+                    <h4>Sabies que...?</h4>
+                    <p>Els pregadéus tenen una vista extraordinària amb els seus grans ulls compostos que els permeten percebre fins a 30 imatges per segon (els humans només veiem 6). Són dels pocs insectes que poden girar el cap per mirar per sobre l'espatlla, detectant moviments fins i tot darrere d'ells. Les seves potes davanteres són tan ràpides al caçar que es mouen a 1/20 de segon, massa ràpid perquè l'ull humà ho percebi. Existeixen mantis de diversos colors segons el seu hàbitat, des de verds fins a roses o marrons. Algunes espècies, com la mantis orquídia, imiten flors per atraure insectes pol·linitzadors i caçar-los. Tot i que tenen aspecte extraterrestre, són inofensives per als humans i molt beneficioses en jardins i horts, on controlen plagues de forma natural.</p>
+                </div>
+            </div>
+            <button class="button" onclick="resetQuiz()" data-lang="es">Volver a empezar</button>
+            <button class="button" onclick="resetQuiz()" data-lang="ca">Tornar a començar</button>
+        </div>
+
+        <div id="neuroptera-result" class="result-container">
+            <h2 data-lang="es">¡Has identificado un insecto del orden Neuroptera!</h2>
+            <h2 data-lang="ca">Has identificat un insecte de l'ordre Neuroptera!</h2>
+            <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/205150247/medium.jpeg" alt="Neuroptera">
+            <div class="result-info">
+                <div data-lang="es">
+                    <h3>Características del orden Neuroptera (Crisopas, Hormiga León):</h3>
+                    <ul>
+                        <li>Alas membranosas grandes con numerosas venas que forman una red.</li>
+                        <li>Antenas generalmente largas.</li>
+                        <li>Muchas especies son depredadoras beneficiosas.</li>
+                        <li>Las larvas de algunas especies construyen trampas en forma de embudo en la arena.</li>
+                    </ul>
+                    <p>Ejemplos: Crisopas, hormiga león, ascaláfidos</p>
+                    
+                    <h4>¿Sabías que...?</h4>
+                    <p>Las crisopas adultas son preciosos insectos de color verde con alas delicadas, pero sus larvas son depredadoras voraces conocidas como "leones de áfidos" - cada una puede devorar hasta 600 pulgones durante su desarrollo. La hormiga león construye trampas en forma de embudo en la arena y se esconde en el fondo esperando a que caigan otros insectos. Cuando una hormiga u otro insecto resbala por el borde, la hormiga león lanza arena para evitar que escape. Sus larvas tienen mandíbulas como colmillos curvos con los que inyectan veneno y enzimas digestivas a sus presas. Lo más curioso es que estos insectos son totalmente inofensivos como adultos - muchos ni siquiera se alimentan. Los agricultores ecológicos utilizan crisopas como control biológico de plagas, liberándolas en sus cultivos como alternativa natural a los pesticidas.</p>
+                </div>
+                <div data-lang="ca">
+                    <h3>Característiques de l'ordre Neuroptera (Crisopes, Formiga Lleó):</h3>
+                    <ul>
+                        <li>Ales membranoses grans amb nombroses venes que formen una xarxa.</li>
+                        <li>Antenes generalment llargues.</li>
+                        <li>Moltes espècies són depredadores beneficioses.</li>
+                        <li>Les larves d'algunes espècies construeixen trampes en forma d'embut a la sorra.</li>
+                    </ul>
+                    <p>Exemples: Crisopes, formiga lleó, ascalàfids</p>
+                    
+                    <h4>Sabies que...?</h4>
+                    <p>Les crisopes adultes són preciosos insectes de color verd amb ales delicades, però les seves larves són depredadores voraços conegudes com a "lleons de pugons" - cadascuna pot devorar fins a 600 pugons durant el seu desenvolupament. La formiga lleó construeix trampes en forma d'embut a la sorra i s'amaga al fons esperant que caiguin altres insectes. Quan una formiga o un altre insecte rellisca per la vora, la formiga lleó llança sorra per evitar que s'escapi. Les seves larves tenen mandíbules com ullals corbats amb els quals injecten verí i enzims digestius a les seves preses. El més curiós és que aquests insectes són totalment inofensius com a adults - molts ni tan sols s'alimenten. Els agricultors ecològics utilitzen crisopes com a control biològic de plagues, alliberant-les en els seus cultius com a alternativa natural als pesticides.</p>
+                </div>
+            </div>
+            <button class="button" onclick="resetQuiz()" data-lang="es">Volver a empezar</button>
+            <button class="button" onclick="resetQuiz()" data-lang="ca">Tornar a començar</button>
+        </div>
+    </div>
+
+    <!-- Footer con información de autor, licencia y enlace de descarga -->
+    <footer>
+        <div data-lang="es">
+            <p>Juan José de Haro | Licencia: <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></p>
+            <p><a href="#" id="download-es" class="download-btn">Puedes descargarte esta página pulsando aquí</a></p>
+        </div>
+        <div data-lang="ca">
+            <p>Juan José de Haro | Llicència: <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></p>
+            <p><a href="#" id="download-ca" class="download-btn">Pots descarregar-te aquesta pàgina prement aquí</a></p>
+        </div>
+    </footer>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 14;
+
+        // Detectar el idioma del navegador al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Este código se ha movido a la sección principal de inicio
+        });
+
+        function updateProgress() {
+            let progress = Math.min(Math.round((currentStep - 1) / totalSteps * 100), 100);
+            document.getElementById('progress').style.width = progress + '%';
+            document.getElementById('progress').textContent = progress + '%';
+        }
+
+        function hideAllQuestions() {
+            const questions = document.querySelectorAll('.question-container');
+            questions.forEach(question => {
+                question.classList.remove('visible');
+                question.classList.add('hidden');
+            });
+        }
+
+        function hideAllResults() {
+            const results = document.querySelectorAll('.result-container');
+            results.forEach(result => {
+                result.style.display = 'none';
+            });
+        }
+
+        function showQuestion(questionId) {
+            hideAllQuestions();
+            hideAllResults();
+            const question = document.getElementById(questionId);
+            question.classList.remove('hidden');
+            question.classList.add('visible');
+            
+            // Extract number from questionId
+            const stepNumber = parseInt(questionId.replace('question', ''));
+            currentStep = stepNumber;
+            updateProgress();
+            
+            // Scroll to the question
+            question.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showResult(orderName) {
+            hideAllQuestions();
+            hideAllResults();
+            const result = document.getElementById(orderName + '-result');
+            result.style.display = 'block';
+            
+            // Forzar el progreso al 100% cuando se llega a un resultado
+            document.getElementById('progress').style.width = '100%';
+            document.getElementById('progress').textContent = '100%';
+            
+            // Scroll to the result
+            result.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetQuiz() {
+            hideAllQuestions();
+            hideAllResults();
+            currentStep = 1;
+            updateProgress();
+            showQuestion('question1');
+        }
+
+        function changeLanguage(lang) {
+            // Cambiar el atributo lang del HTML
+            document.documentElement.lang = lang;
+            
+            // Actualizar los botones de idioma
+            const langButtons = document.querySelectorAll('.lang-btn');
+            langButtons.forEach(btn => {
+                if (btn.textContent.toLowerCase() === lang.toLowerCase()) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        // Función para descargar la página HTML
+        function downloadHTML() {
+            // Crear una copia del documento actual para modificarla
+            const docClone = document.cloneNode(true);
+            
+            // Obtener todos los contenedores de preguntas del clon
+            const questions = docClone.querySelectorAll('.question-container');
+            questions.forEach(question => {
+                if (question.id === 'question1') {
+                    // Hacer visible solo la primera pregunta
+                    question.classList.remove('hidden');
+                    question.classList.add('visible');
+                } else {
+                    // Ocultar todas las demás preguntas
+                    question.classList.remove('visible');
+                    question.classList.add('hidden');
+                }
+            });
+            
+            // Ocultar todos los resultados
+            const results = docClone.querySelectorAll('.result-container');
+            results.forEach(result => {
+                result.style.display = 'none';
+            });
+            
+            // Resetear la barra de progreso
+            const progressBar = docClone.getElementById('progress');
+            if (progressBar) {
+                progressBar.style.width = '0%';
+                progressBar.textContent = '0%';
+            }
+            
+            // Obtener el HTML del documento modificado
+            const htmlContent = docClone.documentElement.outerHTML;
+            
+            // Crear un blob con el contenido HTML modificado
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            
+            // Crear una URL para el blob
+            const url = URL.createObjectURL(blob);
+            
+            // Crear un elemento de enlace temporal
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'clave_dicotomica_insectos.html';
+            
+            // Añadir el enlace al documento, hacer clic en él y luego eliminarlo
+            document.body.appendChild(a);
+            a.click();
+            
+            // Limpiar
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 100);
+        }
+
+        // Añadir código para configurar la página cuando se carga
+        window.addEventListener('DOMContentLoaded', function() {
+            // Obtener idioma del navegador
+            let userLang = navigator.language || navigator.userLanguage;
+            userLang = userLang.split('-')[0]; // Obtener solo la parte del idioma (es-ES -> es)
+            
+            // Si no es catalán, usar español por defecto
+            if (userLang !== 'ca') {
+                userLang = 'es';
+            }
+            
+            changeLanguage(userLang);
+            updateProgress();
+            
+            // Configurar los botones de descarga
+            document.getElementById('download-es').addEventListener('click', downloadHTML);
+            document.getElementById('download-ca').addEventListener('click', downloadHTML);
+        });
+    </script>
+</body>
+</html>
