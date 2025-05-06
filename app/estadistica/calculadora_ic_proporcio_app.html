@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Calculadora d'intervals de confiança d'una proporció</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .description {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        .info-box {
+            background-color: #f0f8ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .formula {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .lang-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .lang-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        .lang-btn:hover {
+            background-color: #0056b3;
+        }
+        .lang-btn.active {
+            background-color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <!-- Botones de idioma -->
+    <div class="lang-buttons">
+        <button id="btn-ca" class="lang-btn" onclick="cambiarIdioma('ca')">CA</button>
+        <button id="btn-es" class="lang-btn" onclick="cambiarIdioma('es')">ES</button>
+    </div>
+
+    <h1 id="h1-main">Calculadora d'intervals de confiança d'una proporció</h1>
+
+    <div class="container">
+        <h2 id="h2-que-es">Què és un interval de confiança?</h2>
+        <p id="p-que-es">Un interval de confiança és una eina estadística que ens permet estimar, amb un cert nivell de seguretat, on es troba el veritable valor d'un paràmetre poblacional. És com dir: "Estem un XX% segurs que el valor real està entre aquests dos números".</p>
+        <div class="description">
+            <span id="example-desc">Exemple: Si diem que l'interval de confiança al 95% és (30%, 40%), significa que si repetíssim l'estudi moltes vegades, el 95% dels intervals calculats contindrien el veritable valor de la població.</span>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <h2 id="h2-como">Com es calcula?</h2>
+        <p id="p-como">El càlcul es fa en tres passos:</p>
+        
+        <h3 id="h3-paso1">1. Error estàndard (SE)</h3>
+        <div class="formula">
+            \[SE = \sqrt{\frac{p \cdot (1-p)}{n}}\]
+        </div>
+        
+        <h3 id="h3-paso2">2. Marge d'error (ME)</h3>
+        <div class="formula">
+            \[ME = z \cdot SE\]
+        </div>
+        
+        <h3 id="h3-paso3">3. Límits de l'interval</h3>
+        <div class="formula">
+            \[\text{Límit inferior} = p - ME\]
+            \[\text{Límit superior} = p + ME\]
+        </div>
+        
+        <p id="p-donde">On:</p>
+        <ul>
+            <li id="li-p"><strong>p</strong> = proporció mostral</li>
+            <li id="li-z1"><strong>z</strong> = 1.96 per a 95% de confiança</li>
+            <li id="li-z2"><strong>z</strong> = 2.576 per a 99% de confiança</li>
+            <li id="li-n"><strong>n</strong> = mida de la mostra</li>
+            <li id="li-se"><strong>SE</strong> = error estàndard</li>
+            <li id="li-me"><strong>ME</strong> = marge d'error</li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <h2 id="h2-calc">Calculadora</h2>
+        <div class="form-group">
+            <label id="label-prop" for="proporcion">Proporció mostral (entre 0 i 1):</label>
+            <div class="description">
+                <span id="desc-prop">És el valor que hem obtingut en la nostra mostra. Per exemple, si de 100 persones enquestades, 30 han dit que sí, la proporció és 0.3</span>
+            </div>
+            <input type="number" id="proporcion" step="0.01" min="0" max="1" value="0.3">
+        </div>
+
+        <div class="form-group">
+            <label id="label-tamano" for="tamano">Mida de la mostra:</label>
+            <div class="description">
+                <span id="desc-tamano">Nombre total d'individus o elements observats. Com més gran sigui la mostra, més precisa serà l'estimació.</span>
+            </div>
+            <input type="number" id="tamano" min="1" value="50">
+        </div>
+
+        <div class="form-group">
+            <label id="label-confianza" for="confianza">Nivell de confiança:</label>
+            <div class="description">
+                <span id="desc-confianza">Indica com de segurs volem estar dels nostres resultats. Un nivell més alt dona un interval més ample.</span>
+            </div>
+            <select id="confianza">
+                <option id="option-95" value="95">95% (més comú)</option>
+                <option id="option-99" value="99">99% (més conservador)</option>
+            </select>
+        </div>
+
+        <button id="btn-calcular" onclick="calcularIntervalo()" class="button">Calcular interval</button>
+        <button id="btn-ejercicio" onclick="generarNuevoEjercicio()" class="button" style="background-color: #28a745;">Generar nou exercici</button>
+
+        <div id="resultado" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="info-box">
+        <h2 id="h2-interpretar">Com interpretar els resultats?</h2>
+        <ul>
+            <li id="li-interp1">Com més estret sigui l'interval, més precisa és l'estimació.</li>
+            <li id="li-interp2">Un nivell de confiança més alt (99%) dona un interval més ample que un de més baix (95%).</li>
+            <li id="li-interp3">La mida de la mostra afecta a l'amplada de l'interval: mostres més grans donen intervals més precisos.</li>
+        </ul>
+    </div>
+
+    <footer>
+        <p id="app-by">Aplicació feta per <a href="https://bilateria.org">Juan José de Haro</a></p>
+        <p id="license">Aquesta obra està sota una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ca">llicència Creative Commons BY-SA</a></p>
+    </footer>
+
+    <script>
+        // Variables para almacenar todos los textos en ambos idiomas
+        const textos = {
+            'ca': {
+                'title': "Calculadora d'intervals de confiança d'una proporció",
+                'h1-main': "Calculadora d'intervals de confiança d'una proporció",
+                'h2-que-es': "Què és un interval de confiança?",
+                'p-que-es': "Un interval de confiança és una eina estadística que ens permet estimar, amb un cert nivell de seguretat, on es troba el veritable valor d'un paràmetre poblacional. És com dir: \"Estem un XX% segurs que el valor real està entre aquests dos números\".",
+                'example-desc': "Exemple: Si diem que l'interval de confiança al 95% és (30%, 40%), significa que si repetíssim l'estudi moltes vegades, el 95% dels intervals calculats contindrien el veritable valor de la població.",
+                'h2-como': "Com es calcula?",
+                'p-como': "El càlcul es fa en tres passos:",
+                'h3-paso1': "1. Error estàndard (SE)",
+                'h3-paso2': "2. Marge d'error (ME)",
+                'h3-paso3': "3. Límits de l'interval",
+                'p-donde': "On:",
+                'li-p': "<strong>p</strong> = proporció mostral",
+                'li-z1': "<strong>z</strong> = 1.96 per a 95% de confiança",
+                'li-z2': "<strong>z</strong> = 2.576 per a 99% de confiança",
+                'li-n': "<strong>n</strong> = mida de la mostra",
+                'li-se': "<strong>SE</strong> = error estàndard",
+                'li-me': "<strong>ME</strong> = marge d'error",
+                'h2-calc': "Calculadora",
+                'label-prop': "Proporció mostral (entre 0 i 1):",
+                'desc-prop': "És el valor que hem obtingut en la nostra mostra. Per exemple, si de 100 persones enquestades, 30 han dit que sí, la proporció és 0.3",
+                'label-tamano': "Mida de la mostra:",
+                'desc-tamano': "Nombre total d'individus o elements observats. Com més gran sigui la mostra, més precisa serà l'estimació.",
+                'label-confianza': "Nivell de confiança:",
+                'desc-confianza': "Indica com de segurs volem estar dels nostres resultats. Un nivell més alt dona un interval més ample.",
+                'option-95': "95% (més comú)",
+                'option-99': "99% (més conservador)",
+                'btn-calcular': "Calcular interval",
+                'btn-ejercicio': "Generar nou exercici",
+                'h2-interpretar': "Com interpretar els resultats?",
+                'li-interp1': "Com més estret sigui l'interval, més precisa és l'estimació.",
+                'li-interp2': "Un nivell de confiança més alt (99%) dona un interval més ample que un de més baix (95%).",
+                'li-interp3': "La mida de la mostra afecta a l'amplada de l'interval: mostres més grans donen intervals més precisos.",
+                'app-by': 'Aplicació feta per <a href="https://bilateria.org">Juan José de Haro</a>',
+                'license': 'Aquesta obra està sota una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ca">llicència Creative Commons BY-SA</a>',
+                'error_msg': 'Si us plau, introdueix valors vàlids',
+                // Resultados
+                'resultados': 'Resultats:',
+                'prop_mostral': 'Proporció mostral (p):',
+                'error_estandar': 'Error estàndard:',
+                'margen_error': 'Marge d\'error (z·SE):',
+                'limite_inferior': 'Límit inferior (p - ME):',
+                'limite_superior': 'Límit superior (p + ME):',
+                'interpretacion': 'Interpretació: Amb un nivell de confiança del {confianza}%, podem afirmar que si repetíssim el procediment de mostreig moltes vegades, el {confianza}% dels intervals de confiança construïts de la mateixa manera inclourien la veritable proporció poblacional. Per tant, confiem que aquesta proporció es troba entre el {limiteInferior}% i el {limiteSuperior}%.'
+            },
+            'es': {
+                'title': "Calculadora de intervalos de confianza de una proporción",
+                'h1-main': "Calculadora de intervalos de confianza de una proporción",
+                'h2-que-es': "¿Qué es un intervalo de confianza?",
+                'p-que-es': "Un intervalo de confianza es una herramienta estadística que nos permite estimar, con un cierto nivel de seguridad, dónde se encuentra el verdadero valor de un parámetro poblacional. Es como decir: \"Estamos un XX% seguros de que el valor real está entre estos dos números\".",
+                'example-desc': "Ejemplo: Si decimos que el intervalo de confianza al 95% es (30%, 40%), significa que si repitiéramos el estudio muchas veces, el 95% de los intervalos calculados contendrían el verdadero valor de la población.",
+                'h2-como': "¿Cómo se calcula?",
+                'p-como': "El cálculo se hace en tres pasos:",
+                'h3-paso1': "1. Error estándar (SE)",
+                'h3-paso2': "2. Margen de error (ME)",
+                'h3-paso3': "3. Límites del intervalo",
+                'p-donde': "Donde:",
+                'li-p': "<strong>p</strong> = proporción muestral",
+                'li-z1': "<strong>z</strong> = 1.96 para 95% de confianza",
+                'li-z2': "<strong>z</strong> = 2.576 para 99% de confianza",
+                'li-n': "<strong>n</strong> = tamaño de la muestra",
+                'li-se': "<strong>SE</strong> = error estándar",
+                'li-me': "<strong>ME</strong> = margen de error",
+                'h2-calc': "Calculadora",
+                'label-prop': "Proporción muestral (entre 0 y 1):",
+                'desc-prop': "Es el valor que hemos obtenido en nuestra muestra. Por ejemplo, si de 100 personas encuestadas, 30 han dicho que sí, la proporción es 0.3",
+                'label-tamano': "Tamaño de la muestra:",
+                'desc-tamano': "Número total de individuos o elementos observados. Cuanto mayor sea la muestra, más precisa será la estimación.",
+                'label-confianza': "Nivel de confianza:",
+                'desc-confianza': "Indica cómo de seguros queremos estar de nuestros resultados. Un nivel más alto da un intervalo más amplio.",
+                'option-95': "95% (más común)",
+                'option-99': "99% (más conservador)",
+                'btn-calcular': "Calcular intervalo",
+                'btn-ejercicio': "Generar nuevo ejercicio",
+                'h2-interpretar': "¿Cómo interpretar los resultados?",
+                'li-interp1': "Cuanto más estrecho sea el intervalo, más precisa es la estimación.",
+                'li-interp2': "Un nivel de confianza más alto (99%) da un intervalo más amplio que uno más bajo (95%).",
+                'li-interp3': "El tamaño de la muestra afecta a la anchura del intervalo: muestras más grandes dan intervalos más precisos.",
+                'app-by': 'Aplicación hecha por <a href="https://bilateria.org">Juan José de Haro</a>',
+                'license': 'Esta obra está bajo una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es">licencia Creative Commons BY-SA</a>',
+                'error_msg': 'Por favor, introduce valores válidos',
+                // Resultados
+                'resultados': 'Resultados:',
+                'prop_mostral': 'Proporción muestral (p):',
+                'error_estandar': 'Error estándar:',
+                'margen_error': 'Margen de error (z·SE):',
+                'limite_inferior': 'Límite inferior (p - ME):',
+                'limite_superior': 'Límite superior (p + ME):',
+                'interpretacion': 'Interpretación: Con un nivel de confianza del {confianza}%, podemos afirmar que si repitiéramos el procedimiento de muestreo muchas veces, el {confianza}% de los intervalos de confianza construidos de la misma manera incluirían la verdadera proporción poblacional. Por tanto, confiamos en que esta proporción se encuentra entre el {limiteInferior}% y el {limiteSuperior}%.'
+            }
+        };
+        
+        // Idioma actual
+        let idiomaActual = 'ca';
+        
+        // Función para detectar el idioma del navegador
+        function detectarIdioma() {
+            const idiomaNavegador = navigator.language || navigator.userLanguage;
+            if (idiomaNavegador.startsWith('ca')) {
+                return 'ca';
+            } else {
+                return 'es';
+            }
+        }
+        
+        // Función para cambiar el idioma
+        function cambiarIdioma(idioma) {
+            idiomaActual = idioma;
+            
+            // Actualizar clases de botones
+            document.getElementById('btn-ca').classList.remove('active');
+            document.getElementById('btn-es').classList.remove('active');
+            document.getElementById(`btn-${idioma}`).classList.add('active');
+            
+            // Actualizar el atributo lang del documento HTML
+            document.documentElement.lang = idioma;
+            
+            // Actualizar título
+            document.title = textos[idioma]['title'];
+            
+            // Actualizar todos los textos en la página
+            for (let id in textos[idioma]) {
+                if (document.getElementById(id)) {
+                    document.getElementById(id).innerHTML = textos[idioma][id];
+                }
+            }
+            
+            // Actualizar enlaces de licencia
+            if (idioma === 'ca') {
+                document.querySelector('#license a').href = 'https://creativecommons.org/licenses/by-sa/4.0/deed.ca';
+            } else {
+                document.querySelector('#license a').href = 'https://creativecommons.org/licenses/by-sa/4.0/deed.es';
+            }
+        }
+        
+        // Función para calcular el intervalo
+        function calcularIntervalo() {
+            const p = parseFloat(document.getElementById('proporcion').value);
+            const n = parseInt(document.getElementById('tamano').value);
+            const confianza = parseInt(document.getElementById('confianza').value);
+            
+            if (isNaN(p) || isNaN(n) || p < 0 || p > 1 || n < 1) {
+                alert(textos[idiomaActual]['error_msg']);
+                return;
+            }
+
+            const z = confianza === 95 ? 1.96 : 2.576;
+            const q = 1 - p;
+            const errorEstandar = Math.sqrt((p * q) / n);
+            const margenError = z * errorEstandar;
+            const limiteInferior = Math.max(0, p - margenError);
+            const limiteSuperior = Math.min(1, p + margenError);
+
+            const resultadoDiv = document.getElementById('resultado');
+            
+            let interpretacion = textos[idiomaActual]['interpretacion']
+                .replace('{confianza}', confianza)
+                .replace('{confianza}', confianza)
+                .replace('{limiteInferior}', (limiteInferior * 100).toFixed(1))
+                .replace('{limiteSuperior}', (limiteSuperior * 100).toFixed(1));
+            
+            resultadoDiv.innerHTML = `
+                <h3>${textos[idiomaActual]['resultados']}</h3>
+                <p>${textos[idiomaActual]['prop_mostral']} ${(p * 100).toFixed(1)}%</p>
+                <p>${textos[idiomaActual]['error_estandar']} ${(errorEstandar * 100).toFixed(3)}%</p>
+                <p>${textos[idiomaActual]['margen_error']} ±${(margenError * 100).toFixed(1)}%</p>
+                <p>${textos[idiomaActual]['limite_inferior']} ${(limiteInferior * 100).toFixed(1)}%</p>
+                <p>${textos[idiomaActual]['limite_superior']} ${(limiteSuperior * 100).toFixed(1)}%</p>
+                <p>${interpretacion}</p>
+            `;
+            resultadoDiv.style.display = 'block';
+        }
+
+        // Función para generar un nuevo ejercicio
+        function generarNuevoEjercicio() {
+            const nuevaProporcion = (Math.random() * 0.8 + 0.1).toFixed(2);
+            const nuevoTamano = Math.floor(Math.random() * 90) + 10;
+            
+            document.getElementById('proporcion').value = nuevaProporcion;
+            document.getElementById('tamano').value = nuevoTamano;
+            document.getElementById('resultado').style.display = 'none';
+        }
+        
+        // Inicializar idioma al cargar la página
+        window.onload = function() {
+            // Detectar el idioma del navegador
+            let idioma = detectarIdioma();
+            cambiarIdioma(idioma);
+        };
+    </script>
+</body>
+</html>

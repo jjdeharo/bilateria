@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de intervalos de confianza</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            position: relative;
+        }
+        .container {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .description {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        .info-box {
+            background-color: #f0f8ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .formula {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .language-switch {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+        }
+        .lang-btn {
+            background-color: #6c757d;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        .lang-btn.active {
+            background-color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switch">
+        <button id="btnCA" class="lang-btn" onclick="cambiarIdioma('ca')">CA</button>
+        <button id="btnES" class="lang-btn" onclick="cambiarIdioma('es')">ES</button>
+    </div>
+
+    <div id="contenido-ca">
+        <h1>Calculadora d'intervals de confiança d'una mitjana</h1>
+
+        <div class="container">
+            <h2>Què és un interval de confiança d'una mitjana?</h2>
+            <p>Un interval de confiança per a una mitjana és una estimació que ens proporciona un rang dins del qual podem esperar trobar la veritable mitjana de la població. Per exemple, si tenim les notes d'una mostra d'estudiants, l'interval ens ajuda a estimar la nota mitjana de tots els estudiants.</p>
+            <div class="description">
+                Exemple: Si diem que l'interval de confiança al 95% és (6.5, 7.5), vol dir que si repetíssim l'estudi moltes vegades, el 95% dels intervals calculats contindrien la veritable mitjana de la població.
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h2>Com es calcula?</h2>
+            <p>El càlcul es fa en tres passos:</p>
+            
+            <h3>1. Error estàndard (SE)</h3>
+            <div class="formula">
+                \[SE = \frac{s}{\sqrt{n}}\]
+            </div>
+            
+            <h3>2. Marge d'error (ME)</h3>
+            <div class="formula">
+                \[ME = z \cdot SE\]
+            </div>
+            
+            <h3>3. Límits de l'interval</h3>
+            <div class="formula">
+                \[\text{Límit inferior} = \bar{x} - ME\]
+                \[\text{Límit superior} = \bar{x} + ME\]
+            </div>
+            
+            <p>On:</p>
+            <ul>
+                <li><strong>\(\bar{x}\)</strong> = mitjana mostral.</li>
+                <li><strong>s</strong> = desviació estàndard mostral.</li>
+                <li><strong>n</strong> = mida de la mostra.</li>
+                <li><strong>z</strong> = 1.96 per a 95% de confiança.</li>
+                <li><strong>z</strong> = 2.576 per a 99% de confiança.</li>
+                <li><strong>SE</strong> = error estàndard.</li>
+                <li><strong>ME</strong> = marge d'error.</li>
+            </ul>
+        </div>
+
+        <div class="container">
+            <h2>Calculadora</h2>
+            <div class="form-group">
+                <label for="media-ca">Mitjana mostral:</label>
+                <div class="description">
+                    És el valor mitjà que hem obtingut en la nostra mostra. Per exemple, si la nota mitjana dels estudiants mostrejats és 7.2, aquest seria el valor.
+                </div>
+                <input type="number" id="media-ca" step="0.1" value="7.2">
+            </div>
+
+            <div class="form-group">
+                <label for="desviacion-ca">Desviació estàndard mostral:</label>
+                <div class="description">
+                    Mesura la variabilitat de les dades. Com més disperses estiguin les dades, més gran serà aquest valor.
+                </div>
+                <input type="number" id="desviacion-ca" step="0.1" min="0" value="1.5">
+            </div>
+
+            <div class="form-group">
+                <label for="tamano-ca">Mida de la mostra:</label>
+                <div class="description">
+                    Nombre total d'individus o elements observats. Com més gran sigui la mostra, més precisa serà l'estimació.
+                </div>
+                <input type="number" id="tamano-ca" min="1" value="30">
+            </div>
+
+            <div class="form-group">
+                <label for="confianza-ca">Nivell de confiança:</label>
+                <div class="description">
+                    Indica com de segurs volem estar dels nostres resultats. Un nivell més alt dona un interval més ample.
+                </div>
+                <select id="confianza-ca">
+                    <option value="95">95% (més comú)</option>
+                    <option value="99">99% (més conservador)</option>
+                </select>
+            </div>
+
+            <button onclick="calcularIntervalo('ca')" class="button">Calcular interval</button>
+            <button onclick="generarNuevoEjercicio('ca')" class="button" style="background-color: #28a745;">Generar nou exercici</button>
+
+            <div id="resultado-ca" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="info-box">
+            <h2>Com interpretar els resultats?</h2>
+            <ul>
+                <li>Com més gran sigui la mostra, més estret serà l'interval i per tant més precisa l'estimació.</li>
+                <li>Com més gran sigui la desviació estàndard (més variabilitat en les dades), més ample serà l'interval.</li>
+                <li>Un nivell de confiança més alt (99%) dona un interval més ample que un de més baix (95%).</li>
+            </ul>
+        </div>
+
+        <footer>
+            <p>Aplicació feta per <a href="https://bilateria.org">Juan José de Haro</a></p>
+            <p>Aquesta obra està sota una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ca">llicència Creative Commons BY-SA</a></p>
+        </footer>
+    </div>
+
+    <div id="contenido-es" style="display: none;">
+        <h1>Calculadora de intervalos de confianza de una media</h1>
+
+        <div class="container">
+            <h2>¿Qué es un intervalo de confianza de una media?</h2>
+            <p>Un intervalo de confianza para una media es una estimación que nos proporciona un rango dentro del cual podemos esperar encontrar la verdadera media de la población. Por ejemplo, si tenemos las notas de una muestra de estudiantes, el intervalo nos ayuda a estimar la nota media de todos los estudiantes.</p>
+            <div class="description">
+                Ejemplo: Si decimos que el intervalo de confianza al 95% es (6.5, 7.5), significa que si repitiéramos el estudio muchas veces, el 95% de los intervalos calculados contendrían la verdadera media de la población.
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h2>¿Cómo se calcula?</h2>
+            <p>El cálculo se realiza en tres pasos:</p>
+            
+            <h3>1. Error estándar (SE)</h3>
+            <div class="formula">
+                \[SE = \frac{s}{\sqrt{n}}\]
+            </div>
+            
+            <h3>2. Margen de error (ME)</h3>
+            <div class="formula">
+                \[ME = z \cdot SE\]
+            </div>
+            
+            <h3>3. Límites del intervalo</h3>
+            <div class="formula">
+                \[\text{Límite inferior} = \bar{x} - ME\]
+                \[\text{Límite superior} = \bar{x} + ME\]
+            </div>
+            
+            <p>Donde:</p>
+            <ul>
+                <li><strong>\(\bar{x}\)</strong> = media muestral.</li>
+                <li><strong>s</strong> = desviación estándar muestral.</li>
+                <li><strong>n</strong> = tamaño de la muestra.</li>
+                <li><strong>z</strong> = 1.96 para 95% de confianza.</li>
+                <li><strong>z</strong> = 2.576 para 99% de confianza.</li>
+                <li><strong>SE</strong> = error estándar.</li>
+                <li><strong>ME</strong> = margen de error.</li>
+            </ul>
+        </div>
+
+        <div class="container">
+            <h2>Calculadora</h2>
+            <div class="form-group">
+                <label for="media-es">Media muestral:</label>
+                <div class="description">
+                    Es el valor medio que hemos obtenido en nuestra muestra. Por ejemplo, si la nota media de los estudiantes muestreados es 7.2, este sería el valor.
+                </div>
+                <input type="number" id="media-es" step="0.1" value="7.2">
+            </div>
+
+            <div class="form-group">
+                <label for="desviacion-es">Desviación estándar muestral:</label>
+                <div class="description">
+                    Mide la variabilidad de los datos. Cuanto más dispersos estén los datos, mayor será este valor.
+                </div>
+                <input type="number" id="desviacion-es" step="0.1" min="0" value="1.5">
+            </div>
+
+            <div class="form-group">
+                <label for="tamano-es">Tamaño de la muestra:</label>
+                <div class="description">
+                    Número total de individuos o elementos observados. Cuanto mayor sea la muestra, más precisa será la estimación.
+                </div>
+                <input type="number" id="tamano-es" min="1" value="30">
+            </div>
+
+            <div class="form-group">
+                <label for="confianza-es">Nivel de confianza:</label>
+                <div class="description">
+                    Indica cuán seguros queremos estar de nuestros resultados. Un nivel más alto da un intervalo más amplio.
+                </div>
+                <select id="confianza-es">
+                    <option value="95">95% (más común)</option>
+                    <option value="99">99% (más conservador)</option>
+                </select>
+            </div>
+
+            <button onclick="calcularIntervalo('es')" class="button">Calcular intervalo</button>
+            <button onclick="generarNuevoEjercicio('es')" class="button" style="background-color: #28a745;">Generar nuevo ejercicio</button>
+
+            <div id="resultado-es" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="info-box">
+            <h2>¿Cómo interpretar los resultados?</h2>
+            <ul>
+                <li>Cuanto mayor sea la muestra, más estrecho será el intervalo y por tanto más precisa la estimación.</li>
+                <li>Cuanto mayor sea la desviación estándar (más variabilidad en los datos), más amplio será el intervalo.</li>
+                <li>Un nivel de confianza más alto (99%) da un intervalo más amplio que uno más bajo (95%).</li>
+            </ul>
+        </div>
+
+        <footer>
+            <p>Aplicación hecha por <a href="https://bilateria.org">Juan José de Haro</a></p>
+            <p>Esta obra está bajo una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es">licencia Creative Commons BY-SA</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // Detector de idioma del navegador
+        function detectarIdioma() {
+            const idiomaNavegador = navigator.language || navigator.userLanguage;
+            return idiomaNavegador.substring(0, 2) === 'ca' ? 'ca' : 'es';
+        }
+
+        // Cambiar idioma
+        function cambiarIdioma(idioma) {
+            if (idioma === 'ca') {
+                document.getElementById('contenido-ca').style.display = 'block';
+                document.getElementById('contenido-es').style.display = 'none';
+                document.getElementById('btnCA').classList.add('active');
+                document.getElementById('btnES').classList.remove('active');
+                document.title = 'Calculadora d\'intervals de confiança d\'una mitjana';
+            } else {
+                document.getElementById('contenido-ca').style.display = 'none';
+                document.getElementById('contenido-es').style.display = 'block';
+                document.getElementById('btnCA').classList.remove('active');
+                document.getElementById('btnES').classList.add('active');
+                document.title = 'Calculadora de intervalos de confianza de una media';
+            }
+        }
+
+        // Calcular intervalo de confianza
+        function calcularIntervalo(idioma) {
+            const media = parseFloat(document.getElementById(`media-${idioma}`).value);
+            const desviacion = parseFloat(document.getElementById(`desviacion-${idioma}`).value);
+            const n = parseInt(document.getElementById(`tamano-${idioma}`).value);
+            const confianza = parseInt(document.getElementById(`confianza-${idioma}`).value);
+            
+            if (isNaN(media) || isNaN(desviacion) || isNaN(n) || desviacion < 0 || n < 1) {
+                if (idioma === 'ca') {
+                    alert('Si us plau, introdueix valors vàlids');
+                } else {
+                    alert('Por favor, introduce valores válidos');
+                }
+                return;
+            }
+
+            const z = confianza === 95 ? 1.96 : 2.576;
+            const errorEstandar = desviacion / Math.sqrt(n);
+            const margenError = z * errorEstandar;
+            const limiteInferior = media - margenError;
+            const limiteSuperior = media + margenError;
+
+            const resultadoDiv = document.getElementById(`resultado-${idioma}`);
+            
+            if (idioma === 'ca') {
+                resultadoDiv.innerHTML = `
+                    <h3>Resultats:</h3>
+                    <p>Mitjana mostral: ${media.toFixed(2)}</p>
+                    <p>Error estàndard: ${errorEstandar.toFixed(3)}</p>
+                    <p>Marge d'error (z·SE): ±${margenError.toFixed(2)}</p>
+                    <p>Límit inferior: ${limiteInferior.toFixed(2)}</p>
+                    <p>Límit superior: ${limiteSuperior.toFixed(2)}</p>
+                    <p>Interpretació: Amb un nivell de confiança del ${confianza}%, podem afirmar que si repetíssim el procediment de mostreig moltes vegades, el ${confianza}% dels intervals de confiança construïts de la mateixa manera inclourien la veritable mitjana poblacional. Per tant, confiem que aquesta mitjana es troba entre ${limiteInferior.toFixed(2)} i ${limiteSuperior.toFixed(2)}.</p>
+                `;
+            } else {
+                resultadoDiv.innerHTML = `
+                    <h3>Resultados:</h3>
+                    <p>Media muestral: ${media.toFixed(2)}</p>
+                    <p>Error estándar: ${errorEstandar.toFixed(3)}</p>
+                    <p>Margen de error (z·SE): ±${margenError.toFixed(2)}</p>
+                    <p>Límite inferior: ${limiteInferior.toFixed(2)}</p>
+                    <p>Límite superior: ${limiteSuperior.toFixed(2)}</p>
+                    <p>Interpretación: Con un nivel de confianza del ${confianza}%, podemos afirmar que si repitiéramos el procedimiento de muestreo muchas veces, el ${confianza}% de los intervalos de confianza construidos de la misma manera incluirían la verdadera media poblacional. Por lo tanto, confiamos en que esta media se encuentra entre ${limiteInferior.toFixed(2)} y ${limiteSuperior.toFixed(2)}.</p>
+                `;
+            }
+            
+            resultadoDiv.style.display = 'block';
+        }
+
+        // Generar nuevo ejercicio
+        function generarNuevoEjercicio(idioma) {
+            const nuevaMedia = (Math.random() * 8 + 2).toFixed(1); // Entre 2 y 10
+            const nuevaDesviacion = (Math.random() * 2 + 0.5).toFixed(1); // Entre 0.5 y 2.5
+            const nuevoTamano = Math.floor(Math.random() * 90) + 10; // Entre 10 y 100
+            
+            document.getElementById(`media-${idioma}`).value = nuevaMedia;
+            document.getElementById(`desviacion-${idioma}`).value = nuevaDesviacion;
+            document.getElementById(`tamano-${idioma}`).value = nuevoTamano;
+            document.getElementById(`resultado-${idioma}`).style.display = 'none';
+        }
+
+        // Inicializar la aplicación con el idioma detectado
+        document.addEventListener('DOMContentLoaded', function() {
+            const idiomaInicial = detectarIdioma();
+            cambiarIdioma(idiomaInicial);
+        });
+    </script>
+</body>
+</html>

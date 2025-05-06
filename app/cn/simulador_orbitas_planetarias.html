@@ -1,0 +1,329 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema solar elíptico</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+        }
+        #canvas {
+            border: 1px solid #333;
+            background: #000;
+            width: 90vw;
+            height: 70vh;
+            max-width: 800px;
+            max-height: 600px;
+        }
+        .controls {
+            margin: 10px;
+            text-align: center;
+            width: 90%;
+            max-width: 800px;
+        }
+        .controls label, .controls select, .controls button {
+            margin: 5px;
+            padding: 5px;
+            font-size: 16px;
+        }
+        .lang-buttons {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .lang-buttons button {
+            padding: 5px 10px;
+            margin: 0 2px;
+            border: 1px solid #fff;
+            background: #333;
+            color: #fff;
+            cursor: pointer;
+        }
+        .lang-buttons button.active {
+            background: #fff;
+            color: #000;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .footer a {
+            color: #fff;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 600px) {
+            .controls label, .controls select, .controls button {
+                font-size: 14px;
+                padding: 3px;
+            }
+            #canvas {
+                width: 95vw;
+                height: 50vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="lang-buttons">
+        <button id="lang-ca" class="lang-button active">CA</button>
+        <button id="lang-es" class="lang-button">ES</button>
+    </div>
+    <canvas id="canvas"></canvas>
+    <div class="controls">
+        <label id="speed-label">Velocitat de l'òrbita:</label>
+        <input type="range" id="speed" min="0.1" max="5" step="0.1" value="1">
+        <br>
+        <label id="planet-label">Planeta:</label>
+        <select id="planet">
+            <option value="all">Tots</option>
+            <option value="mercury">Mercuri</option>
+            <option value="venus">Venus</option>
+            <option value="earth">Terra</option>
+            <option value="mars">Mart</option>
+            <option value="jupiter">Júpiter</option>
+            <option value="saturn">Saturn</option>
+            <option value="uranus">Urà</option>
+            <option value="neptune">Neptú</option>
+        </select>
+        <br>
+        <button id="reset">Reiniciar</button>
+    </div>
+    <div class="footer">
+        <p><a href="https://labia.tiddlyhost.com">Laboratori d'aplicacions educatives</a></p>
+        <p>Aplicació feta per <a href="https://bilateria.org">Juan José de Haro</a></p>
+        <p><a href="https://creativecommons.org/licenses/by-sa/4.0/">Aquesta obra està sota una llicència Creative Commons BY-SA</a></p>
+    </div>
+
+    <script>
+        const translations = {
+            ca: {
+                'speed-label': 'Velocitat de l\'òrbita:',
+                'planet-label': 'Planeta:',
+                'reset': 'Reiniciar',
+                'title': 'Sistema solar elíptico',
+                'all': 'Tots',
+                'mercury': 'Mercuri',
+                'venus': 'Venus',
+                'earth': 'Terra',
+                'mars': 'Mart',
+                'jupiter': 'Júpiter',
+                'saturn': 'Saturn',
+                'uranus': 'Urà',
+                'neptune': 'Neptú'
+            },
+            es: {
+                'speed-label': 'Velocidad de la órbita:',
+                'planet-label': 'Planeta:',
+                'reset': 'Reiniciar',
+                'title': 'Sistema solar elíptico',
+                'all': 'Todos',
+                'mercury': 'Mercurio',
+                'venus': 'Venus',
+                'earth': 'Tierra',
+                'mars': 'Marte',
+                'jupiter': 'Júpiter',
+                'saturn': 'Saturno',
+                'uranus': 'Urano',
+                'neptune': 'Neptuno'
+            }
+        };
+
+        let lang = navigator.language.startsWith('ca') ? 'ca' : 'es';
+        const storedLang = localStorage.getItem('lang');
+        if (storedLang) lang = storedLang;
+
+        function updateLanguage() {
+            document.getElementById('speed-label').textContent = translations[lang]['speed-label'];
+            document.getElementById('planet-label').textContent = translations[lang]['planet-label'];
+            document.getElementById('reset').textContent = translations[lang]['reset'];
+            document.title = translations[lang]['title'];
+
+            const planetSelect = document.getElementById('planet');
+            planetSelect.options[0].text = translations[lang]['all'];
+            planetSelect.options[1].text = translations[lang]['mercury'];
+            planetSelect.options[2].text = translations[lang]['venus'];
+            planetSelect.options[3].text = translations[lang]['earth'];
+            planetSelect.options[4].text = translations[lang]['mars'];
+            planetSelect.options[5].text = translations[lang]['jupiter'];
+            planetSelect.options[6].text = translations[lang]['saturn'];
+            planetSelect.options[7].text = translations[lang]['uranus'];
+            planetSelect.options[8].text = translations[lang]['neptune'];
+
+            document.getElementById('lang-ca').classList.toggle('active', lang === 'ca');
+            document.getElementById('lang-es').classList.toggle('active', lang === 'es');
+        }
+
+        document.getElementById('lang-ca').addEventListener('click', () => {
+            lang = 'ca';
+            localStorage.setItem('lang', lang);
+            updateLanguage();
+        });
+
+        document.getElementById('lang-es').addEventListener('click', () => {
+            lang = 'es';
+            localStorage.setItem('lang', lang);
+            updateLanguage();
+        });
+
+        updateLanguage();
+
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let speed = parseFloat(document.getElementById('speed').value);
+        let selectedPlanet = document.getElementById('planet').value;
+
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+
+        const planets = [
+            { name: 'mercury', a: 50, e: 0.2056, period: 88, color: '#aaaaaa', size: 4 },
+            { name: 'venus', a: 80, e: 0.0068, period: 225, color: '#ffcc66', size: 6 },
+            { name: 'earth', a: 110, e: 0.0167, period: 365.25, color: '#66ccff', size: 6 },
+            { name: 'mars', a: 140, e: 0.0934, period: 687, color: '#ff6666', size: 5 },
+            { name: 'jupiter', a: 200, e: 0.0484, period: 4332.59, color: '#ff9966', size: 12 },
+            { name: 'saturn', a: 260, e: 0.0541, period: 10759.22, color: '#cccc99', size: 10 },
+            { name: 'uranus', a: 320, e: 0.0472, period: 30688.5, color: '#66cccc', size: 8 },
+            { name: 'neptune', a: 380, e: 0.0086, period: 60182, color: '#6666cc', size: 8 }
+        ];
+
+        let time = 0;
+
+        function solveKepler(M, e, tolerance = 1e-6, maxIterations = 100) {
+            let E = M;
+            let delta = 1;
+            let iterations = 0;
+            while (Math.abs(delta) > tolerance && iterations < maxIterations) {
+                delta = (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E));
+                E -= delta;
+                iterations++;
+            }
+            return E;
+        }
+
+        function drawOrbit(planet) {
+            const b = planet.a * Math.sqrt(1 - planet.e * planet.e);
+            const centerX = canvas.width / 2 - planet.a * planet.e;
+            const centerY = canvas.height / 2;
+            ctx.beginPath();
+            ctx.ellipse(centerX, centerY, planet.a, b, 0, 0, Math.PI * 2);
+            ctx.strokeStyle = '#fff'; // Color blanco para mayor visibilidad
+            ctx.lineWidth = 2; // Grosor de línea aumentado
+            ctx.stroke();
+        }
+
+        function drawPlanet(planet) {
+            const M = (2 * Math.PI * time) / planet.period;
+            const E = solveKepler(M, planet.e);
+            const x = planet.a * (Math.cos(E) - planet.e);
+            const y = planet.a * Math.sqrt(1 - planet.e * planet.e) * Math.sin(E);
+            const canvasX = canvas.width / 2 + x;
+            const canvasY = canvas.height / 2 + y;
+
+            ctx.beginPath();
+            ctx.arc(canvasX, canvasY, planet.size, 0, Math.PI * 2);
+            ctx.fillStyle = planet.color;
+            ctx.fill();
+
+            const planetName = translations[lang][planet.name];
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#fff';
+            ctx.fillText(planetName, canvasX + planet.size + 5, canvasY + planet.size / 2);
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, 15, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffff00';
+            ctx.fill();
+
+            planets.forEach(planet => {
+                if (selectedPlanet === 'all' || selectedPlanet === planet.name) {
+                    drawOrbit(planet);
+                    drawPlanet(planet);
+                }
+            });
+
+            time += speed;
+            requestAnimationFrame(draw);
+        }
+
+        document.getElementById('speed').addEventListener('input', () => {
+            speed = parseFloat(document.getElementById('speed').value);
+        });
+
+        document.getElementById('planet').addEventListener('change', () => {
+            selectedPlanet = document.getElementById('planet').value;
+        });
+
+        document.getElementById('reset').addEventListener('click', () => {
+            time = 0;
+            speed = 1;
+            selectedPlanet = 'all';
+            document.getElementById('speed').value = '1';
+            document.getElementById('planet').value = 'all';
+        });
+
+        window.addEventListener('resize', () => {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        });
+
+        draw();
+    </script>
+</body>
+</html>

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <title>Test de Tipus Metabòlics | Test de Tipos Metabólicos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f7ff;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .quiz-container {
+            margin: 20px 0;
+        }
+        .question {
+            margin: 20px 0;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 5px;
+        }
+        select {
+            padding: 8px 12px;
+            margin: 0 10px;
+            width: 250px;
+            border: 1px solid #4CAF50;
+            border-radius: 5px;
+            background-color: #ffffff;
+            font-size: 14px;
+            color: #333;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        select:hover {
+            box-shadow: 0 0 5px rgba(76,175,80,0.3);
+            border-color: #45a049;
+        }
+        select:focus {
+            outline: none;
+            box-shadow: 0 0 8px rgba(76,175,80,0.4);
+        }
+        button {
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: background 0.3s ease;
+        }
+        #checkButton {
+            background: #2196F3;
+            margin-right: 10px;
+        }
+        #checkButton:hover {
+            background: #1976D2;
+        }
+        #newQuestion {
+            background: #4CAF50;
+        }
+        #newQuestion:hover {
+            background: #45a049;
+        }
+        .correct { background-color: #dfffdf; }
+        .incorrect { background-color: #ffe6e6; }
+        #score {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        .mode-selector {
+            margin-bottom: 20px;
+        }
+        .mode-btn {
+            background: #e0f2e9;
+            margin: 5px;
+            padding: 8px 15px;
+            border: 1px solid #4CAF50;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        .mode-btn.active {
+            background: #4CAF50;
+            color: white;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .footer a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        .lang-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            border: none;
+        }
+        .lang-switcher:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="lang-switcher" onclick="toggleLanguage()" id="langButton"></button>
+        <h1 id="title">Test de Tipus Metabòlics</h1>
+        <div class="mode-selector">
+            <button class="mode-btn active" id="mode1" onclick="setMode('normal')"></button>
+            <button class="mode-btn" id="mode2" onclick="setMode('revers')"></button>
+        </div>
+        
+        <div class="quiz-container">
+            <div id="question-container"></div>
+            <div>
+                <button id="checkButton" onclick="checkAnswer()"></button>
+                <button id="newQuestion" onclick="generateQuestion()"></button>
+            </div>
+            <p id="score"></p>
+        </div>
+
+        <div class="footer">
+            <p id="madeBy"></p>
+            <p id="license"></p>
+        </div>
+    </div>
+
+    <script>
+        // Configuració de idiomes
+        const translations = {
+            ca: {
+                title: "Test de Tipus Metabòlics",
+                mode1: "Tipus → Característiques",
+                mode2: "Característiques → Tipus",
+                check: "Comprovar",
+                newQuestion: "Nova Pregunta",
+                encerts: "Encerts",
+                errors: "Errors",
+                madeBy: "Aplicació feta per <a href='https://bilateria.org' target='_blank'>Juan José de Haro</a>",
+                license: "Aquesta obra està sota una <a href='https://creativecommons.org/licenses/by-sa/4.0/deed.ca' target='_blank'>Llicència Creative Commons BY-SA</a>",
+                selectOption: "Selecciona...",
+                selectExample: "Tria un exemple",
+                characteristics: "Característiques:",
+                energy: "Font d'energia:",
+                carbon: "Font de carboni:",
+                reductor: "Font reductora:",
+                example: "Exemple:",
+                options: {
+                    energy: ["Llum", "Compostos orgànics", "Compostos inorgànics"],
+                    carbon: ["CO₂", "Orgànic"],
+                    reductor: ["Inorgànic", "Orgànic"]
+                }
+            },
+            es: {
+                title: "Test de Tipos Metabólicos",
+                mode1: "Tipo → Características",
+                mode2: "Características → Tipo",
+                check: "Comprobar",
+                newQuestion: "Nueva Pregunta",
+                encerts: "Aciertos",
+                errors: "Errores",
+                madeBy: "Aplicación hecha por <a href='https://bilateria.org' target='_blank'>Juan José de Haro</a>",
+                license: "Esta obra está bajo una <a href='https://creativecommons.org/licenses/by-sa/4.0/deed.es' target='_blank'>Licencia Creative Commons BY-SA</a>",
+                selectOption: "Selecciona...",
+                selectExample: "Elige un ejemplo",
+                characteristics: "Características:",
+                energy: "Fuente de energía:",
+                carbon: "Fuente de carbono:",
+                reductor: "Fuente reductora:",
+                example: "Ejemplo:",
+                options: {
+                    energy: ["Luz", "Compuestos orgánicos", "Compuestos inorgánicos"],
+                    carbon: ["CO₂", "Orgánico"],
+                    reductor: ["Inorgánico", "Orgánico"]
+                }
+            }
+        };
+
+        // Dades corregides (versió actualitzada)
+        const metabolicTypes = {
+            ca: [
+                {
+                    type: "Fotolitoautòtrof",
+                    energia: "Llum",
+                    carboni: "CO₂",
+                    reductora: "Inorgànic",
+                    exemple: "Plantes, cianobacteris, bacteris verds del sofre"
+                },
+                {
+                    type: "Fotoorganoautòtrof",
+                    energia: "Llum",
+                    carboni: "CO₂",
+                    reductora: "Orgànic",
+                    exemple: "Rhodospirillum (bacteris púrpura no del sofre)"
+                },
+                {
+                    type: "Fotolitoheteròtrof",
+                    energia: "Llum",
+                    carboni: "Orgànic",
+                    reductora: "Inorgànic",
+                    exemple: "Cianobacteris mixotròfiques en condicions específiques"
+                },
+                {
+                    type: "Fotoorganoheteròtrof",
+                    energia: "Llum",
+                    carboni: "Orgànic",
+                    reductora: "Orgànic",
+                    exemple: "Rhodobacter sphaeroides"
+                },
+                {
+                    type: "Quimiolitoautòtrof",
+                    energia: "Compostos inorgànics",
+                    carboni: "CO₂",
+                    reductora: "Inorgànic",
+                    exemple: "Nitrosomonas, Acidithiobacillus ferrooxidans"
+                },
+                {
+                    type: "Quimioorganoautòtrof",
+                    energia: "Compostos orgànics",
+                    carboni: "CO₂",
+                    reductora: "Orgànic",
+                    exemple: "Hydrogenophaga pseudoflava"
+                },
+                {
+                    type: "Quimiolitoheteròtrof",
+                    energia: "Compostos inorgànics",
+                    carboni: "Orgànic",
+                    reductora: "Inorgànic",
+                    exemple: "Paracoccus denitrificans (amb H₂)"
+                },
+                {
+                    type: "Quimioorganoheteròtrof",
+                    energia: "Compostos orgànics",
+                    carboni: "Orgànic",
+                    reductora: "Orgànic",
+                    exemple: "Humans, fongs, protozous, animals"
+                }
+            ],
+            es: [
+                {
+                    type: "Fotolitoautótrofo",
+                    energia: "Luz",
+                    carboni: "CO₂",
+                    reductora: "Inorgánico",
+                    exemple: "Plantas, cianobacterias, bacterias verdes del azufre"
+                },
+                {
+                    type: "Fotoorganoautótrofo",
+                    energia: "Luz",
+                    carboni: "CO₂",
+                    reductora: "Orgánico",
+                    exemple: "Rhodospirillum (bacterias púrpura no del azufre)"
+                },
+                {
+                    type: "Fotolitoheterótrofo",
+                    energia: "Luz",
+                    carboni: "Orgánico",
+                    reductora: "Inorgánico",
+                    exemple: "Cianobacterias mixotróficas en condiciones específicas"
+                },
+                {
+                    type: "Fotoorganoheterótrofo",
+                    energia: "Luz",
+                    carboni: "Orgánico",
+                    reductora: "Orgánico",
+                    exemple: "Rhodobacter sphaeroides"
+                },
+                {
+                    type: "Quimiolitoautótrofo",
+                    energia: "Compuestos inorgánicos",
+                    carboni: "CO₂",
+                    reductora: "Inorgánico",
+                    exemple: "Nitrosomonas, Acidithiobacillus ferrooxidans"
+                },
+                {
+                    type: "Quimioorganoautótrofo",
+                    energia: "Compuestos orgánicos",
+                    carboni: "CO₂",
+                    reductora: "Orgánico",
+                    exemple: "Hydrogenophaga pseudoflava"
+                },
+                {
+                    type: "Quimiolitoheterótrofo",
+                    energia: "Compuestos inorgánicos",
+                    carboni: "Orgánico",
+                    reductora: "Inorgánico",
+                    exemple: "Paracoccus denitrificans (con H₂)"
+                },
+                {
+                    type: "Quimioorganoheterótrofo",
+                    energia: "Compuestos orgánicos",
+                    carboni: "Orgánico",
+                    reductora: "Orgánico",
+                    exemple: "Humanos, hongos, protozoos, animales"
+                }
+            ]
+        };
+
+        // Sistema de funcionament (sense canvis)
+        let currentLang = navigator.language.startsWith('es') ? 'es' : 'ca';
+        let currentQuestion = null;
+        let correctAnswers = 0;
+        let wrongAnswers = 0;
+        let currentMode = 'normal';
+
+        if(window.location.hash === '#es') currentLang = 'es';
+        if(window.location.hash === '#ca') currentLang = 'ca';
+
+        function updateTexts() {
+            const t = translations[currentLang];
+            document.getElementById('langButton').textContent = currentLang === 'ca' ? 'Español' : 'Català';
+            document.getElementById('title').innerHTML = t.title;
+            document.getElementById('mode1').innerHTML = t.mode1;
+            document.getElementById('mode2').innerHTML = t.mode2;
+            document.getElementById('checkButton').innerHTML = t.check;
+            document.getElementById('newQuestion').innerHTML = t.newQuestion;
+            document.getElementById('score').innerHTML = `${t.encerts}: ${correctAnswers} | ${t.errors}: ${wrongAnswers}`;
+            document.getElementById('madeBy').innerHTML = t.madeBy;
+            document.getElementById('license').innerHTML = t.license;
+            window.location.hash = currentLang;
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'ca' ? 'es' : 'ca';
+            updateTexts();
+            generateQuestion();
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.toggle('active', btn === document.getElementById(`mode${mode === 'normal' ? 1 : 2}`));
+            });
+            generateQuestion();
+        }
+
+        function generateQuestion() {
+            const types = metabolicTypes[currentLang];
+            currentQuestion = types[Math.floor(Math.random() * types.length)];
+            const container = document.getElementById("question-container");
+            const t = translations[currentLang];
+            
+            if(currentMode === 'normal') {
+                container.innerHTML = `
+                    <div class="question">
+                        <h3>${currentQuestion.type}</h3>
+                        <p>${t.energy} 
+                            <select id="energy">
+                                <option value="">${t.selectOption}</option>
+                                ${[...new Set(t.options.energy)].map(opt => `<option>${opt}</option>`).join('')}
+                            </select>
+                        </p>
+                        <p>${t.carbon} 
+                            <select id="carbon">
+                                <option value="">${t.selectOption}</option>
+                                ${[...new Set(t.options.carbon)].map(opt => `<option>${opt}</option>`).join('')}
+                            </select>
+                        </p>
+                        <p>${t.reductor} 
+                            <select id="reductor">
+                                <option value="">${t.selectOption}</option>
+                                ${[...new Set(t.options.reductor)].map(opt => `<option>${opt}</option>`).join('')}
+                            </select>
+                        </p>
+                        <p>${t.example} 
+                            <select id="example">
+                                <option value="">${t.selectExample}</option>
+                                ${[...new Set(types.map(t => t.exemple))].map(opt => `<option>${opt}</option>`).join('')}
+                            </select>
+                        </p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="question">
+                        <h3>${t.characteristics}</h3>
+                        <p>• ${t.energy} ${currentQuestion.energia}</p>
+                        <p>• ${t.carbon} ${currentQuestion.carboni}</p>
+                        <p>• ${t.reductor} ${currentQuestion.reductora}</p>
+                        <p>• ${t.example} ${currentQuestion.exemple}</p>
+                        <select id="typeAnswer">
+                            <option value="">${t.selectOption}</option>
+                            ${[...new Set(types.map(t => t.type))].map(opt => `<option>${opt}</option>`).join('')}
+                        </select>
+                    </div>
+                `;
+            }
+        }
+
+        function checkAnswer() {
+            let isCorrect = false;
+            const t = translations[currentLang];
+            
+            if(currentMode === 'normal') {
+                const energy = document.getElementById("energy").value;
+                const carbon = document.getElementById("carbon").value;
+                const reductor = document.getElementById("reductor").value;
+                const example = document.getElementById("example").value;
+                
+                isCorrect = energy === currentQuestion.energia && 
+                          carbon === currentQuestion.carboni && 
+                          reductor === currentQuestion.reductora && 
+                          example === currentQuestion.exemple;
+
+                document.querySelectorAll('select').forEach(select => {
+                    const expectedValue = currentQuestion[{
+                        'energy': 'energia',
+                        'carbon': 'carboni',
+                        'reductor': 'reductora',
+                        'example': 'exemple'
+                    }[select.id]];
+                    select.parentElement.classList.toggle('correct', select.value === expectedValue);
+                    select.parentElement.classList.toggle('incorrect', select.value !== expectedValue && select.value !== "");
+                });
+            } else {
+                const selectedType = document.getElementById("typeAnswer").value;
+                isCorrect = selectedType === currentQuestion.type;
+                document.getElementById("typeAnswer").parentElement.classList.toggle('correct', isCorrect);
+                document.getElementById("typeAnswer").parentElement.classList.toggle('incorrect', !isCorrect);
+            }
+
+            if(isCorrect) {
+                correctAnswers++;
+            } else {
+                wrongAnswers++;
+            }
+            
+            document.getElementById("score").innerHTML = `${t.encerts}: ${correctAnswers} | ${t.errors}: ${wrongAnswers}`;
+        }
+
+        // Inici
+        updateTexts();
+        generateQuestion();
+    </script>
+</body>
+</html>

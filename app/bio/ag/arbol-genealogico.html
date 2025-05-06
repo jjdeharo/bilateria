@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Generador de problemas de árboles genealógicos</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --background-color: #f9f9f9;
+            --text-color: #333;
+            --border-color: #ddd;
+            --male-color: #93c5fd;
+            --female-color: #fbcfe8;
+            --unknown-color: #e5e7eb;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .problem-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .language-selector {
+            margin-left: auto;
+            display: flex;
+            gap: 5px;
+        }
+        
+        .language-button {
+            padding: 5px 10px;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        .language-button.active {
+            border: 2px solid var(--primary-color);
+            opacity: 1;
+        }
+        
+        #family-tree {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            overflow-x: auto;
+        }
+        
+        .tree-level {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .tree-person {
+            text-align: center;
+            padding: 10px;
+            margin: 0 10px;
+            width: 140px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .tree-person.male {
+            background-color: var(--male-color);
+        }
+        
+        .tree-person.female {
+            background-color: var(--female-color);
+        }
+        
+        .tree-person.unknown {
+            background-color: var(--unknown-color);
+            border: 2px dashed #aaa;
+        }
+        
+        .tree-person p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        
+        .tree-person .name {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .tree-person .genotype {
+            font-family: monospace;
+            font-size: 15px;
+        }
+        
+        .tree-person .phenotype {
+            font-style: italic;
+        }
+        
+        .tree-connector {
+            position: relative;
+            height: 50px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .vertical-line {
+            width: 2px;
+            background-color: #888;
+            height: 100%;
+        }
+        
+        .horizontal-line {
+            height: 2px;
+            background-color: #888;
+            position: absolute;
+            top: 0;
+        }
+        
+        .problem-statement {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-left: 4px solid var(--primary-color);
+            border-radius: 4px;
+        }
+        
+        .solution-input {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+        
+        .solution-input input {
+            padding: 8px;
+            width: 100%;
+            max-width: 300px;
+            margin-top: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+        
+        .feedback {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .feedback.correct {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .feedback.incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+        
+        footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .tree-level {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            
+            .horizontal-line {
+                display: none;
+            }
+        }
+    .character-description { margin-bottom: 10px; font-style: italic; }
+</style>
+</head>
+<body>
+    <header>
+        <h1 id="main-title">Generador de problemas de árboles genealógicos</h1>
+    </header>
+    
+    <div class="controls">
+        <button id="new-problem-btn">Nuevo problema</button>
+        <button id="show-solution-btn">Ver solución</button>
+        
+        <div class="language-selector">
+            <button id="lang-ca" class="language-button">CA</button>
+            <button id="lang-es" class="language-button active">ES</button>
+        </div>
+    </div>
+    
+    <div class="problem-container">
+        <div class="problem-statement" id="problem-statement"></div>
+        <div class="character-description" id="character-description"></div>
+        
+        <div id="family-tree"></div>
+        
+        <div class="solution-input">
+            <label for="user-answer" id="solution-label">Tu respuesta:</label>
+            <input type="text" id="user-answer" placeholder="Escribe tu respuesta aquí">
+            <button id="check-answer-btn">Comprobar</button>
+            <div id="feedback" class="feedback"></div>
+        </div>
+    </div>
+    
+    <footer>
+        <p><a href="https://labia.tiddlyhost.com" target="_blank">Laboratorio de aplicaciones educativas</a></p>
+        <p><a href="https://bilateria.org" target="_blank">Aplicación hecha por Juan José de Haro</a></p>
+        <p><a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank">Esta obra está bajo una licencia Creative Commons BY-SA</a></p>
+    </footer>
+
+    <script>
+        // Detección del idioma del navegador
+        let userLang = navigator.language || navigator.userLanguage;
+        userLang = userLang.startsWith('ca') ? 'ca' : 'es';
+        
+        // Caracteres genéticos cargados desde el JSON
+        let caracteres = [];
+        
+        // Estado actual del problema
+        let currentProblem = {
+            character: null,
+            tree: [],
+            targetPerson: null,
+            solution: null
+        };
+        
+        // Traducciones
+        const translations = {
+            ca: {
+                pageTitle: "Generador de problemes d'arbres genealògics",
+                mainTitle: "Generador de problemes d'arbres genealògics",
+                newProblem: "Nou problema",
+                showSolution: "Veure solució",
+                solution: "La solució és: ",
+                yourAnswer: "La teva resposta:",
+                check: "Comprovar",
+                correct: "Correcte! La resposta és: ",
+                incorrect: "Incorrecte. Intenta-ho de nou.",
+                mother: "Mare",
+                father: "Pare",
+                son: "Fill",
+                daughter: "Filla",
+                grandfather: "Avi",
+                grandmother: "Àvia",
+                uncle: "Oncle",
+                aunt: "Tia",
+                cousin: "Cosí/na",
+                brother: "Germà",
+                sister: "Germana",
+                genotypeSolution: "El genotip de {name} és:",
+                phenotypeSolution: "El fenotip de {name} és:",
+                parentageSolution: "Si {name1} i {name2} tenen un fill {gender}, quin serà el seu genotip més probable?",
+                probableOffspring: "Quina és la probabilitat que {name1} i {name2} tinguin un fill amb el fenotip {phenotype}?",
+                sex: {
+                    male: "home",
+                    female: "dona"
+                }
+            },
+            es: {
+                pageTitle: "Generador de problemas de árboles genealógicos",
+                mainTitle: "Generador de problemas de árboles genealógicos",
+                newProblem: "Nuevo problema",
+                showSolution: "Ver solución",
+                solution: "La solución es: ",
+                yourAnswer: "Tu respuesta:",
+                check: "Comprobar",
+                correct: "¡Correcto! La respuesta es: ",
+                incorrect: "Incorrecto. Inténtalo de nuevo.",
+                mother: "Madre",
+                father: "Padre",
+                son: "Hijo",
+                daughter: "Hija",
+                grandfather: "Abuelo",
+                grandmother: "Abuela",
+                uncle: "Tío",
+                aunt: "Tía",
+                cousin: "Primo/a",
+                brother: "Hermano",
+                sister: "Hermana",
+                genotypeSolution: "El genotipo de {name} es:",
+                phenotypeSolution: "El fenotipo de {name} es:",
+                parentageSolution: "Si {name1} y {name2} tienen un hijo {gender}, ¿cuál será su genotipo más probable?",
+                probableOffspring: "¿Cuál es la probabilidad de que {name1} y {name2} tengan un hijo con el fenotipo {phenotype}?",
+                sex: {
+                    male: "hombre",
+                    female: "mujer"
+                }
+            }
+        };
+        
+        // Nombres para usar en el árbol genealógico
+        const names = {
+            male: {
+                es: ["Carlos", "Juan", "Miguel", "Antonio", "Pedro", "Luis", "José", "Francisco", "Javier", "Manuel", "David", "Alberto", "Alejandro", "Pablo", "Daniel"],
+                ca: ["Carles", "Joan", "Miquel", "Antoni", "Pere", "Lluís", "Josep", "Francesc", "Xavier", "Manuel", "David", "Albert", "Alexandre", "Pau", "Daniel"]
+            },
+            female: {
+                es: ["María", "Ana", "Carmen", "Laura", "Elena", "Sofía", "Lucía", "Isabel", "Marta", "Patricia", "Cristina", "Julia", "Beatriz", "Clara", "Sara"],
+                ca: ["Maria", "Anna", "Carme", "Laura", "Elena", "Sofia", "Llúcia", "Isabel", "Marta", "Patrícia", "Cristina", "Júlia", "Beatriu", "Clara", "Sara"]
+            }
+        };
+        
+        // Estructuras de árboles predefinidas (para tener topologías variadas)
+        const treeStructures = [
+            // Árbol 1: Abuelos, padres e hijos
+            [
+                { level: 0, persons: [
+                    { id: "gf1", gender: "male", relation: "grandfather" },
+                    { id: "gm1", gender: "female", relation: "grandmother" }
+                ]},
+                { level: 1, persons: [
+                    { id: "f", gender: "male", relation: "father", parents: ["gf1", "gm1"] },
+                    { id: "m", gender: "female", relation: "mother" }
+                ]},
+                { level: 2, persons: [
+                    { id: "s1", gender: "male", relation: "son", parents: ["f", "m"] },
+                    { id: "d1", gender: "female", relation: "daughter", parents: ["f", "m"] }
+                ]}
+            ],
+            
+            // Árbol 2: Padres y varios hijos
+            [
+                { level: 0, persons: [
+                    { id: "f", gender: "male", relation: "father" },
+                    { id: "m", gender: "female", relation: "mother" }
+                ]},
+                { level: 1, persons: [
+                    { id: "s1", gender: "male", relation: "son", parents: ["f", "m"] },
+                    { id: "d1", gender: "female", relation: "daughter", parents: ["f", "m"] },
+                    { id: "s2", gender: "male", relation: "son", parents: ["f", "m"] }
+                ]}
+            ],
+            
+            // Árbol 3: Abuelos en ambos lados, padres e hijo
+            [
+                { level: 0, persons: [
+                    { id: "gf1", gender: "male", relation: "grandfather" },
+                    { id: "gm1", gender: "female", relation: "grandmother" },
+                    { id: "gf2", gender: "male", relation: "grandfather" },
+                    { id: "gm2", gender: "female", relation: "grandmother" }
+                ]},
+                { level: 1, persons: [
+                    { id: "f", gender: "male", relation: "father", parents: ["gf1", "gm1"] },
+                    { id: "m", gender: "female", relation: "mother", parents: ["gf2", "gm2"] }
+                ]},
+                { level: 2, persons: [
+                    { id: "s1", gender: "male", relation: "son", parents: ["f", "m"] }
+                ]}
+            ],
+            
+            // Árbol 4: Padres, hijos y nietos
+            [
+                { level: 0, persons: [
+                    { id: "f", gender: "male", relation: "father" },
+                    { id: "m", gender: "female", relation: "mother" }
+                ]},
+                { level: 1, persons: [
+                    { id: "s1", gender: "male", relation: "son", parents: ["f", "m"] },
+                    { id: "d1", gender: "female", relation: "daughter", parents: ["f", "m"] }
+                ]},
+                { level: 2, persons: [
+                    { id: "gs1", gender: "male", relation: "son", parents: ["s1", null] },
+                    { id: "gd1", gender: "female", relation: "daughter", parents: ["d1", null] }
+                ]}
+            ],
+            
+            // Árbol 5: Padres, varios hijos, y primos
+            [
+                { level: 0, persons: [
+                    { id: "gf1", gender: "male", relation: "grandfather" },
+                    { id: "gm1", gender: "female", relation: "grandmother" }
+                ]},
+                { level: 1, persons: [
+                    { id: "f", gender: "male", relation: "father", parents: ["gf1", "gm1"] },
+                    { id: "m", gender: "female", relation: "mother" },
+                    { id: "u", gender: "male", relation: "uncle", parents: ["gf1", "gm1"] },
+                    { id: "a", gender: "female", relation: "aunt" }
+                ]},
+                { level: 2, persons: [
+                    { id: "s1", gender: "male", relation: "son", parents: ["f", "m"] },
+                    { id: "c1", gender: "male", relation: "cousin", parents: ["u", "a"] },
+                    { id: "c2", gender: "female", relation: "cousin", parents: ["u", "a"] }
+                ]}
+            ]
+        ];
+        
+        // Cargar los datos desde el JSON
+        async function loadGeneticData() {
+            try {
+                const response = await fetch('caracteres_genetica_bilingue.json');
+                const data = await response.json();
+                caracteres = data.caracteres;
+                setLanguage(userLang);
+                generateNewProblem();
+            } catch (error) {
+                console.error("Error cargando datos:", error);
+                alert("Error al cargar los datos genéticos. Por favor, recarga la página.");
+            }
+        }
+        
+        // Cambiar el idioma
+        function setLanguage(lang) {
+            userLang = lang;
+            
+            // Actualizar clases de botones de idioma
+            document.getElementById('lang-ca').classList.toggle('active', lang === 'ca');
+            document.getElementById('lang-es').classList.toggle('active', lang === 'es');
+            
+            // Actualizar textos de la interfaz
+            document.getElementById('page-title').textContent = translations[lang].pageTitle;
+            document.getElementById('main-title').textContent = translations[lang].mainTitle;
+            document.getElementById('new-problem-btn').textContent = translations[lang].newProblem;
+            document.getElementById('show-solution-btn').textContent = translations[lang].showSolution;
+            document.getElementById('solution-label').textContent = translations[lang].yourAnswer;
+            document.getElementById('check-answer-btn').textContent = translations[lang].check;
+            
+            // Si hay un problema activo, actualizarlo
+            
+            if (currentProblem.character) {
+                // Recalcular fenotipos al cambiar de idioma
+                currentProblem.tree.forEach(level => {
+                    level.persons.forEach(p => {
+                        p.phenotype = findPhenotype(currentProblem.character, p.genotype);
+                    });
+                });
+                updateProblemDisplay();
+            }
+            
+            // Guardar preferencia en localStorage
+            localStorage.setItem('geneticTreeLang', lang);
+        }
+        
+        // Generar un nuevo problema
+        function generateNewProblem() {
+            // Seleccionar un carácter genético aleatorio
+            const characterIndex = Math.floor(Math.random() * caracteres.length);
+            const character = caracteres[characterIndex];
+            
+            // Seleccionar una estructura de árbol aleatoria
+            const treeStructureIndex = Math.floor(Math.random() * treeStructures.length);
+            const treeStructure = JSON.parse(JSON.stringify(treeStructures[treeStructureIndex]));
+            
+            // Generar el árbol con nombres y genotipos
+            const tree = generateTreeWithGenotypes(treeStructure, character);
+            
+            // Elegir una persona objetivo para la pregunta
+            const allPersons = tree.flatMap(l => l.persons);
+            const targetIndex = Math.floor(Math.random() * allPersons.length);
+            const targetPerson = allPersons[targetIndex];
+            
+            // Generar la solución según el tipo de problema
+            const problemType = Math.floor(Math.random() * 3);
+            let solution = null;
+            let problemText = '';
+            
+            switch (problemType) {
+                case 0: // Determinar genotipo
+                    solution = targetPerson.genotype;
+                    problemText = translations[userLang].genotypeSolution.replace('{name}', targetPerson.name);
+                    break;
+                
+                case 1: // Determinar fenotipo
+                    solution = targetPerson.phenotype;
+                    problemText = translations[userLang].phenotypeSolution.replace('{name}', targetPerson.name);
+                    break;
+                
+                case 2: // Probabilidad de descendencia
+                    // Buscar padres para una probabilidad
+                    let parents = findParentsInTree(tree);
+                    if (parents.length > 0) {
+                        const randomParentIndex = Math.floor(Math.random() * parents.length);
+                        const parentPair = parents[randomParentIndex];
+                        
+                        // Calcular las probabilidades de descendencia
+                        const offspringProbabilities = calculateOffspringProbabilities(parentPair[0], parentPair[1], character);
+                        
+                        // Elegir un fenotipo aleatorio con su probabilidad
+                        const phenotypes = Object.keys(offspringProbabilities);
+                        const randomPhenotypeIndex = Math.floor(Math.random() * phenotypes.length);
+                        const randomPhenotype = phenotypes[randomPhenotypeIndex];
+                        
+                        solution = offspringProbabilities[randomPhenotype].toString();
+                        problemText = translations[userLang].probableOffspring
+                            .replace('{name1}', parentPair[0].name)
+                            .replace('{name2}', parentPair[1].name)
+                            .replace('{phenotype}', randomPhenotype);
+                    } else {
+                        // Si no hay padres, volver al caso de genotipo
+                        solution = targetPerson.genotype;
+                        problemText = translations[userLang].genotypeSolution.replace('{name}', targetPerson.name);
+                    }
+                    break;
+            }
+            
+            currentProblem = {
+                character,
+                tree,
+                targetPerson,
+                solution,
+                problemText
+            };
+            
+            updateProblemDisplay();
+            resetFeedback();
+        }
+        
+        // Encontrar pares de padres en el árbol
+        function findParentsInTree(tree) {
+            const parentPairs = [];
+            
+            // Buscar pares de padres (personas que tienen hijos)
+            for (let level of tree) {
+                for (let person of level.persons) {
+                    if (person.children && person.children.length > 0) {
+                        // Buscar a su pareja
+                        const partner = level.persons.find(p => 
+                            p.id !== person.id && 
+                            p.children && 
+                            p.children.some(childId => person.children.includes(childId))
+                        );
+                        
+                        if (partner && person.gender !== partner.gender) {
+                            // Asegurarse de que no añadimos duplicados (A,B) y (B,A)
+                            const pairExists = parentPairs.some(pair => 
+                                (pair[0].id === person.id && pair[1].id === partner.id) ||
+                                (pair[0].id === partner.id && pair[1].id === person.id)
+                            );
+                            
+                            if (!pairExists) {
+                                parentPairs.push([person, partner]);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return parentPairs;
+        }
+        
+        // Calcular probabilidades de descendencia
+        function calculateOffspringProbabilities(parent1, parent2, character) {
+            const probabilities = {};
+            
+            // Determinar los posibles genotipos de los hijos
+            const genotype1 = parent1.genotype;
+            const genotype2 = parent2.genotype;
+            
+            // Extraer alelos
+            let alleles1 = [];
+            let alleles2 = [];
+            
+            if (character.tipo[userLang] === 'ligado_al_sexo' || character.tipo[userLang] === 'lligat_al_sexe') {
+                // Para caracteres ligados al sexo
+                alleles1 = genotype1.split('');
+                alleles2 = genotype2.split('');
+                
+                // Si el padre es masculino (XY), solo toma el primer alelo (X)
+                if (parent1.gender === 'male') alleles1 = [alleles1[0]];
+                if (parent2.gender === 'male') alleles2 = [alleles2[0]];
+                
+                // Para caracteres ligados al X, los hombres solo aportan Y a sus hijos varones
+                const possibleGenotypes = [];
+                
+                // Genotipos de hijas (XX)
+                if (parent1.gender === 'male') {
+                    for (let allele2 of alleles2) {
+                        possibleGenotypes.push(alleles1[0] + allele2);
+                    }
+                } else {
+                    for (let allele1 of alleles1) {
+                        for (let allele2 of alleles2) {
+                            possibleGenotypes.push(allele1 + allele2);
+                        }
+                    }
+                }
+                
+                // Contar frecuencias de genotipos
+                const genotypeFrequencies = {};
+                for (let genotype of possibleGenotypes) {
+                    genotypeFrequencies[genotype] = (genotypeFrequencies[genotype] || 0) + 1;
+                }
+                
+                // Convertir a fenotipos y probabilidades
+                for (let genotype in genotypeFrequencies) {
+                    let phenotype;
+                    
+                    // Buscar el fenotipo correspondiente
+                    for (let key in character.fenotipos) {
+                        if (key === genotype) {
+                            phenotype = character.fenotipos[key][userLang];
+                            break;
+                        }
+                    }
+                    
+                    if (phenotype) {
+                        probabilities[phenotype] = (probabilities[phenotype] || 0) + 
+                            genotypeFrequencies[genotype] / possibleGenotypes.length;
+                    }
+                }
+            } else {
+                // Para otros tipos de herencia
+                // Extraer alelos del genotipo (cada posición en la cadena es un alelo)
+                for (let i = 0; i < genotype1.length; i++) {
+                    if (genotype1[i] !== genotype1[i].toLowerCase() || !isNaN(parseInt(genotype1[i]))) {
+                        alleles1.push(genotype1[i]);
+                    }
+                }
+                
+                for (let i = 0; i < genotype2.length; i++) {
+                    if (genotype2[i] !== genotype2[i].toLowerCase() || !isNaN(parseInt(genotype2[i]))) {
+                        alleles2.push(genotype2[i]);
+                    }
+                }
+                
+                // Generar todas las combinaciones posibles de alelos
+                const possibleGenotypes = [];
+                for (let allele1 of alleles1) {
+                    for (let allele2 of alleles2) {
+                        // Ordenar alelos alfabéticamente para tipos no ligados al sexo
+                        let sortedAlleles = [allele1, allele2].sort();
+                        let genotype = sortedAlleles.join('');
+                        possibleGenotypes.push(genotype);
+                    }
+                }
+                
+                // Contar frecuencias de genotipos
+                const genotypeFrequencies = {};
+                for (let genotype of possibleGenotypes) {
+                    genotypeFrequencies[genotype] = (genotypeFrequencies[genotype] || 0) + 1;
+                }
+                
+                // Convertir a fenotipos y probabilidades
+                for (let genotype in genotypeFrequencies) {
+                    let phenotype;
+                    
+                    // Buscar el fenotipo correspondiente
+                    for (let key in character.fenotipos) {
+                        if (key === genotype) {
+                            phenotype = character.fenotipos[key][userLang];
+                            break;
+                        }
+                    }
+                    
+                    if (phenotype) {
+                        probabilities[phenotype] = (probabilities[phenotype] || 0) + 
+                            genotypeFrequencies[genotype] / possibleGenotypes.length;
+                    }
+                }
+            }
+            
+            return probabilities;
+        }
+        
+        // Generar árbol con genotipos
+        function generateTreeWithGenotypes(treeStructure, character) {
+            const tree = [];
+            const personMap = {};
+            
+            // Primer paso: asignar nombres y genotipos aleatorios
+            for (let level of treeStructure) {
+                const treeLevel = {
+                    level: level.level,
+                    persons: []
+                };
+                
+                for (let person of level.persons) {
+                    const personCopy = { ...person };
+                    
+                    // Asignar nombre según género
+                    const namesList = names[person.gender][userLang];
+                    let name;
+                    do {
+                        name = namesList[Math.floor(Math.random() * namesList.length)];
+                    } while (tree.flatMap(l => l.persons).some(p => p.name === name)); // Evitar repeticiones
+                    
+                    personCopy.name = name;
+                    
+                    // Asignar genotipo aleatorio
+                    personCopy.genotype = assignRandomGenotype(character, person.gender);
+                    
+                    // Encontrar el fenotipo correspondiente
+                    personCopy.phenotype = findPhenotype(character, personCopy.genotype);
+                    
+                    treeLevel.persons.push(personCopy);
+                    personMap[person.id] = personCopy;
+                }
+                
+                tree.push(treeLevel);
+            }
+            
+            // Segundo paso: establecer relaciones de parentesco y recalcular genotipos
+            for (let level of tree) {
+                for (let person of level.persons) {
+                    if (person.parents && person.parents.length > 0) {
+                        const validParents = person.parents.filter(p => p !== null);
+                        if (validParents.length > 0) {
+                            // Conectar hijos con padres
+                            for (let parentId of validParents) {
+                                const parent = personMap[parentId];
+                                if (parent) {
+                                    if (!parent.children) parent.children = [];
+                                    parent.children.push(person.id);
+                                }
+                            }
+                            
+                            // Si tiene dos padres, asignar genotipo coherente
+                            if (validParents.length === 2) {
+                                const parent1 = personMap[validParents[0]];
+                                const parent2 = personMap[validParents[1]];
+                                
+                                if (parent1 && parent2) {
+                                    // Asegurarse de que el padre y la madre tienen géneros diferentes
+                                    if (parent1.gender !== parent2.gender) {
+                                        person.genotype = assignCoherentGenotype(character, parent1, parent2, person.gender);
+                                        person.phenotype = findPhenotype(character, person.genotype);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return tree;
+        }
+        
+        // Asignar un genotipo aleatorio
+        function assignRandomGenotype(character, gender) {
+            const alelos = character.alelos;
+            let genotype = '';
+            
+            if (character.tipo[userLang] === 'ligado_al_sexo' || character.tipo[userLang] === 'lligat_al_sexe') {
+                // Para caracteres ligados al sexo
+                if (gender === 'male') {
+                    // XY - Solo necesitamos un alelo para el cromosoma X
+                    const randomIndex = Math.floor(Math.random() * alelos.length);
+                    genotype = alelos[randomIndex] + 'Y';
+                } else {
+                    // XX - Necesitamos dos alelos para los cromosomas X
+                    const allele1 = alelos[Math.floor(Math.random() * alelos.length)];
+                    const allele2 = alelos[Math.floor(Math.random() * alelos.length)];
+                    genotype = allele1 + allele2;
+                }
+            } else if (alelos.length === 3) {
+                // Sistema de tres alelos (como grupo sanguíneo ABO)
+                const allele1 = alelos[Math.floor(Math.random() * alelos.length)];
+                const allele2 = alelos[Math.floor(Math.random() * alelos.length)];
+                genotype = allele1 + allele2;
+            } else {
+                // Sistema de dos alelos
+                const allele1 = alelos[Math.floor(Math.random() * alelos.length)];
+                const allele2 = alelos[Math.floor(Math.random() * alelos.length)];
+                
+                // Ordenar alelos alfabéticamente para tipos no ligados al sexo
+                if (character.tipo[userLang] !== 'ligado_al_sexo' && character.tipo[userLang] !== 'lligat_al_sexe') {
+                    genotype = [allele1, allele2].sort().join('');
+                } else {
+                    genotype = allele1 + allele2;
+                }
+            }
+            
+            return genotype;
+        }
+        
+        // Asignar un genotipo coherente basado en los padres
+        function assignCoherentGenotype(character, parent1, parent2, gender) {
+            let father, mother;
+            
+            // Determinar quién es el padre y quién es la madre
+            if (parent1.gender === 'male') {
+                father = parent1;
+                mother = parent2;
+            } else {
+                father = parent2;
+                mother = parent1;
+            }
+            
+            let genotype = '';
+            
+            if (character.tipo[userLang] === 'ligado_al_sexo' || character.tipo[userLang] === 'lligat_al_sexe') {
+                if (gender === 'male') {
+                    // XY - El cromosoma X viene de la madre
+                    const motherGenotype = mother.genotype;
+                    const randomXIndex = Math.floor(Math.random() * 2); // 0 o 1 para elegir uno de los X de la madre
+                    genotype = motherGenotype[randomXIndex] + 'Y';
+                } else {
+                    // XX - Un X del padre y uno de la madre
+                    const fatherGenotype = father.genotype;
+                    const motherGenotype = mother.genotype;
+                    
+                    // El padre aporta su único X
+                    const fatherX = fatherGenotype[0]; // El primer carácter es el X
+                    
+                    // La madre aporta uno de sus X aleatoriamente
+                    const randomXIndex = Math.floor(Math.random() * 2); // 0 o 1
+                    const motherX = motherGenotype[randomXIndex];
+                    
+                    genotype = fatherX + motherX;
+                }
+            } else {
+                // Para otros tipos de herencia
+                // Extraer alelos de los padres
+                const fatherAlleles = [];
+                const motherAlleles = [];
+                
+                for (let i = 0; i < father.genotype.length; i++) {
+                    const char = father.genotype[i];
+                    if (char !== char.toLowerCase() || !isNaN(parseInt(char))) {
+                        fatherAlleles.push(char);
+                    }
+                }
+                
+                for (let i = 0; i < mother.genotype.length; i++) {
+                    const char = mother.genotype[i];
+                    if (char !== char.toLowerCase() || !isNaN(parseInt(char))) {
+                        motherAlleles.push(char);
+                    }
+                }
+                
+                // Seleccionar un alelo aleatorio de cada padre
+                const fatherContribution = fatherAlleles[Math.floor(Math.random() * fatherAlleles.length)];
+                const motherContribution = motherAlleles[Math.floor(Math.random() * motherAlleles.length)];
+                
+                // Ordenar alelos alfabéticamente para tipos no ligados al sexo
+                genotype = [fatherContribution, motherContribution].sort().join('');
+            }
+            
+            return genotype;
+        }
+        
+        // Encontrar el fenotipo correspondiente a un genotipo
+        function findPhenotype(character, genotype) {
+            // Buscar el fenotipo en la definición del carácter
+            for (let key in character.fenotipos) {
+                if (key === genotype) {
+                    return character.fenotipos[key][userLang];
+                }
+            }
+            
+            return "Desconocido";
+        }
+        
+        // Actualizar la visualización del problema
+        function updateProblemDisplay() {
+            // Mostrar el enunciado del problema
+            document.getElementById('problem-statement').textContent = currentProblem.problemText;
+            // Mostrar la descripción del carácter genético
+            document.getElementById('character-description').textContent = currentProblem.character.descripcion[userLang] || '';
+            
+            // Renderizar el árbol genealógico
+            renderFamilyTree(currentProblem.tree);
+        }
+        
+        // Renderizar el árbol genealógico
+        function renderFamilyTree(tree) {
+            const treeContainer = document.getElementById('family-tree');
+            treeContainer.innerHTML = '';
+            
+            // Renderizar cada nivel del árbol
+            for (let i = 0; i < tree.length; i++) {
+                const level = tree[i];
+                
+                // Crear el nivel
+                const levelDiv = document.createElement('div');
+                levelDiv.className = 'tree-level';
+                
+                // Renderizar las personas de este nivel
+                for (const person of level.persons) {
+                    const personDiv = document.createElement('div');
+                    personDiv.className = `tree-person ${person.gender}`;
+                    
+                    // Nombre
+                    const nameP = document.createElement('p');
+                    nameP.className = 'name';
+                    nameP.textContent = person.name;
+                    personDiv.appendChild(nameP);
+                    
+                    // Relación
+                    if (person.relation) {
+                        const relationP = document.createElement('p');
+                        relationP.textContent = translations[userLang][person.relation];
+                        personDiv.appendChild(relationP);
+                    }
+                    
+                    // Fenotipo (siempre visible)
+                    const phenotypeP = document.createElement('p');
+                    phenotypeP.className = 'phenotype';
+                    phenotypeP.textContent = person.phenotype;
+                    personDiv.appendChild(phenotypeP);
+                    
+                    // Genotipo (oculto en las personas con genotipo desconocido)
+                    if (person.genotype) {
+                        const genotypeP = document.createElement('p');
+                        genotypeP.className = 'genotype';
+                        
+                        // Ocultar algunos genotipos para el problema
+                        if (person === currentProblem.targetPerson) {
+                            genotypeP.textContent = '??';
+                            personDiv.classList.add('unknown');
+                        } else {
+                            genotypeP.textContent = person.genotype;
+                        }
+                        
+                        personDiv.appendChild(genotypeP);
+                    }
+                    
+                    levelDiv.appendChild(personDiv);
+                }
+                
+                treeContainer.appendChild(levelDiv);
+                
+                // Añadir conectores si no es el último nivel
+                if (i < tree.length - 1) {
+                    addConnectors(treeContainer, tree[i], tree[i+1]);
+                }
+            }
+        }
+        
+        // Añadir los conectores entre niveles del árbol
+        function addConnectors(container, currentLevel, nextLevel) {
+            const connectorDiv = document.createElement('div');
+            connectorDiv.className = 'tree-connector';
+            
+            // Para cada persona en el siguiente nivel, conectar con sus padres
+            for (const person of nextLevel.persons) {
+                if (person.parents && person.parents.length > 0) {
+                    const validParents = person.parents.filter(p => p !== null);
+                    if (validParents.length > 0) {
+                        // Encontrar a los padres en el nivel actual
+                        const parentElements = [];
+                        for (let parentId of validParents) {
+                            const parentPerson = currentLevel.persons.find(p => p.id === parentId);
+                            if (parentPerson) {
+                                const parentIndex = currentLevel.persons.indexOf(parentPerson);
+                                parentElements.push(parentIndex);
+                            }
+                        }
+                        
+                        if (parentElements.length > 0) {
+                            // Crear línea vertical
+                            const verticalLine = document.createElement('div');
+                            verticalLine.className = 'vertical-line';
+                            connectorDiv.appendChild(verticalLine);
+                            
+                            // Crear línea horizontal para conectar padres
+                            if (parentElements.length > 1) {
+                                const minParent = Math.min(...parentElements);
+                                const maxParent = Math.max(...parentElements);
+                                const horizontalLine = document.createElement('div');
+                                horizontalLine.className = 'horizontal-line';
+                                horizontalLine.style.left = `${minParent * 160 + 70}px`;
+                                horizontalLine.style.width = `${(maxParent - minParent) * 160 + 2}px`;
+                                connectorDiv.appendChild(horizontalLine);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            container.appendChild(connectorDiv);
+        }
+        
+        // Comprobar la respuesta del usuario
+
+        function checkAnswer() {
+            const userAnswerRaw = document.getElementById('user-answer').value.trim();
+            const correctAnswerRaw = (currentProblem.solution ?? '').toString().trim();
+
+            const feedbackDiv = document.getElementById('feedback');
+
+            let isCorrect = false;
+
+            // Detect numerical answers (probabilities, percentages)
+            const userNumber = parseFloat(userAnswerRaw.replace(',', '.'));
+            const correctNumber = parseFloat(correctAnswerRaw.replace(',', '.'));
+
+            if (!isNaN(userNumber) && !isNaN(correctNumber)) {
+                // Allow a tiny tolerance for float comparisons
+                isCorrect = Math.abs(userNumber - correctNumber) < 1e-6 ||
+                            Math.abs(userNumber - correctNumber * 100) < 1e-6 ||   // allow 0.25 vs 25
+                            Math.abs(userNumber * 100 - correctNumber) < 1e-6;
+            } else {
+                // Compare text answers ignoring surrounding spaces and case (except genotypes where case matters)
+                // For genotypes (A/a letters) case is significant, so compare both direct and lower‑cased.
+                isCorrect = isCorrect = userAnswerRaw === correctAnswerRaw;
+            }
+
+            if (isCorrect) {
+                feedbackDiv.textContent = translations[userLang].correct + currentProblem.solution;
+                feedbackDiv.className = 'feedback correct';
+            } else {
+                feedbackDiv.textContent = translations[userLang].incorrect;
+                feedbackDiv.className = 'feedback incorrect';
+            }
+            feedbackDiv.style.display = 'block';
+        }
+        
+        // Mostrar la solución
+        function showSolution() {
+            const feedbackDiv = document.getElementById('feedback');
+            feedbackDiv.textContent = translations[userLang].solution + currentProblem.solution;
+            feedbackDiv.className = 'feedback correct';
+            feedbackDiv.style.display = 'block';
+        }
+        
+        // Resetear el feedback
+        function resetFeedback() {
+            const feedbackDiv = document.getElementById('feedback');
+            feedbackDiv.style.display = 'none';
+        }
+        
+        // Event listeners
+        document.getElementById('lang-ca').addEventListener('click', () => setLanguage('ca'));
+        document.getElementById('lang-es').addEventListener('click', () => setLanguage('es'));
+        document.getElementById('new-problem-btn').addEventListener('click', generateNewProblem);
+        document.getElementById('show-solution-btn').addEventListener('click', showSolution);
+        document.getElementById('check-answer-btn').addEventListener('click', checkAnswer);
+        document.getElementById('user-answer').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+        document.getElementById('user-answer').addEventListener('input', resetFeedback);
+        
+        // Inicializar
+        window.addEventListener('DOMContentLoaded', () => {
+            // Comprobar preferencia de idioma guardada
+            const savedLang = localStorage.getItem('geneticTreeLang');
+            if (savedLang) {
+                userLang = savedLang;
+            }
+            
+            // Reposicionar el botón Ver solución junto a Comprobar
+            const checkBtn = document.getElementById('check-answer-btn');
+            const showBtn = document.getElementById('show-solution-btn');
+            if (checkBtn && showBtn) {
+                checkBtn.parentNode.insertBefore(showBtn, checkBtn.nextSibling);
+            }
+
+            // Cargar datos y empezar
+            loadGeneticData();
+        });
+    </script>
+</body>
+</html>

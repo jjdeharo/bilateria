@@ -1,0 +1,1265 @@
+{
+  "caracteres": [
+    {
+      "tipo": {
+        "es": "ligado_al_sexo",
+        "ca": "lligat_al_sexe"
+      },
+      "caracter": {
+        "es": "Daltonismo",
+        "ca": "Daltonisme"
+      },
+      "alelos": [
+        "Xd",
+        "XD"
+      ],
+      "fenotipos": {
+        "XDY": {
+          "es": "visión normal (hombre)",
+          "ca": "visió normal (home)"
+        },
+        "XdY": {
+          "es": "daltónico (hombre)",
+          "ca": "daltònic (home)"
+        },
+        "XDXD": {
+          "es": "visión normal (mujer)",
+          "ca": "visió normal (dona)"
+        },
+        "XDXd": {
+          "es": "portadora (mujer)",
+          "ca": "portadora (dona)"
+        },
+        "XdXd": {
+          "es": "daltónica (mujer)",
+          "ca": "daltònica (dona)"
+        }
+      },
+      "descripcion": {
+        "es": "El daltonismo es un rasgo recesivo ligado al cromosoma X. Las mujeres necesitan dos alelos recesivos para expresar el fenotipo, mientras que los hombres solo necesitan uno al tener un solo cromosoma X.",
+        "ca": "El daltonisme és un tret recessiu lligat al cromosoma X. Les dones necessiten dos al·lels recessius per expressar el fenotip, mentre que els homes només en necessiten un en tenir un sol cromosoma X."
+      }
+    },
+    {
+      "tipo": {
+        "es": "ligado_al_sexo",
+        "ca": "lligat_al_sexe"
+      },
+      "caracter": {
+        "es": "Hemofilia A",
+        "ca": "Hemofília A"
+      },
+      "alelos": [
+        "Xh",
+        "XH"
+      ],
+      "fenotipos": {
+        "XHY": {
+          "es": "sin hemofilia (hombre)",
+          "ca": "sense hemofília (home)"
+        },
+        "XhY": {
+          "es": "hemofílico (hombre)",
+          "ca": "hemofílic (home)"
+        },
+        "XHXH": {
+          "es": "sin hemofilia (mujer)",
+          "ca": "sense hemofília (dona)"
+        },
+        "XHXh": {
+          "es": "portadora (mujer)",
+          "ca": "portadora (dona)"
+        },
+        "XhXh": {
+          "es": "hemofílica (mujer)",
+          "ca": "hemofílica (dona)"
+        }
+      },
+      "descripcion": {
+        "es": "La hemofilia A es un trastorno de la coagulación recesivo ligado al cromosoma X. Es más común en hombres porque solo necesitan un alelo recesivo para manifestar la enfermedad.",
+        "ca": "L'hemofília A és un trastorn de la coagulació recessiu lligat al cromosoma X. És més comú en homes perquè només necessiten un al·lel recessiu per manifestar la malaltia."
+      }
+    },
+    {
+      "tipo": {
+        "es": "ligado_al_sexo",
+        "ca": "lligat_al_sexe"
+      },
+      "caracter": {
+        "es": "Distrofia muscular de Duchenne",
+        "ca": "Distròfia muscular de Duchenne"
+      },
+      "alelos": [
+        "Xd",
+        "XD"
+      ],
+      "fenotipos": {
+        "XDY": {
+          "es": "sin distrofia (hombre)",
+          "ca": "sense distròfia (home)"
+        },
+        "XdY": {
+          "es": "con distrofia (hombre)",
+          "ca": "amb distròfia (home)"
+        },
+        "XDXD": {
+          "es": "sin distrofia (mujer)",
+          "ca": "sense distròfia (dona)"
+        },
+        "XDXd": {
+          "es": "portadora (mujer)",
+          "ca": "portadora (dona)"
+        },
+        "XdXd": {
+          "es": "con distrofia (mujer)",
+          "ca": "amb distròfia (dona)"
+        }
+      },
+      "descripcion": {
+        "es": "La distrofia muscular de Duchenne es recesiva ligada al X. Los hombres afectados suelen tener síntomas graves, mientras que las mujeres portadoras pueden presentar síntomas leves o ninguno.",
+        "ca": "La distròfia muscular de Duchenne és recessiva lligada a l'X. Els homes afectats solen tenir símptomes greus, mentre que les dones portadores poden presentar símptomes lleus o cap."
+      }
+    },
+    {
+      "tipo": {
+        "es": "ligado_al_sexo",
+        "ca": "lligat_al_sexe"
+      },
+      "caracter": {
+        "es": "Déficit de glucosa-6-fosfato deshidrogenasa",
+        "ca": "Dèficit de glucosa-6-fosfat deshidrogenasa"
+      },
+      "alelos": [
+        "Xg",
+        "XG"
+      ],
+      "fenotipos": {
+        "XGY": {
+          "es": "sin déficit (hombre)",
+          "ca": "sense dèficit (home)"
+        },
+        "XgY": {
+          "es": "con déficit (hombre)",
+          "ca": "amb dèficit (home)"
+        },
+        "XGXG": {
+          "es": "sin déficit (mujer)",
+          "ca": "sense dèficit (dona)"
+        },
+        "XGXg": {
+          "es": "portadora (mujer)",
+          "ca": "portadora (dona)"
+        },
+        "XgXg": {
+          "es": "con déficit (mujer)",
+          "ca": "amb dèficit (dona)"
+        }
+      },
+      "descripcion": {
+        "es": "El déficit de G6PD, que causa anemia hemolítica, es un trastorno recesivo ligado al X. Afecta principalmente a hombres y se manifiesta al consumir ciertos alimentos o medicamentos.",
+        "ca": "El dèficit de G6PD, que causa anèmia hemolítica, és un trastorn recessiu lligat a l'X. Afecta principalment homes i es manifesta en consumir certs aliments o medicaments."
+      }
+    },
+    {
+      "tipo": {
+        "es": "ligado_al_sexo",
+        "ca": "lligat_al_sexe"
+      },
+      "caracter": {
+        "es": "Ictiosis ligada al X",
+        "ca": "Ictiosi lligada a l'X"
+      },
+      "alelos": [
+        "Xi",
+        "XI"
+      ],
+      "fenotipos": {
+        "XIY": {
+          "es": "piel normal (hombre)",
+          "ca": "pell normal (home)"
+        },
+        "XiY": {
+          "es": "con ictiosis (hombre)",
+          "ca": "amb ictiosi (home)"
+        },
+        "XIXI": {
+          "es": "piel normal (mujer)",
+          "ca": "pell normal (dona)"
+        },
+        "XIXi": {
+          "es": "portadora (mujer)",
+          "ca": "portadora (dona)"
+        },
+        "XiXi": {
+          "es": "con ictiosis (mujer)",
+          "ca": "amb ictiosi (dona)"
+        }
+      },
+      "descripcion": {
+        "es": "La ictiosis ligada al X causa piel seca y escamosa. Es recesiva ligada al X, rara en mujeres y más común en hombres.",
+        "ca": "La ictiosi lligada a l'X causa pell seca i escamosa. És recessiva lligada a l'X, rara en dones i més comuna en homes."
+      }
+    },
+    {
+      "tipo": {
+        "es": "ligado_al_sexo",
+        "ca": "lligat_al_sexe"
+      },
+      "caracter": {
+        "es": "Síndrome de Rett",
+        "ca": "Síndrome de Rett"
+      },
+      "alelos": [
+        "Xr",
+        "XR"
+      ],
+      "fenotipos": {
+        "XRY": {
+          "es": "sin síndrome (hombre)",
+          "ca": "sense síndrome (home)"
+        },
+        "XrY": {
+          "es": "letal embrionario (hombre)",
+          "ca": "letal embrionari (home)"
+        },
+        "XRXR": {
+          "es": "sin síndrome (mujer)",
+          "ca": "sense síndrome (dona)"
+        },
+        "XRXr": {
+          "es": "con síndrome (mujer)",
+          "ca": "amb síndrome (dona)"
+        },
+        "XrXr": {
+          "es": "letal embrionario (mujer)",
+          "ca": "letal embrionari (dona)"
+        }
+      },
+      "descripcion": {
+        "es": "El síndrome de Rett es un trastorno dominante ligado al X que afecta principalmente a niñas. Es letal en varones antes del nacimiento cuando llevan el alelo mutado.",
+        "ca": "La síndrome de Rett és un trastorn dominant lligat a l'X que afecta principalment a nenes. És letal en mascles abans del naixement quan porten l'al·lel mutat."
+      }
+    },
+    {
+      "tipo": {
+        "es": "ligado_al_sexo",
+        "ca": "lligat_al_sexe"
+      },
+      "caracter": {
+        "es": "Color de ojos en Drosophila",
+        "ca": "Color d'ulls en Drosophila"
+      },
+      "alelos": [
+        "Xw",
+        "XW"
+      ],
+      "fenotipos": {
+        "XWY": {
+          "es": "ojos rojos (macho)",
+          "ca": "ulls vermells (mascle)"
+        },
+        "XwY": {
+          "es": "ojos blancos (macho)",
+          "ca": "ulls blancs (mascle)"
+        },
+        "XWXW": {
+          "es": "ojos rojos (hembra)",
+          "ca": "ulls vermells (femella)"
+        },
+        "XWXw": {
+          "es": "ojos rojos (hembra)",
+          "ca": "ulls vermells (femella)"
+        },
+        "XwXw": {
+          "es": "ojos blancos (hembra)",
+          "ca": "ulls blancs (femella)"
+        }
+      },
+      "descripcion": {
+        "es": "En Drosophila, el color blanco de ojos es recesivo ligado al X. Fue uno de los primeros caracteres ligados al sexo descubiertos por Thomas Hunt Morgan.",
+        "ca": "En Drosophila, el color blanc d'ulls és recessiu lligat a l'X. Va ser un dels primers caràcters lligats al sexe descoberts per Thomas Hunt Morgan."
+      }
+    },
+    {
+      "tipo": {
+        "es": "ligado_al_sexo",
+        "ca": "lligat_al_sexe"
+      },
+      "caracter": {
+        "es": "Agammaglobulinemia de Bruton",
+        "ca": "Agammaglobulinèmia de Bruton"
+      },
+      "alelos": [
+        "Xa",
+        "XA"
+      ],
+      "fenotipos": {
+        "XAY": {
+          "es": "sistema inmune normal (hombre)",
+          "ca": "sistema immunitari normal (home)"
+        },
+        "XaY": {
+          "es": "inmunodeficiencia (hombre)",
+          "ca": "immunodeficiència (home)"
+        },
+        "XAXA": {
+          "es": "sistema inmune normal (mujer)",
+          "ca": "sistema immunitari normal (dona)"
+        },
+        "XAXa": {
+          "es": "portadora (mujer)",
+          "ca": "portadora (dona)"
+        },
+        "XaXa": {
+          "es": "inmunodeficiencia (mujer)",
+          "ca": "immunodeficiència (dona)"
+        }
+      },
+      "descripcion": {
+        "es": "La agammaglobulinemia de Bruton es recesiva ligada al X que causa inmunodeficiencia severa por falta de linfocitos B y anticuerpos.",
+        "ca": "L'agammaglobulinèmia de Bruton és recessiva lligada a l'X que causa immunodeficiència severa per manca de limfòcits B i anticossos."
+      }
+    },
+    {
+      "tipo": {
+        "es": "dominancia_completa",
+        "ca": "dominància_completa"
+      },
+      "caracter": {
+        "es": "Color de semilla en guisantes",
+        "ca": "Color de llavor en pèsols"
+      },
+      "alelos": [
+        "A",
+        "a"
+      ],
+      "fenotipos": {
+        "AA": {
+          "es": "amarilla",
+          "ca": "groga"
+        },
+        "Aa": {
+          "es": "amarilla",
+          "ca": "groga"
+        },
+        "aa": {
+          "es": "verde",
+          "ca": "verda"
+        }
+      },
+      "descripcion": {
+        "es": "En los guisantes, la semilla amarilla (A) es dominante sobre la verde (a).",
+        "ca": "En els pèsols, la llavor groga (A) és dominant sobre la verda (a)."
+      }
+    },
+    {
+      "tipo": {
+        "es": "dominancia_completa",
+        "ca": "dominància_completa"
+      },
+      "caracter": {
+        "es": "Textura de semilla en guisantes",
+        "ca": "Textura de llavor en pèsols"
+      },
+      "alelos": [
+        "R",
+        "r"
+      ],
+      "fenotipos": {
+        "RR": {
+          "es": "lisa",
+          "ca": "llisa"
+        },
+        "Rr": {
+          "es": "lisa",
+          "ca": "llisa"
+        },
+        "rr": {
+          "es": "rugosa",
+          "ca": "rugosa"
+        }
+      },
+      "descripcion": {
+        "es": "En los guisantes, la semilla lisa (R) es dominante sobre la rugosa (r).",
+        "ca": "En els pèsols, la llavor llisa (R) és dominant sobre la rugosa (r)."
+      }
+    },
+    {
+      "tipo": {
+        "es": "dominancia_completa",
+        "ca": "dominància_completa"
+      },
+      "caracter": {
+        "es": "Lóbulos de oreja en humanos",
+        "ca": "Lòbuls d'orella en humans"
+      },
+      "alelos": [
+        "L",
+        "l"
+      ],
+      "fenotipos": {
+        "LL": {
+          "es": "libres",
+          "ca": "lliures"
+        },
+        "Ll": {
+          "es": "libres",
+          "ca": "lliures"
+        },
+        "ll": {
+          "es": "pegados",
+          "ca": "enganxats"
+        }
+      },
+      "descripcion": {
+        "es": "En humanos, los lóbulos de oreja libres (L) son dominantes sobre los pegados (l).",
+        "ca": "En humans, els lòbuls d'orella lliures (L) són dominants sobre els enganxats (l)."
+      }
+    },
+    {
+      "tipo": {
+        "es": "dominancia_incompleta",
+        "ca": "dominància_incompleta"
+      },
+      "caracter": {
+        "es": "Color de flor en dondiego de noche",
+        "ca": "Color de flor en flor de nit"
+      },
+      "alelos": [
+        "R",
+        "r"
+      ],
+      "fenotipos": {
+        "RR": {
+          "es": "rojo",
+          "ca": "vermell"
+        },
+        "Rr": {
+          "es": "rosa",
+          "ca": "rosa"
+        },
+        "rr": {
+          "es": "blanco",
+          "ca": "blanc"
+        }
+      },
+      "descripcion": {
+        "es": "En la planta dondiego de noche, las flores rojas (RR) y blancas (rr) producen flores rosas (Rr) por dominancia incompleta.",
+        "ca": "En la planta flor de nit, les flors vermelles (RR) i blanques (rr) produeixen flors roses (Rr) per dominància incompleta."
+      }
+    },
+    {
+      "tipo": {
+        "es": "dominancia_completa",
+        "ca": "dominància_completa"
+      },
+      "caracter": {
+        "es": "Color de flor en guisantes",
+        "ca": "Color de flor en pèsols"
+      },
+      "alelos": [
+        "P",
+        "p"
+      ],
+      "fenotipos": {
+        "PP": {
+          "es": "violeta",
+          "ca": "violeta"
+        },
+        "Pp": {
+          "es": "violeta",
+          "ca": "violeta"
+        },
+        "pp": {
+          "es": "blanca",
+          "ca": "blanca"
+        }
+      },
+      "descripcion": {
+        "es": "En los guisantes, el color de flor violeta (P) es dominante sobre el blanco (p).",
+        "ca": "En els pèsols, el color de flor violeta (P) és dominant sobre el blanc (p)."
+      }
+    },
+    {
+      "tipo": {
+        "es": "dominancia_incompleta",
+        "ca": "dominància_incompleta"
+      },
+      "caracter": {
+        "es": "Color de fruto en berenjenas",
+        "ca": "Color de fruit en albergínies"
+      },
+      "alelos": [
+        "V",
+        "v"
+      ],
+      "fenotipos": {
+        "VV": {
+          "es": "violeta oscuro",
+          "ca": "violeta fosc"
+        },
+        "Vv": {
+          "es": "violeta claro",
+          "ca": "violeta clar"
+        },
+        "vv": {
+          "es": "blanco",
+          "ca": "blanc"
+        }
+      },
+      "descripcion": {
+        "es": "En las berenjenas, el color de fruto violeta oscuro (VV) y blanco (vv) producen frutos violeta claro (Vv) por dominancia incompleta.",
+        "ca": "En les albergínies, el color de fruit violeta fosc (VV) i blanc (vv) produeixen fruits violeta clar (Vv) per dominància incompleta."
+      }
+    },
+    {
+      "tipo": {
+        "es": "codominancia",
+        "ca": "codominància"
+      },
+      "caracter": {
+        "es": "Grupo sanguíneo ABO",
+        "ca": "Grup sanguini ABO"
+      },
+      "alelos": [
+        "IA",
+        "IB",
+        "i"
+      ],
+      "fenotipos": {
+        "IAIA": {
+          "es": "A",
+          "ca": "A"
+        },
+        "IAi": {
+          "es": "A",
+          "ca": "A"
+        },
+        "IBIB": {
+          "es": "B",
+          "ca": "B"
+        },
+        "IBi": {
+          "es": "B",
+          "ca": "B"
+        },
+        "IAIB": {
+          "es": "AB",
+          "ca": "AB"
+        },
+        "ii": {
+          "es": "O",
+          "ca": "O"
+        }
+      },
+      "descripcion": {
+        "es": "En humanos, los alelos A (IA) y B (IB) son codominantes y dan lugar al grupo sanguíneo AB; el alelo i es recesivo.",
+        "ca": "En humans, els al·lels A (IA) i B (IB) són codominants i donen lloc al grup sanguini AB; l'al·lel i és recessiu."
+      }
+    },
+    {
+      "tipo": {
+        "es": "dominancia_completa",
+        "ca": "dominància_completa"
+      },
+      "caracter": {
+        "es": "Forma del pelo en humanos",
+        "ca": "Forma del cabell en humans"
+      },
+      "alelos": [
+        "C",
+        "c"
+      ],
+      "fenotipos": {
+        "CC": {
+          "es": "rizado",
+          "ca": "arrissat"
+        },
+        "Cc": {
+          "es": "rizado",
+          "ca": "arrissat"
+        },
+        "cc": {
+          "es": "liso",
+          "ca": "llis"
+        }
+      },
+      "descripcion": {
+        "es": "En humanos, el pelo rizado (C) es dominante sobre el pelo liso (c).",
+        "ca": "En humans, el cabell arrissat (C) és dominant sobre el cabell llis (c)."
+      }
+    },
+    {
+      "tipo": {
+        "es": "dominancia_completa",
+        "ca": "dominància_completa"
+      },
+      "caracter": {
+        "es": "Capacidad de enrollar la lengua",
+        "ca": "Capacitat d'enrotllar la llengua"
+      },
+      "alelos": [
+        "T",
+        "t"
+      ],
+      "fenotipos": {
+        "TT": {
+          "es": "puede enrollar",
+          "ca": "pot enrotllar"
+        },
+        "Tt": {
+          "es": "puede enrollar",
+          "ca": "pot enrotllar"
+        },
+        "tt": {
+          "es": "no puede enrollar",
+          "ca": "no pot enrotllar"
+        }
+      },
+      "descripcion": {
+        "es": "En humanos, la capacidad de enrollar la lengua (T) es dominante sobre la incapacidad (t).",
+        "ca": "En humans, la capacitat d'enrotllar la llengua (T) és dominant sobre la incapacitat (t)."
+      }
+    },
+    {
+      "tipo": {
+        "es": "dominancia_completa",
+        "ca": "dominància_completa"
+      },
+      "caracter": {
+        "es": "Color de ojos en Drosophila",
+        "ca": "Color d'ulls en Drosophila"
+      },
+      "alelos": [
+        "W",
+        "w"
+      ],
+      "fenotipos": {
+        "WW": {
+          "es": "rojo",
+          "ca": "vermell"
+        },
+        "Ww": {
+          "es": "rojo",
+          "ca": "vermell"
+        },
+        "ww": {
+          "es": "blanco",
+          "ca": "blanc"
+        }
+      },
+      "descripcion": {
+        "es": "En las moscas Drosophila, el color de ojos rojo (W) es dominante sobre el blanco (w).",
+        "ca": "En les mosques Drosophila, el color d'ulls vermell (W) és dominant sobre el blanc (w)."
+      }
+    },
+    {
+      "tipo": {
+        "es": "dominancia_completa",
+        "ca": "dominància_completa"
+      },
+      "caracter": {
+        "es": "Altura en guisantes",
+        "ca": "Alçada en pèsols"
+      },
+      "alelos": [
+        "T",
+        "t"
+      ],
+      "fenotipos": {
+        "TT": {
+          "es": "alto",
+          "ca": "alt"
+        },
+        "Tt": {
+          "es": "alto",
+          "ca": "alt"
+        },
+        "tt": {
+          "es": "bajo",
+          "ca": "baix"
+        }
+      },
+      "descripcion": {
+        "es": "En los guisantes, la planta alta (T) es dominante sobre la baja (t).",
+        "ca": "En els pèsols, la planta alta (T) és dominant sobre la baixa (t)."
+      }
+    },
+    {
+      "tipo": {
+        "es": "dominancia_completa",
+        "ca": "dominància_completa"
+      },
+      "caracter": {
+        "es": "Presencia de pecas en humanos",
+        "ca": "Presència de pigues en humans"
+      },
+      "alelos": [
+        "F",
+        "f"
+      ],
+      "fenotipos": {
+        "FF": {
+          "es": "con pecas",
+          "ca": "amb pigues"
+        },
+        "Ff": {
+          "es": "con pecas",
+          "ca": "amb pigues"
+        },
+        "ff": {
+          "es": "sin pecas",
+          "ca": "sense pigues"
+        }
+      },
+      "descripcion": {
+        "es": "En humanos, la presencia de pecas (F) es dominante sobre la ausencia (f).",
+        "ca": "En humans, la presència de pigues (F) és dominant sobre l'absència (f)."
+      }
+    },
+    {
+      "tipo": {
+        "es": "dominancia_completa",
+        "ca": "dominància_completa"
+      },
+      "caracter": {
+        "es": "Polidactilia en humanos",
+        "ca": "Polidactília en humans"
+      },
+      "alelos": [
+        "P",
+        "p"
+      ],
+      "fenotipos": {
+        "PP": {
+          "es": "dedos extra",
+          "ca": "dits extra"
+        },
+        "Pp": {
+          "es": "dedos extra",
+          "ca": "dits extra"
+        },
+        "pp": {
+          "es": "número normal de dedos",
+          "ca": "nombre normal de dits"
+        }
+      },
+      "descripcion": {
+        "es": "En humanos, la polidactilia o presencia de dedos extra (P) es dominante sobre el número normal de dedos (p).",
+        "ca": "En humans, la polidactília o presència de dits extra (P) és dominant sobre el nombre normal de dits (p)."
+      }
+    },
+    {
+      "tipo": {
+        "es": "dominancia_completa",
+        "ca": "dominància_completa"
+      },
+      "caracter": {
+        "es": "Línea de la viuda en el cabello",
+        "ca": "Línia de la vídua en el cabell"
+      },
+      "alelos": [
+        "W",
+        "w"
+      ],
+      "fenotipos": {
+        "WW": {
+          "es": "con pico de viuda",
+          "ca": "amb pic de vídua"
+        },
+        "Ww": {
+          "es": "con pico de viuda",
+          "ca": "amb pic de vídua"
+        },
+        "ww": {
+          "es": "sin pico de viuda",
+          "ca": "sense pic de vídua"
+        }
+      },
+      "descripcion": {
+        "es": "En humanos, la línea del cabello en forma de pico o 'pico de viuda' (W) es dominante sobre la línea recta (w).",
+        "ca": "En humans, la línia del cabell en forma de pic o 'pic de vídua' (W) és dominant sobre la línia recta (w)."
+      }
+    },
+    {
+      "tipo": {
+        "es": "dominancia_completa",
+        "ca": "dominància_completa"
+      },
+      "caracter": {
+        "es": "Hoyuelos en las mejillas",
+        "ca": "Clotets a les galtes"
+      },
+      "alelos": [
+        "D",
+        "d"
+      ],
+      "fenotipos": {
+        "DD": {
+          "es": "con hoyuelos",
+          "ca": "amb clotets"
+        },
+        "Dd": {
+          "es": "con hoyuelos",
+          "ca": "amb clotets"
+        },
+        "dd": {
+          "es": "sin hoyuelos",
+          "ca": "sense clotets"
+        }
+      },
+      "descripcion": {
+        "es": "En humanos, la presencia de hoyuelos en las mejillas (D) es dominante sobre la ausencia (d).",
+        "ca": "En humans, la presència de clotets a les galtes (D) és dominant sobre l'absència (d)."
+      }
+    },
+    {
+      "tipo": {
+        "es": "dominancia_completa",
+        "ca": "dominància_completa"
+      },
+      "caracter": {
+        "es": "Visión del color",
+        "ca": "Visió del color"
+      },
+      "alelos": [
+        "C",
+        "c"
+      ],
+      "fenotipos": {
+        "CC": {
+          "es": "visión normal",
+          "ca": "visió normal"
+        },
+        "Cc": {
+          "es": "visión normal",
+          "ca": "visió normal"
+        },
+        "cc": {
+          "es": "daltonismo",
+          "ca": "daltonisme"
+        }
+      },
+      "descripcion": {
+        "es": "En humanos, la visión normal del color (C) es dominante sobre el daltonismo (c), aunque es un rasgo ligado al cromosoma X.",
+        "ca": "En humans, la visió normal del color (C) és dominant sobre el daltonisme (c), tot i que és un tret lligat al cromosoma X."
+      }
+    },
+    {
+      "tipo": {
+        "es": "dominancia_completa",
+        "ca": "dominància_completa"
+      },
+      "caracter": {
+        "es": "Enfermedad de Huntington",
+        "ca": "Malaltia de Huntington"
+      },
+      "alelos": [
+        "H",
+        "h"
+      ],
+      "fenotipos": {
+        "HH": {
+          "es": "afectado",
+          "ca": "afectat"
+        },
+        "Hh": {
+          "es": "afectado",
+          "ca": "afectat"
+        },
+        "hh": {
+          "es": "no afectado",
+          "ca": "no afectat"
+        }
+      },
+      "descripcion": {
+        "es": "En humanos, el alelo que causa la enfermedad de Huntington (H) es dominante sobre el alelo normal (h).",
+        "ca": "En humans, l'al·lel que causa la malaltia de Huntington (H) és dominant sobre l'al·lel normal (h)."
+      }
+    },
+    {
+      "tipo": {
+        "es": "dominancia_incompleta",
+        "ca": "dominància_incompleta"
+      },
+      "caracter": {
+        "es": "Color de flor en bocas de dragón",
+        "ca": "Color de flor en boques de drac"
+      },
+      "alelos": [
+        "R",
+        "r"
+      ],
+      "fenotipos": {
+        "RR": {
+          "es": "rojo",
+          "ca": "vermell"
+        },
+        "Rr": {
+          "es": "rosa",
+          "ca": "rosa"
+        },
+        "rr": {
+          "es": "blanco",
+          "ca": "blanc"
+        }
+      },
+      "descripcion": {
+        "es": "En las plantas de boca de dragón (Antirrhinum), las flores rojas (RR) y blancas (rr) producen flores rosas (Rr) por dominancia incompleta.",
+        "ca": "En les plantes de boca de drac (Antirrhinum), les flors vermelles (RR) i blanques (rr) produeixen flors roses (Rr) per dominància incompleta."
+      }
+    },
+    {
+      "tipo": {
+        "es": "dominancia_incompleta",
+        "ca": "dominància_incompleta"
+      },
+      "caracter": {
+        "es": "Color de plumaje en gallinas andaluzas",
+        "ca": "Color de plomatge en gallines andaluses"
+      },
+      "alelos": [
+        "B",
+        "b"
+      ],
+      "fenotipos": {
+        "BB": {
+          "es": "negro",
+          "ca": "negre"
+        },
+        "Bb": {
+          "es": "azul",
+          "ca": "blau"
+        },
+        "bb": {
+          "es": "blanco",
+          "ca": "blanc"
+        }
+      },
+      "descripcion": {
+        "es": "En gallinas andaluzas, el plumaje negro (BB) y blanco (bb) produce plumaje azul (Bb) por dominancia incompleta.",
+        "ca": "En gallines andaluses, el plomatge negre (BB) i blanc (bb) produeix plomatge blau (Bb) per dominància incompleta."
+      }
+    },
+    {
+      "tipo": {
+        "es": "dominancia_incompleta",
+        "ca": "dominància_incompleta"
+      },
+      "caracter": {
+        "es": "Color de pelo en bovinos Shorthorn",
+        "ca": "Color de pèl en bovins Shorthorn"
+      },
+      "alelos": [
+        "R",
+        "r"
+      ],
+      "fenotipos": {
+        "RR": {
+          "es": "rojo",
+          "ca": "vermell"
+        },
+        "Rr": {
+          "es": "ruano",
+          "ca": "roà"
+        },
+        "rr": {
+          "es": "blanco",
+          "ca": "blanc"
+        }
+      },
+      "descripcion": {
+        "es": "En el ganado Shorthorn, el pelo rojo (RR) y blanco (rr) produce pelo ruano (mezcla de rojo y blanco) (Rr) por dominancia incompleta.",
+        "ca": "En el bestiar Shorthorn, el pèl vermell (RR) i blanc (rr) produeix pèl roà (barreja de vermell i blanc) (Rr) per dominància incompleta."
+      }
+    },
+    {
+      "tipo": {
+        "es": "dominancia_incompleta",
+        "ca": "dominància_incompleta"
+      },
+      "caracter": {
+        "es": "Color de flores en camelias",
+        "ca": "Color de flors en camèlies"
+      },
+      "alelos": [
+        "R",
+        "r"
+      ],
+      "fenotipos": {
+        "RR": {
+          "es": "rojo",
+          "ca": "vermell"
+        },
+        "Rr": {
+          "es": "rosa",
+          "ca": "rosa"
+        },
+        "rr": {
+          "es": "blanco",
+          "ca": "blanc"
+        }
+      },
+      "descripcion": {
+        "es": "En camelias, las flores rojas (RR) y blancas (rr) producen flores rosas (Rr) por dominancia incompleta.",
+        "ca": "En camèlies, les flors vermelles (RR) i blanques (rr) produeixen flors roses (Rr) per dominància incompleta."
+      }
+    },
+    {
+      "tipo": {
+        "es": "dominancia_incompleta",
+        "ca": "dominància_incompleta"
+      },
+      "caracter": {
+        "es": "Longitud del pico en pinzones",
+        "ca": "Longitud del bec en pinsans"
+      },
+      "alelos": [
+        "L",
+        "l"
+      ],
+      "fenotipos": {
+        "LL": {
+          "es": "largo",
+          "ca": "llarg"
+        },
+        "Ll": {
+          "es": "medio",
+          "ca": "mitjà"
+        },
+        "ll": {
+          "es": "corto",
+          "ca": "curt"
+        }
+      },
+      "descripcion": {
+        "es": "En algunas especies de pinzones, la longitud del pico muestra dominancia incompleta, con heterocigotos (Ll) presentando un tamaño intermedio.",
+        "ca": "En algunes espècies de pinsans, la longitud del bec mostra dominància incompleta, amb heterozigots (Ll) presentant una mida intermèdia."
+      }
+    },
+    {
+      "tipo": {
+        "es": "dominancia_incompleta",
+        "ca": "dominància_incompleta"
+      },
+      "caracter": {
+        "es": "Color de flores en petunias",
+        "ca": "Color de flors en petúnies"
+      },
+      "alelos": [
+        "W",
+        "w"
+      ],
+      "fenotipos": {
+        "WW": {
+          "es": "violeta",
+          "ca": "violeta"
+        },
+        "Ww": {
+          "es": "lavanda",
+          "ca": "lavanda"
+        },
+        "ww": {
+          "es": "blanco",
+          "ca": "blanc"
+        }
+      },
+      "descripcion": {
+        "es": "En petunias, las flores violetas (WW) y blancas (ww) producen flores lavanda (Ww) por dominancia incompleta.",
+        "ca": "En petúnies, les flors violetes (WW) i blanques (ww) produeixen flors lavanda (Ww) per dominància incompleta."
+      }
+    },
+    {
+      "tipo": {
+        "es": "codominancia",
+        "ca": "codominància"
+      },
+      "caracter": {
+        "es": "Sistema sanguíneo MN",
+        "ca": "Sistema sanguini MN"
+      },
+      "alelos": [
+        "LM",
+        "LN"
+      ],
+      "fenotipos": {
+        "LMLM": {
+          "es": "M",
+          "ca": "M"
+        },
+        "LMLN": {
+          "es": "MN",
+          "ca": "MN"
+        },
+        "LNLN": {
+          "es": "N",
+          "ca": "N"
+        }
+      },
+      "descripcion": {
+        "es": "En humanos, los alelos M (LM) y N (LN) son codominantes y dan lugar al grupo sanguíneo MN cuando ambos están presentes.",
+        "ca": "En humans, els al·lels M (LM) i N (LN) són codominants i donen lloc al grup sanguini MN quan tots dos estan presents."
+      }
+    },
+    {
+      "tipo": {
+        "es": "codominancia",
+        "ca": "codominància"
+      },
+      "caracter": {
+        "es": "Color de pelaje en ganado Roan",
+        "ca": "Color de pelatge en bestiar Roan"
+      },
+      "alelos": [
+        "R",
+        "r"
+      ],
+      "fenotipos": {
+        "RR": {
+          "es": "rojo",
+          "ca": "vermell"
+        },
+        "Rr": {
+          "es": "roan (pelos rojos y blancos mezclados)",
+          "ca": "roan (pèls vermells i blancs barrejats)"
+        },
+        "rr": {
+          "es": "blanco",
+          "ca": "blanc"
+        }
+      },
+      "descripcion": {
+        "es": "En el ganado Roan, el heterocigoto Rr muestra ambos colores de pelo (rojo y blanco) en forma de mosaico donde ambos alelos se expresan independientemente.",
+        "ca": "En el bestiar Roan, l'heterozigot Rr mostra ambdós colors de pèl (vermell i blanc) en forma de mosaic on els dos al·lels s'expressen independentment."
+      }
+    },
+    {
+      "tipo": {
+        "es": "codominancia",
+        "ca": "codominància"
+      },
+      "caracter": {
+        "es": "Proteínas de la leche en vacas",
+        "ca": "Proteïnes de la llet en vaques"
+      },
+      "alelos": [
+        "A",
+        "B"
+      ],
+      "fenotipos": {
+        "AA": {
+          "es": "proteína A",
+          "ca": "proteïna A"
+        },
+        "AB": {
+          "es": "proteínas A y B",
+          "ca": "proteïnes A i B"
+        },
+        "BB": {
+          "es": "proteína B",
+          "ca": "proteïna B"
+        }
+      },
+      "descripcion": {
+        "es": "En vacas, los alelos para diferentes proteínas de la leche (A y B) se expresan ambos en los heterocigotos (AB), produciendo ambas proteínas simultáneamente.",
+        "ca": "En vaques, els al·lels per a diferents proteïnes de la llet (A i B) s'expressen tots dos en els heterozigots (AB), produint ambdues proteïnes simultàniament."
+      }
+    },
+    {
+      "tipo": {
+        "es": "codominancia",
+        "ca": "codominància"
+      },
+      "caracter": {
+        "es": "Sistema HLA en humanos",
+        "ca": "Sistema HLA en humans"
+      },
+      "alelos": [
+        "HLA-A1",
+        "HLA-A2"
+      ],
+      "fenotipos": {
+        "HLA-A1/HLA-A1": {
+          "es": "antígeno HLA-A1",
+          "ca": "antigen HLA-A1"
+        },
+        "HLA-A1/HLA-A2": {
+          "es": "antígenos HLA-A1 y HLA-A2",
+          "ca": "antígens HLA-A1 i HLA-A2"
+        },
+        "HLA-A2/HLA-A2": {
+          "es": "antígeno HLA-A2",
+          "ca": "antigen HLA-A2"
+        }
+      },
+      "descripcion": {
+        "es": "En humanos, los alelos del complejo mayor de histocompatibilidad (HLA) son codominantes, expresándose ambos en individuos heterocigotos.",
+        "ca": "En humans, els al·lels del complex major d'histocompatibilitat (HLA) són codominants, expressant-se tots dos en individus heterozigots."
+      }
+    },
+    {
+      "tipo": {
+        "es": "codominancia",
+        "ca": "codominància"
+      },
+      "caracter": {
+        "es": "Bandas en caracoles Cepaea",
+        "ca": "Bandes en cargols Cepaea"
+      },
+      "alelos": [
+        "B",
+        "b"
+      ],
+      "fenotipos": {
+        "BB": {
+          "es": "con bandas",
+          "ca": "amb bandes"
+        },
+        "Bb": {
+          "es": "bandas interrumpidas",
+          "ca": "bandes interrompudes"
+        },
+        "bb": {
+          "es": "sin bandas",
+          "ca": "sense bandes"
+        }
+      },
+      "descripcion": {
+        "es": "En caracoles del género Cepaea, el patrón de bandas muestra codominancia, con heterocigotos presentando un patrón de bandas interrumpidas.",
+        "ca": "En cargols del gènere Cepaea, el patró de bandes mostra codominància, amb heterozigots presentant un patró de bandes interrompudes."
+      }
+    },
+    {
+      "tipo": {
+        "es": "codominancia",
+        "ca": "codominància"
+      },
+      "caracter": {
+        "es": "Color de plumas en algunas gallinas",
+        "ca": "Color de plomes en algunes gallines"
+      },
+      "alelos": [
+        "C",
+        "c"
+      ],
+      "fenotipos": {
+        "CC": {
+          "es": "negro",
+          "ca": "negre"
+        },
+        "Cc": {
+          "es": "patrón moteado (negro y blanco)",
+          "ca": "patró clapat (negre i blanc)"
+        },
+        "cc": {
+          "es": "blanco",
+          "ca": "blanc"
+        }
+      },
+      "descripcion": {
+        "es": "En ciertas razas de gallinas, el heterocigoto (Cc) muestra un patrón moteado donde ambos alelos se expresan en diferentes zonas del plumaje.",
+        "ca": "En certes races de gallines, l'heterozigot (Cc) mostra un patró clapat on ambdós al·lels s'expressen en diferents zones del plomatge."
+      }
+    }
+  ]
+}

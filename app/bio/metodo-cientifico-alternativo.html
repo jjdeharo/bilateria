@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El anti-método científico: una revolución del pensamiento</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #e74c3c;
+            --accent-color: #3498db;
+            --text-color: #333;
+            --light-bg: #ecf0f1;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #f9f9f9;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        h1 {
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+        }
+        
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #c0392b;
+        }
+        
+        .scenario {
+            display: none;
+        }
+        
+        .scenario.active {
+            display: block;
+        }
+        
+        .choices {
+            margin-top: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .result {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 4px;
+            background-color: var(--light-bg);
+            display: none;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+        
+        .progress-bar {
+            width: 0%;
+            height: 20px;
+            background-color: var(--accent-color);
+            border-radius: 4px;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        
+        .tab {
+            padding: 0.5rem 1rem;
+            background-color: #ddd;
+            cursor: pointer;
+            border-radius: 4px 4px 0 0;
+            margin-right: 0.25rem;
+        }
+        
+        .tab.active {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        .timeline {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background-color: var(--primary-color);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+        }
+        
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            width: 50%;
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border: 4px solid var(--accent-color);
+            border-radius: 50%;
+            top: 15px;
+            z-index: 1;
+        }
+        
+        .left {
+            left: 0;
+        }
+        
+        .right {
+            left: 50%;
+        }
+        
+        .left::after {
+            right: -10px;
+        }
+        
+        .right::after {
+            left: -10px;
+        }
+        
+        .timeline-content {
+            padding: 20px;
+            background-color: white;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        @media screen and (max-width: 768px) {
+            .timeline::after {
+                left: 31px;
+            }
+            
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+            
+            .timeline-item::after {
+                left: 21px;
+            }
+            
+            .left::after, .right::after {
+                left: 21px;
+            }
+            
+            .right {
+                left: 0%;
+            }
+        }
+        
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+        
+        footer a {
+            color: #3498db;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* Antimétodo */
+        .anti-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+        
+        .anti-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            width: 100%;
+            max-width: 300px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .anti-card:hover {
+            transform: scale(1.02);
+        }
+        
+        .anti-card h3 {
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .thinking-model {
+            padding: 1rem;
+            border-left: 4px solid var(--accent-color);
+            margin: 1rem 0;
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .highlight {
+            background-color: rgba(231, 76, 60, 0.1);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+        }
+        
+        /* Universos paralelos */
+        .universe {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            height: 400px;
+            margin: 2rem 0;
+            background-color: #000;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 5s infinite;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0.2; }
+            50% { opacity: 1; }
+            100% { opacity: 0.2; }
+        }
+        
+        .reality-box {
+            position: absolute;
+            width: 250px;
+            padding: 1rem;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            transition: all 1s;
+        }
+        
+        #reality1 {
+            top: 50px;
+            left: 10%;
+        }
+        
+        #reality2 {
+            top: 150px;
+            left: 40%;
+        }
+        
+        #reality3 {
+            top: 100px;
+            left: 70%;
+        }
+        
+        #reality4 {
+            top: 250px;
+            left: 25%;
+        }
+        
+        #reality5 {
+            top: 200px;
+            left: 60%;
+        }
+        
+        @media screen and (max-width: 768px) {
+            .reality-box {
+                width: 150px;
+                font-size: 0.8rem;
+            }
+            
+            #reality1, #reality2, #reality3, #reality4, #reality5 {
+                position: static;
+                margin: 1rem auto;
+            }
+            
+            .universe {
+                height: auto;
+                display: flex;
+                flex-direction: column;
+                padding: 1rem;
+            }
+        }
+
+        /* Selector de idioma */
+        .language-selector {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+        
+        .lang-btn {
+            padding: 5px 10px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .lang-btn.active {
+            background-color: white;
+            color: var(--primary-color);
+        }
+        
+        @media screen and (max-width: 768px) {
+            .language-selector {
+                position: relative;
+                top: 0;
+                right: 0;
+                justify-content: center;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="language-selector">
+            <button class="lang-btn" id="es-btn" onclick="changeLanguage('es')">ES</button>
+            <button class="lang-btn" id="ca-btn" onclick="changeLanguage('ca')">CA</button>
+        </div>
+        <h1 id="main-title">El anti-método científico: una revolución del pensamiento</h1>
+        <p id="subtitle">Un viaje a través de realidades alternativas del conocimiento</p>
+    </header>
+    
+    <div class="container">
+        <div class="card">
+            <h2 id="welcome-title">Bienvenido a una visión radicalmente distinta</h2>
+            <p id="welcome-text1">Olvida todo lo que te han contado sobre el método científico. Vamos a darle la vuelta al concepto.</p>
+            <p id="welcome-text2">¿Y si en lugar de seguir un método para hallar respuestas, creamos un <span class="highlight" id="anti-method-highlight">anti-método</span> para cuestionar las preguntas?</p>
+            
+            <div class="tabs">
+                <div class="tab active" onclick="openTab('intro')" id="tab-intro">La inversión</div>
+                <div class="tab" onclick="openTab('universos')" id="tab-universos">Universos paralelos</div>
+                <div class="tab" onclick="openTab('simulador')" id="tab-simulador">Simulador de realidades</div>
+                <div class="tab" onclick="openTab('antimétodo')" id="tab-antimetodo">El anti-método</div>
+            </div>
+            
+            <div id="intro" class="tab-content active">
+                <p id="intro-text1">El método científico convencional sigue estos pasos:</p>
+                <ol id="scientific-method-steps">
+                    <li>Observación.</li>
+                    <li>Pregunta.</li>
+                    <li>Hipótesis.</li>
+                    <li>Experimentación.</li>
+                    <li>Análisis.</li>
+                    <li>Conclusión.</li>
+                </ol>
+                
+                <p id="intro-text2">Pero... ¿qué pasaría si empezáramos por el final? ¿Y si partiéramos de las conclusiones para validar o invalidar nuestras creencias?</p>
+                
+                <div class="thinking-model">
+                    <h3 id="impossible-thinking1-title">Pensamiento imposible #1:</h3>
+                    <p id="impossible-thinking1-text1">Imagina un mundo donde la ciencia funciona al revés: primero decidimos qué queremos que sea verdad y luego diseñamos experimentos para confirmarlo.</p>
+                    <p id="impossible-thinking1-text2">Espera... ¿acaso no es así como funcionan muchos de nuestros razonamientos cotidianos?</p>
+                </div>
+                
+                <p id="confirmation-bias-title">La fórmula del sesgo de confirmación podría expresarse como:</p>
+                <p>\[ Creencia + Datos \Rightarrow Selección_{datos} = Confirmación_{creencia} \]</p>
+                
+                <button class="btn" onclick="openTab('universos')" id="btn-next-universe">Continuar al siguiente nivel</button>
+            </div>
+            
+            <div id="universos" class="tab-content">
+                <h3 id="universe-title">Los universos paralelos del conocimiento</h3>
+                
+                <p id="universe-text">En nuestra realidad, el método científico es solo uno de los múltiples sistemas posibles para generar conocimiento.</p>
+                
+                <div class="universe" id="universe-container">
+                    <!-- Estrellas generadas por JS -->
+                    <div class="reality-box" id="reality1">
+                        <h4 id="reality1-title">Realidad #1</h4>
+                        <p id="reality1-text">El mundo donde la autoridad determina la verdad</p>
+                    </div>
+                    
+                    <div class="reality-box" id="reality2">
+                        <h4 id="reality2-title">Realidad #2</h4>
+                        <p id="reality2-text">El universo donde la tradición nunca se cuestiona</p>
+                    </div>
+                    
+                    <div class="reality-box" id="reality3">
+                        <h4 id="reality3-title">Realidad #3</h4>
+                        <p id="reality3-text">La dimensión donde solo las ideas mayoritarias son válidas</p>
+                    </div>
+                    
+                    <div class="reality-box" id="reality4">
+                        <h4 id="reality4-title">Realidad #4</h4>
+                        <p id="reality4-text">El cosmos donde la intuición supera a la evidencia</p>
+                    </div>
+                    
+                    <div class="reality-box" id="reality5">
+                        <h4 id="reality5-title">Realidad #5</h4>
+                        <p id="reality5-text">Nuestra realidad: el método científico</p>
+                    </div>
+                </div>
+                
+                <p id="universe-question">¿Qué hace único al método científico frente a estos universos alternativos?</p>
+                <p id="universe-answer">Contrariamente a lo que podríamos pensar, su mayor fortaleza reside en su <strong id="failure-ability">capacidad para equivocarse</strong>.</p>
+                
+                <div class="thinking-model">
+                    <h3 id="incompatible-concepts-title">Fusión de conceptos incompatibles:</h3>
+                    <p id="incompatible-concepts-text">El método científico es simultáneamente el más humilde y el más poderoso sistema de conocimiento: <strong id="incompatible-concepts-strong">gana fuerza precisamente al reconocer su falibilidad</strong>.</p>
+                </div>
+                
+                <button class="btn" onclick="openTab('simulador')" id="btn-next-simulator">Avanzar al simulador</button>
+            </div>
+            
+            <div id="simulador" class="tab-content">
+                <h3 id="simulator-title">Simulador de realidades científicas</h3>
+                <p id="simulator-text">Experimenta cómo funcionaría el mundo si alteramos los componentes del método científico.</p>
+                
+                <div class="scenario active" id="scenario1">
+                    <h4 id="scenario1-title">Escenario 1: La tierra plana</h4>
+                    <p id="scenario1-text1">Eres un investigador y has encontrado algo extraordinario: evidencia que sugiere que la Tierra podría ser plana.</p>
+                    <p id="scenario1-text2">¿Cómo procederías?</p>
+                    
+                    <div class="choices">
+                        <button class="btn" onclick="showResult('result1A')" id="scenario1-choiceA">A. Publicar inmediatamente mi descubrimiento revolucionario</button>
+                        <button class="btn" onclick="showResult('result1B')" id="scenario1-choiceB">B. Intentar refutar mi propia hipótesis con más pruebas</button>
+                        <button class="btn" onclick="showResult('result1C')" id="scenario1-choiceC">C. Buscar solo evidencia que confirme mi teoría</button>
+                    </div>
+                    
+                    <div class="result" id="result1A">
+                        <p id="result1A-text1">Has elegido publicar inmediatamente. Resultado: La comunidad científica exige evidencias sólidas que no tienes. Tu reputación queda en entredicho.</p>
+                        <p id="result1A-text2">Falló el <strong id="result1A-strong">escepticismo metodológico</strong>.</p>
+                        <button class="btn" onclick="nextScenario(1)" id="result1A-button">Continuar</button>
+                    </div>
+                    
+                    <div class="result" id="result1B">
+                        <p id="result1B-text1">Has intentado refutar tu propia hipótesis. Resultado: Descubres errores en tu metodología inicial que invalidaban tus conclusiones.</p>
+                        <p id="result1B-text2">¡Has aplicado correctamente el método científico! La ciencia avanza cuando intentamos derribar nuestras propias ideas.</p>
+                        <button class="btn" onclick="nextScenario(1)" id="result1B-button">Continuar</button>
+                    </div>
+                    
+                    <div class="result" id="result1C">
+                        <p id="result1C-text1">Has buscado solo evidencia confirmatoria. Resultado: Ignoras datos cruciales que contradecían tu teoría y terminas con conclusiones erróneas.</p>
+                        <p id="result1C-text2">Falló la <strong id="result1C-strong">objetividad y verificabilidad</strong>.</p>
+                        <button class="btn" onclick="nextScenario(1)" id="result1C-button">Continuar</button>
+                    </div>
+                </div>
+                
+                <div class="scenario" id="scenario2">
+                    <h4 id="scenario2-title">Escenario 2: La vacuna misteriosa</h4>
+                    <p id="scenario2-text1">Eres un científico médico. Has desarrollado una vacuna que parece prometedora, pero los datos preliminares muestran posibles efectos secundarios.</p>
+                    <p id="scenario2-text2">¿Qué harías?</p>
+                    
+                    <div class="choices">
+                        <button class="btn" onclick="showResult('result2A')" id="scenario2-choiceA">A. Publicar solo los resultados positivos</button>
+                        <button class="btn" onclick="showResult('result2B')" id="scenario2-choiceB">B. Reportar todos los datos y continuar investigando</button>
+                        <button class="btn" onclick="showResult('result2C')" id="scenario2-choiceC">C. Abandonar la investigación ante la primera señal de problemas</button>
+                    </div>
+                    
+                    <div class="result" id="result2A">
+                        <p id="result2A-text1">Has publicado solo resultados positivos. Resultado: La vacuna causa problemas que no reportaste. La confianza pública en la ciencia disminuye.</p>
+                        <p id="result2A-text2">Falló la <strong id="result2A-strong">transparencia y reproducibilidad</strong>.</p>
+                        <button class="btn" onclick="nextScenario(2)" id="result2A-button">Continuar</button>
+                    </div>
+                    
+                    <div class="result" id="result2B">
+                        <p id="result2B-text1">Has reportado todos los datos. Resultado: Otros científicos te ayudan a mejorar la vacuna y resolver los efectos secundarios.</p>
+                        <p id="result2B-text2">¡Has aplicado correctamente el método científico! La ciencia es un esfuerzo colaborativo y acumulativo.</p>
+                        <button class="btn" onclick="nextScenario(2)" id="result2B-button">Continuar</button>
+                    </div>
+                    
+                    <div class="result" id="result2C">
+                        <p id="result2C-text1">Has abandonado la investigación. Resultado: Pierdes la oportunidad de desarrollar una vacuna que podría salvar millones de vidas.</p>
+                        <p id="result2C-text2">Falló la <strong id="result2C-strong">perseverancia y revisión</strong>.</p>
+                        <button class="btn" onclick="nextScenario(2)" id="result2C-button">Continuar</button>
+                    </div>
+                </div>
+                
+                <div class="scenario" id="scenario3">
+                    <h4 id="scenario3-title">Escenario 3: El fenómeno inexplicable</h4>
+                    <p id="scenario3-text1">Observas un fenómeno extraño que no encaja con las teorías científicas actuales. Tu intuición te dice que hay algo paranormal.</p>
+                    <p id="scenario3-text2">¿Cómo investigarías?</p>
+                    
+                    <div class="choices">
+                        <button class="btn" onclick="showResult('result3A')" id="scenario3-choiceA">A. Concluir que es paranormal ya que no hay explicación científica</button>
+                        <button class="btn" onclick="showResult('result3B')" id="scenario3-choiceB">B. Buscar explicaciones naturales primero, incluso si son improbables</button>
+                        <button class="btn" onclick="showResult('result3C')" id="scenario3-choiceC">C. Ignorar el fenómeno por no encajar con lo que sabes</button>
+                    </div>
+                    
+                    <div class="result" id="result3A">
+                        <p id="result3A-text1">Has concluido que es paranormal. Resultado: Otros investigadores encuentran una explicación natural que no consideraste.</p>
+                        <p id="result3A-text2">Falló la <strong id="result3A-strong">navaja de Occam</strong> - buscar primero explicaciones simples y naturales.</p>
+                        <button class="btn" onclick="openTab('antimétodo')" id="result3A-button">Avanzar al anti-método</button>
+                    </div>
+                    
+                    <div class="result" id="result3B">
+                        <p id="result3B-text1">Has buscado explicaciones naturales. Resultado: Descubres un nuevo fenómeno físico que amplia nuestro conocimiento científico.</p>
+                        <p id="result3B-text2">¡Has aplicado correctamente el método científico! La ciencia avanza cuando mantenemos la mente abierta pero crítica.</p>
+                        <button class="btn" onclick="openTab('antimétodo')" id="result3B-button">Avanzar al anti-método</button>
+                    </div>
+                    
+                    <div class="result" id="result3C">
+                        <p id="result3C-text1">Has ignorado el fenómeno. Resultado: Pierdes la oportunidad de hacer un gran descubrimiento por cerrazón mental.</p>
+                        <p id="result3C-text2">Falló la <strong id="result3C-strong">curiosidad y apertura</strong>.</p>
+                        <button class="btn" onclick="openTab('antimétodo')" id="result3C-button">Avanzar al anti-método</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="antimétodo" class="tab-content">
+                <h3 id="anti-method-title">El anti-método: invirtiendo el método científico</h3>
+                <p id="anti-method-text">Después de experimentar con estos escenarios, podemos definir el "anti-método científico" - lo opuesto a la ciencia efectiva:</p>
+                
+                <div class="anti-container">
+                    <div class="anti-card" onclick="showAntiDetail('anti1')">
+                        <h3 id="anti1-card-title">Anti-paso 1</h3>
+                        <p id="anti1-card-text">Comenzar con la conclusión</p>
+                    </div>
+                    
+                    <div class="anti-card" onclick="showAntiDetail('anti2')">
+                        <h3 id="anti2-card-title">Anti-paso 2</h3>
+                        <p id="anti2-card-text">Buscar solo evidencia confirmatoria</p>
+                    </div>
+                    
+                    <div class="anti-card" onclick="showAntiDetail('anti3')">
+                        <h3 id="anti3-card-title">Anti-paso 3</h3>
+                        <p id="anti3-card-text">Rechazar la crítica</p>
+                    </div>
+                    
+                    <div class="anti-card" onclick="showAntiDetail('anti4')">
+                        <h3 id="anti4-card-title">Anti-paso 4</h3>
+                        <p id="anti4-card-text">Ignorar datos contradictorios</p>
+                    </div>
+                    
+                    <div class="anti-card" onclick="showAntiDetail('anti5')">
+                        <h3 id="anti5-card-title">Anti-paso 5</h3>
+                        <p id="anti5-card-text">Resistir el cambio</p>
+                    </div>
+                </div>
+                
+                <div class="card hidden" id="anti1">
+                    <h3 id="anti1-detail-title">Anti-paso 1: Comenzar con la conclusión</h3>
+                    <p id="anti1-detail-text1">En lugar de formular preguntas y buscar respuestas, decidimos de antemano qué queremos que sea verdad.</p>
+                    <p id="anti1-detail-text2">Ejemplo cotidiano: "Estoy seguro de que el cambio climático no es real, buscaré información que lo demuestre."</p>
+                    <p id="anti1-detail-text3">Método científico correcto: Comenzar con observaciones y preguntas abiertas.</p>
+                    <button class="btn" onclick="hideAntiDetail()" id="anti1-back-button">Volver</button>
+                </div>
+                
+                <div class="card hidden" id="anti2">
+                    <h3 id="anti2-detail-title">Anti-paso 2: Buscar solo evidencia confirmatoria</h3>
+                    <p id="anti2-detail-text1">Seleccionamos únicamente los datos que confirman nuestra creencia previa, ignorando todo lo demás.</p>
+                    <p id="anti2-detail-text2">Ejemplo cotidiano: Recordar solo las predicciones acertadas de un horóscopo y olvidar las fallidas.</p>
+                    <p id="anti2-detail-text3">Método científico correcto: Intentar refutar activamente nuestras propias hipótesis.</p>
+                    <button class="btn" onclick="hideAntiDetail()" id="anti2-back-button">Volver</button>
+                </div>
+                
+                <div class="card hidden" id="anti3">
+                    <h3 id="anti3-detail-title">Anti-paso 3: Rechazar la crítica</h3>
+                    <p id="anti3-detail-text1">Ver cualquier crítica o cuestionamiento como un ataque personal, no como una oportunidad de mejora.</p>
+                    <p id="anti3-detail-text2">Ejemplo cotidiano: "Si cuestionas mi teoría es porque estás en mi contra."</p>
+                    <p id="anti3-detail-text3">Método científico correcto: Dar la bienvenida a la revisión por pares y la crítica constructiva.</p>
+                    <button class="btn" onclick="hideAntiDetail()" id="anti3-back-button">Volver</button>
+                </div>
+                
+                <div class="card hidden" id="anti4">
+                    <h3 id="anti4-detail-title">Anti-paso 4: Ignorar datos contradictorios</h3>
+                    <p id="anti4-detail-text1">Descartar cualquier evidencia que contradiga nuestras conclusiones preferidas.</p>
+                    <p id="anti4-detail-text2">Ejemplo cotidiano: Ignorar estudios científicos que contradicen nuestras creencias sobre la salud.</p>
+                    <p id="anti4-detail-text3">Método científico correcto: Prestar especial atención a los datos anómalos o inesperados.</p>
+                    <button class="btn" onclick="hideAntiDetail()" id="anti4-back-button">Volver</button>
+                </div>
+                
+                <div class="card hidden" id="anti5">
+                    <h3 id="anti5-detail-title">Anti-paso 5: Resistir el cambio</h3>
+                    <p id="anti5-detail-text1">Aferrarse a ideas previas incluso cuando la evidencia sugiere que son incorrectas.</p>
+                    <p id="anti5-detail-text2">Ejemplo cotidiano: "Siempre hemos hecho las cosas así, ¿por qué cambiar?"</p>
+                    <p id="anti5-detail-text3">Método científico correcto: Adaptar nuestras teorías a medida que aparece nueva evidencia.</p>
+                    <button class="btn" onclick="hideAntiDetail()" id="anti5-back-button">Volver</button>
+                </div>
+                
+                <div class="thinking-model" style="margin-top: 2rem;">
+                    <h3 id="anti-method-paradox-title">La paradoja del anti-método:</h3>
+                    <p id="anti-method-paradox-text">Al estudiar lo que NO es el método científico, comprendemos mejor su verdadera esencia.</p>
+                    <p id="scientific-method-formula-title">La fórmula del método científico podría representarse como:</p>
+                    <p id="scientific-method-formula">\[ Observación + Pregunta + (Hipótesis - Intentos_{refutación}) + Verificación_{independiente} = Conocimiento_{provisional} \]</p>
+                </div>
+                
+                <button class="btn btn-secondary" onclick="resetSimulator()" id="reset-button">Reiniciar simulador</button>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p id="footer-credits">Aplicación hecha por <a href="https://bilateria.org">Juan José de Haro</a></p>
+        <p id="footer-license">Esta obra está bajo una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" id="license-link">licencia Creative Commons BY-SA</a></p>
+    </footer>
+    
+    <script>
+        // Objetos de texto para cada idioma
+        const texts = {
+            es: {
+                // Títulos y subtítulos principales
+                'main-title': 'El anti-método científico: una revolución del pensamiento',
+                'subtitle': 'Un viaje a través de realidades alternativas del conocimiento',
+                'welcome-title': 'Bienvenido a una visión radicalmente distinta',
+                'welcome-text1': 'Olvida todo lo que te han contado sobre el método científico. Vamos a darle la vuelta al concepto.',
+                'welcome-text2': '¿Y si en lugar de seguir un método para hallar respuestas, creamos un <span class="highlight">anti-método</span> para cuestionar las preguntas?',
+                'anti-method-highlight': 'anti-método',
+                
+                // Pestañas
+                'tab-intro': 'La inversión',
+                'tab-universos': 'Universos paralelos',
+                'tab-simulador': 'Simulador de realidades',
+                'tab-antimetodo': 'El anti-método',
+                
+                // Introducción
+                'intro-text1': 'El método científico convencional sigue estos pasos:',
+                'intro-text2': 'Pero... ¿qué pasaría si empezáramos por el final? ¿Y si partiéramos de las conclusiones para validar o invalidar nuestras creencias?',
+                'impossible-thinking1-title': 'Pensamiento imposible #1:',
+                'impossible-thinking1-text1': 'Imagina un mundo donde la ciencia funciona al revés: primero decidimos qué queremos que sea verdad y luego diseñamos experimentos para confirmarlo.',
+                'impossible-thinking1-text2': 'Espera... ¿acaso no es así como funcionan muchos de nuestros razonamientos cotidianos?',
+                'confirmation-bias-title': 'La fórmula del sesgo de confirmación podría expresarse como:',
+                'btn-next-universe': 'Continuar al siguiente nivel',
+                
+                // Pasos del método científico
+                'scientific-method-steps': [
+                    'Observación.',
+                    'Pregunta.',
+                    'Hipótesis.',
+                    'Experimentación.',
+                    'Análisis.',
+                    'Conclusión.'
+                ],
+                
+                // Universos
+                'universe-title': 'Los universos paralelos del conocimiento',
+                'universe-text': 'En nuestra realidad, el método científico es solo uno de los múltiples sistemas posibles para generar conocimiento.',
+                'universe-question': '¿Qué hace único al método científico frente a estos universos alternativos?',
+                'universe-answer': 'Contrariamente a lo que podríamos pensar, su mayor fortaleza reside en su <strong>capacidad para equivocarse</strong>.',
+                'failure-ability': 'capacidad para equivocarse',
+                'incompatible-concepts-title': 'Fusión de conceptos incompatibles:',
+                'incompatible-concepts-text': 'El método científico es simultáneamente el más humilde y el más poderoso sistema de conocimiento: <strong>gana fuerza precisamente al reconocer su falibilidad</strong>.',
+                'incompatible-concepts-strong': 'gana fuerza precisamente al reconocer su falibilidad',
+                'btn-next-simulator': 'Avanzar al simulador',
+                
+                // Realidades
+                'reality1-title': 'Realidad #1',
+                'reality1-text': 'El mundo donde la autoridad determina la verdad',
+                'reality2-title': 'Realidad #2',
+                'reality2-text': 'El universo donde la tradición nunca se cuestiona',
+                'reality3-title': 'Realidad #3',
+                'reality3-text': 'La dimensión donde solo las ideas mayoritarias son válidas',
+                'reality4-title': 'Realidad #4',
+                'reality4-text': 'El cosmos donde la intuición supera a la evidencia',
+                'reality5-title': 'Realidad #5',
+                'reality5-text': 'Nuestra realidad: el método científico',
+                
+                // Simulador
+                'simulator-title': 'Simulador de realidades científicas',
+                'simulator-text': 'Experimenta cómo funcionaría el mundo si alteramos los componentes del método científico.',
+                
+                // Escenario 1
+                'scenario1-title': 'Escenario 1: La tierra plana',
+                'scenario1-text1': 'Eres un investigador y has encontrado algo extraordinario: evidencia que sugiere que la Tierra podría ser plana.',
+                'scenario1-text2': '¿Cómo procederías?',
+                'scenario1-choiceA': 'A. Publicar inmediatamente mi descubrimiento revolucionario',
+                'scenario1-choiceB': 'B. Intentar refutar mi propia hipótesis con más pruebas',
+                'scenario1-choiceC': 'C. Buscar solo evidencia que confirme mi teoría',
+                'result1A-text1': 'Has elegido publicar inmediatamente. Resultado: La comunidad científica exige evidencias sólidas que no tienes. Tu reputación queda en entredicho.',
+                'result1A-text2': 'Falló el <strong>escepticismo metodológico</strong>.',
+                'result1A-strong': 'escepticismo metodológico',
+                'result1A-button': 'Continuar',
+                'result1B-text1': 'Has intentado refutar tu propia hipótesis. Resultado: Descubres errores en tu metodología inicial que invalidaban tus conclusiones.',
+                'result1B-text2': '¡Has aplicado correctamente el método científico! La ciencia avanza cuando intentamos derribar nuestras propias ideas.',
+                'result1B-button': 'Continuar',
+                'result1C-text1': 'Has buscado solo evidencia confirmatoria. Resultado: Ignoras datos cruciales que contradecían tu teoría y terminas con conclusiones erróneas.',
+                'result1C-text2': 'Falló la <strong>objetividad y verificabilidad</strong>.',
+                'result1C-strong': 'objetividad y verificabilidad',
+                'result1C-button': 'Continuar',
+                
+                // Escenario 2
+                'scenario2-title': 'Escenario 2: La vacuna misteriosa',
+                'scenario2-text1': 'Eres un científico médico. Has desarrollado una vacuna que parece prometedora, pero los datos preliminares muestran posibles efectos secundarios.',
+                'scenario2-text2': '¿Qué harías?',
+                'scenario2-choiceA': 'A. Publicar solo los resultados positivos',
+                'scenario2-choiceB': 'B. Reportar todos los datos y continuar investigando',
+                'scenario2-choiceC': 'C. Abandonar la investigación ante la primera señal de problemas',
+                'result2A-text1': 'Has publicado solo resultados positivos. Resultado: La vacuna causa problemas que no reportaste. La confianza pública en la ciencia disminuye.',
+                'result2A-text2': 'Falló la <strong>transparencia y reproducibilidad</strong>.',
+                'result2A-strong': 'transparencia y reproducibilidad',
+                'result2A-button': 'Continuar',
+                'result2B-text1': 'Has reportado todos los datos. Resultado: Otros científicos te ayudan a mejorar la vacuna y resolver los efectos secundarios.',
+                'result2B-text2': '¡Has aplicado correctamente el método científico! La ciencia es un esfuerzo colaborativo y acumulativo.',
+                'result2B-button': 'Continuar',
+                'result2C-text1': 'Has abandonado la investigación. Resultado: Pierdes la oportunidad de desarrollar una vacuna que podría salvar millones de vidas.',
+                'result2C-text2': 'Falló la <strong>perseverancia y revisión</strong>.',
+                'result2C-strong': 'perseverancia y revisión',
+                'result2C-button': 'Continuar',
+                
+                // Escenario 3
+                'scenario3-title': 'Escenario 3: El fenómeno inexplicable',
+                'scenario3-text1': 'Observas un fenómeno extraño que no encaja con las teorías científicas actuales. Tu intuición te dice que hay algo paranormal.',
+                'scenario3-text2': '¿Cómo investigarías?',
+                'scenario3-choiceA': 'A. Concluir que es paranormal ya que no hay explicación científica',
+                'scenario3-choiceB': 'B. Buscar explicaciones naturales primero, incluso si son improbables',
+                'scenario3-choiceC': 'C. Ignorar el fenómeno por no encajar con lo que sabes',
+                'result3A-text1': 'Has concluido que es paranormal. Resultado: Otros investigadores encuentran una explicación natural que no consideraste.',
+                'result3A-text2': 'Falló la <strong>navaja de Occam</strong> - buscar primero explicaciones simples y naturales.',
+                'result3A-strong': 'navaja de Occam',
+                'result3A-button': 'Avanzar al anti-método',
+                'result3B-text1': 'Has buscado explicaciones naturales. Resultado: Descubres un nuevo fenómeno físico que amplia nuestro conocimiento científico.',
+                'result3B-text2': '¡Has aplicado correctamente el método científico! La ciencia avanza cuando mantenemos la mente abierta pero crítica.',
+                'result3B-button': 'Avanzar al anti-método',
+                'result3C-text1': 'Has ignorado el fenómeno. Resultado: Pierdes la oportunidad de hacer un gran descubrimiento por cerrazón mental.',
+                'result3C-text2': 'Falló la <strong>curiosidad y apertura</strong>.',
+                'result3C-strong': 'curiosidad y apertura',
+                'result3C-button': 'Avanzar al anti-método',
+                
+                // Anti-método
+                'anti-method-title': 'El anti-método: invirtiendo el método científico',
+                'anti-method-text': 'Después de experimentar con estos escenarios, podemos definir el "anti-método científico" - lo opuesto a la ciencia efectiva:',
+                
+                // Anti-pasos (tarjetas)
+                'anti1-card-title': 'Anti-paso 1',
+                'anti1-card-text': 'Comenzar con la conclusión',
+                'anti2-card-title': 'Anti-paso 2',
+                'anti2-card-text': 'Buscar solo evidencia confirmatoria',
+                'anti3-card-title': 'Anti-paso 3',
+                'anti3-card-text': 'Rechazar la crítica',
+                'anti4-card-title': 'Anti-paso 4',
+                'anti4-card-text': 'Ignorar datos contradictorios',
+                'anti5-card-title': 'Anti-paso 5',
+                'anti5-card-text': 'Resistir el cambio',
+                
+                // Detalles anti-pasos
+                'anti1-detail-title': 'Anti-paso 1: Comenzar con la conclusión',
+                'anti1-detail-text1': 'En lugar de formular preguntas y buscar respuestas, decidimos de antemano qué queremos que sea verdad.',
+                'anti1-detail-text2': 'Ejemplo cotidiano: "Estoy seguro de que el cambio climático no es real, buscaré información que lo demuestre."',
+                'anti1-detail-text3': 'Método científico correcto: Comenzar con observaciones y preguntas abiertas.',
+                'anti1-back-button': 'Volver',
+                
+                'anti2-detail-title': 'Anti-paso 2: Buscar solo evidencia confirmatoria',
+                'anti2-detail-text1': 'Seleccionamos únicamente los datos que confirman nuestra creencia previa, ignorando todo lo demás.',
+                'anti2-detail-text2': 'Ejemplo cotidiano: Recordar solo las predicciones acertadas de un horóscopo y olvidar las fallidas.',
+                'anti2-detail-text3': 'Método científico correcto: Intentar refutar activamente nuestras propias hipótesis.',
+                'anti2-back-button': 'Volver',
+                
+                'anti3-detail-title': 'Anti-paso 3: Rechazar la crítica',
+                'anti3-detail-text1': 'Ver cualquier crítica o cuestionamiento como un ataque personal, no como una oportunidad de mejora.',
+                'anti3-detail-text2': 'Ejemplo cotidiano: "Si cuestionas mi teoría es porque estás en mi contra."',
+                'anti3-detail-text3': 'Método científico correcto: Dar la bienvenida a la revisión por pares y la crítica constructiva.',
+                'anti3-back-button': 'Volver',
+                
+                'anti4-detail-title': 'Anti-paso 4: Ignorar datos contradictorios',
+                'anti4-detail-text1': 'Descartar cualquier evidencia que contradiga nuestras conclusiones preferidas.',
+                'anti4-detail-text2': 'Ejemplo cotidiano: Ignorar estudios científicos que contradicen nuestras creencias sobre la salud.',
+                'anti4-detail-text3': 'Método científico correcto: Prestar especial atención a los datos anómalos o inesperados.',
+                'anti4-back-button': 'Volver',
+                
+                'anti5-detail-title': 'Anti-paso 5: Resistir el cambio',
+                'anti5-detail-text1': 'Aferrarse a ideas previas incluso cuando la evidencia sugiere que son incorrectas.',
+                'anti5-detail-text2': 'Ejemplo cotidiano: "Siempre hemos hecho las cosas así, ¿por qué cambiar?"',
+                'anti5-detail-text3': 'Método científico correcto: Adaptar nuestras teorías a medida que aparece nueva evidencia.',
+                'anti5-back-button': 'Volver',
+                
+                // Paradoja y conclusión
+                'anti-method-paradox-title': 'La paradoja del anti-método:',
+                'anti-method-paradox-text': 'Al estudiar lo que NO es el método científico, comprendemos mejor su verdadera esencia.',
+                'scientific-method-formula-title': 'La fórmula del método científico podría representarse como:',
+                'reset-button': 'Reiniciar simulador',
+                
+                // Pie de página
+                'footer-credits': 'Aplicación hecha por <a href="https://bilateria.org">Juan José de Haro</a>',
+                'footer-license': 'Esta obra está bajo una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es">licencia Creative Commons BY-SA</a>',
+                'license-link': 'https://creativecommons.org/licenses/by-sa/4.0/deed.es'
+            },
+            ca: {
+                // Títulos y subtítulos principales
+                'main-title': 'L\'anti-mètode científic: una revolució del pensament',
+                'subtitle': 'Un viatge a través de realitats alternatives del coneixement',
+                'welcome-title': 'Benvingut a una visió radicalment diferent',
+                'welcome-text1': 'Oblida tot el que t\'han explicat sobre el mètode científic. Capgirarem el concepte.',
+                'welcome-text2': 'I si en lloc de seguir un mètode per trobar respostes, creem un <span class="highlight">anti-mètode</span> per qüestionar les preguntes?',
+                'anti-method-highlight': 'anti-mètode',
+                
+                // Pestañas
+                'tab-intro': 'La inversió',
+                'tab-universos': 'Universos paral·lels',
+                'tab-simulador': 'Simulador de realitats',
+                'tab-antimetodo': 'L\'anti-mètode',
+                
+                // Introducción
+                'intro-text1': 'El mètode científic convencional segueix aquests passos:',
+                'intro-text2': 'Però... què passaria si comencéssim pel final? I si partíssim de les conclusions per validar o invalidar les nostres creences?',
+                'impossible-thinking1-title': 'Pensament impossible #1:',
+                'impossible-thinking1-text1': 'Imagina un món on la ciència funciona al revés: primer decidim què volem que sigui veritat i després dissenyem experiments per confirmar-ho.',
+                'impossible-thinking1-text2': 'Espera... no és així com funcionen molts dels nostres raonaments quotidians?',
+                'confirmation-bias-title': 'La fórmula del biaix de confirmació es podria expressar com:',
+                'btn-next-universe': 'Continuar al següent nivell',
+                
+                // Pasos del método científico
+                'scientific-method-steps': [
+                    'Observació.',
+                    'Pregunta.',
+                    'Hipòtesi.',
+                    'Experimentació.',
+                    'Anàlisi.',
+                    'Conclusió.'
+                ],
+                
+                // Universos
+                'universe-title': 'Els universos paral·lels del coneixement',
+                'universe-text': 'A la nostra realitat, el mètode científic és només un dels múltiples sistemes possibles per generar coneixement.',
+                'universe-question': 'Què fa únic el mètode científic davant d\'aquests universos alternatius?',
+                'universe-answer': 'Contràriament al que podríem pensar, la seva major fortalesa resideix en la seva <strong>capacitat per equivocar-se</strong>.',
+                'failure-ability': 'capacitat per equivocar-se',
+                'incompatible-concepts-title': 'Fusió de conceptes incompatibles:',
+                'incompatible-concepts-text': 'El mètode científic és simultàniament el més humil i el més poderós sistema de coneixement: <strong>guanya força precisament en reconèixer la seva fal·libilitat</strong>.',
+                'incompatible-concepts-strong': 'guanya força precisament en reconèixer la seva fal·libilitat',
+                'btn-next-simulator': 'Avançar al simulador',
+                
+                // Realidades
+                'reality1-title': 'Realitat #1',
+                'reality1-text': 'El món on l\'autoritat determina la veritat',
+                'reality2-title': 'Realitat #2',
+                'reality2-text': 'L\'univers on la tradició mai es qüestiona',
+                'reality3-title': 'Realitat #3',
+                'reality3-text': 'La dimensió on només les idees majoritàries són vàlides',
+                'reality4-title': 'Realitat #4',
+                'reality4-text': 'El cosmos on la intuïció supera l\'evidència',
+                'reality5-title': 'Realitat #5',
+                'reality5-text': 'La nostra realitat: el mètode científic',
+                
+                // Simulador
+                'simulator-title': 'Simulador de realitats científiques',
+                'simulator-text': 'Experimenta com funcionaria el món si alterem els components del mètode científic.',
+                
+                // Escenario 1
+                'scenario1-title': 'Escenari 1: La terra plana',
+                'scenario1-text1': 'Ets un investigador i has trobat quelcom extraordinari: evidència que suggereix que la Terra podria ser plana.',
+                'scenario1-text2': 'Com procediràs?',
+                'scenario1-choiceA': 'A. Publicar immediatament el meu descobriment revolucionari',
+                'scenario1-choiceB': 'B. Intentar refutar la meva pròpia hipòtesi amb més proves',
+                'scenario1-choiceC': 'C. Buscar només evidència que confirmi la meva teoria',
+                'result1A-text1': 'Has escollit publicar immediatament. Resultat: La comunitat científica exigeix evidències sòlides que no tens. La teva reputació queda en entredit.',
+                'result1A-text2': 'Va fallar l\'<strong>escepticisme metodològic</strong>.',
+                'result1A-strong': 'escepticisme metodològic',
+                'result1A-button': 'Continuar',
+                'result1B-text1': 'Has intentat refutar la teva pròpia hipòtesi. Resultat: Descobreixes errors en la teva metodologia inicial que invalidaven les teves conclusions.',
+                'result1B-text2': 'Has aplicat correctament el mètode científic! La ciència avança quan intentem enderrocar les nostres pròpies idees.',
+                'result1B-button': 'Continuar',
+                'result1C-text1': 'Has buscat només evidència confirmatòria. Resultat: Ignores dades crucials que contradeien la teva teoria i acabes amb conclusions errònies.',
+                'result1C-text2': 'Va fallar l\'<strong>objectivitat i verificabilitat</strong>.',
+                'result1C-strong': 'objectivitat i verificabilitat',
+                'result1C-button': 'Continuar',
+                
+                // Escenario 2
+                'scenario2-title': 'Escenari 2: La vacuna misteriosa',
+                'scenario2-text1': 'Ets un científic mèdic. Has desenvolupat una vacuna que sembla prometedora, però les dades preliminars mostren possibles efectes secundaris.',
+                'scenario2-text2': 'Què faries?',
+                'scenario2-choiceA': 'A. Publicar només els resultats positius',
+                'scenario2-choiceB': 'B. Reportar totes les dades i continuar investigant',
+                'scenario2-choiceC': 'C. Abandonar la investigació davant el primer senyal de problemes',
+                'result2A-text1': 'Has publicat només resultats positius. Resultat: La vacuna causa problemes que no vas reportar. La confiança pública en la ciència disminueix.',
+                'result2A-text2': 'Va fallar la <strong>transparència i reproductibilitat</strong>.',
+                'result2A-strong': 'transparència i reproductibilitat',
+                'result2A-button': 'Continuar',
+                'result2B-text1': 'Has reportat totes les dades. Resultat: Altres científics t\'ajuden a millorar la vacuna i resoldre els efectes secundaris.',
+                'result2B-text2': 'Has aplicat correctament el mètode científic! La ciència és un esforç col·laboratiu i acumulatiu.',
+                'result2B-button': 'Continuar',
+                'result2C-text1': 'Has abandonat la investigació. Resultat: Perds l\'oportunitat de desenvolupar una vacuna que podria salvar milions de vides.',
+                'result2C-text2': 'Va fallar la <strong>perseverança i revisió</strong>.',
+                'result2C-strong': 'perseverança i revisió',
+                'result2C-button': 'Continuar',
+                
+                // Escenario 3
+                'scenario3-title': 'Escenari 3: El fenomen inexplicable',
+                'scenario3-text1': 'Observes un fenomen estrany que no encaixa amb les teories científiques actuals. La teva intuïció et diu que hi ha quelcom paranormal.',
+                'scenario3-text2': 'Com ho investigaries?',
+                'scenario3-choiceA': 'A. Concloure que és paranormal ja que no hi ha explicació científica',
+                'scenario3-choiceB': 'B. Buscar explicacions naturals primer, fins i tot si són improbables',
+                'scenario3-choiceC': 'C. Ignorar el fenomen per no encaixar amb el que saps',
+                'result3A-text1': 'Has conclòs que és paranormal. Resultat: Altres investigadors troben una explicació natural que no vas considerar.',
+                'result3A-text2': 'Va fallar la <strong>navalla d\'Occam</strong> - buscar primer explicacions simples i naturals.',
+                'result3A-strong': 'navalla d\'Occam',
+                'result3A-button': 'Avançar a l\'anti-mètode',
+                'result3B-text1': 'Has buscat explicacions naturals. Resultat: Descobreixes un nou fenomen físic que amplia el nostre coneixement científic.',
+                'result3B-text2': 'Has aplicat correctament el mètode científic! La ciència avança quan mantenim la ment oberta però crítica.',
+                'result3B-button': 'Avançar a l\'anti-mètode',
+                'result3C-text1': 'Has ignorat el fenomen. Resultat: Perds l\'oportunitat de fer un gran descobriment per tancament mental.',
+                'result3C-text2': 'Va fallar la <strong>curiositat i obertura</strong>.',
+                'result3C-strong': 'curiositat i obertura',
+                'result3C-button': 'Avançar a l\'anti-mètode',
+                
+                // Anti-método
+                'anti-method-title': 'L\'anti-mètode: invertint el mètode científic',
+                'anti-method-text': 'Després d\'experimentar amb aquests escenaris, podem definir "l\'anti-mètode científic" - l\'oposat a la ciència efectiva:',
+                
+                // Anti-pasos (tarjetas)
+                'anti1-card-title': 'Anti-pas 1',
+                'anti1-card-text': 'Començar amb la conclusió',
+                'anti2-card-title': 'Anti-pas 2',
+                'anti2-card-text': 'Buscar només evidència confirmatòria',
+                'anti3-card-title': 'Anti-pas 3',
+                'anti3-card-text': 'Rebutjar la crítica',
+                'anti4-card-title': 'Anti-pas 4',
+                'anti4-card-text': 'Ignorar dades contradictòries',
+                'anti5-card-title': 'Anti-pas 5',
+                'anti5-card-text': 'Resistir el canvi',
+                
+                // Detalles anti-pasos
+                'anti1-detail-title': 'Anti-pas 1: Començar amb la conclusió',
+                'anti1-detail-text1': 'En lloc de formular preguntes i buscar respostes, decidim per endavant què volem que sigui veritat.',
+                'anti1-detail-text2': 'Exemple quotidià: "Estic segur que el canvi climàtic no és real, buscaré informació que ho demostri."',
+                'anti1-detail-text3': 'Mètode científic correcte: Començar amb observacions i preguntes obertes.',
+                'anti1-back-button': 'Tornar',
+                
+                'anti2-detail-title': 'Anti-pas 2: Buscar només evidència confirmatòria',
+                'anti2-detail-text1': 'Seleccionem únicament les dades que confirmen la nostra creença prèvia, ignorant tot el demés.',
+                'anti2-detail-text2': 'Exemple quotidià: Recordar només les prediccions encertades d\'un horòscop i oblidar les fallides.',
+                'anti2-detail-text3': 'Mètode científic correcte: Intentar refutar activament les nostres pròpies hipòtesis.',
+                'anti2-back-button': 'Tornar',
+                
+                'anti3-detail-title': 'Anti-pas 3: Rebutjar la crítica',
+                'anti3-detail-text1': 'Veure qualsevol crítica o qüestionament com un atac personal, no com una oportunitat de millora.',
+                'anti3-detail-text2': 'Exemple quotidià: "Si qüestiones la meva teoria és perquè estàs en contra meva."',
+                'anti3-detail-text3': 'Mètode científic correcte: Donar la benvinguda a la revisió per parells i la crítica constructiva.',
+                'anti3-back-button': 'Tornar',
+                
+                'anti4-detail-title': 'Anti-pas 4: Ignorar dades contradictòries',
+                'anti4-detail-text1': 'Descartar qualsevol evidència que contradigui les nostres conclusions preferides.',
+                'anti4-detail-text2': 'Exemple quotidià: Ignorar estudis científics que contradiuen les nostres creences sobre la salut.',
+                'anti4-detail-text3': 'Mètode científic correcte: Prestar especial atenció a les dades anòmales o inesperades.',
+                'anti4-back-button': 'Tornar',
+                
+                'anti5-detail-title': 'Anti-pas 5: Resistir el canvi',
+                'anti5-detail-text1': 'Aferrar-se a idees prèvies fins i tot quan l\'evidència suggereix que són incorrectes.',
+                'anti5-detail-text2': 'Exemple quotidià: "Sempre hem fet les coses així, per què canviar?"',
+                'anti5-detail-text3': 'Mètode científic correcte: Adaptar les nostres teories a mesura que apareix nova evidència.',
+                'anti5-back-button': 'Tornar',
+                
+                // Paradoja y conclusión
+                'anti-method-paradox-title': 'La paradoxa de l\'anti-mètode:',
+                'anti-method-paradox-text': 'En estudiar el que NO és el mètode científic, comprenem millor la seva veritable essència.',
+                'scientific-method-formula-title': 'La fórmula del mètode científic es podria representar com:',
+                'reset-button': 'Reiniciar simulador',
+                
+                // Pie de página
+                'footer-credits': 'Aplicació feta per <a href="https://bilateria.org">Juan José de Haro</a>',
+                'footer-license': 'Aquesta obra està sota una <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ca">llicència Creative Commons BY-SA</a>',
+                'license-link': 'https://creativecommons.org/licenses/by-sa/4.0/deed.ca'
+            }
+        };
+        
+        // Generar estrellas para el universo
+        function generateStars() {
+            const universe = document.getElementById('universe-container');
+            const numberOfStars = 100;
+            
+            for (let i = 0; i < numberOfStars; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Tamaño aleatorio
+                const size = Math.random() * 3;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                // Posición aleatoria
+                const left = Math.random() * 100;
+                const top = Math.random() * 100;
+                star.style.left = `${left}%`;
+                star.style.top = `${top}%`;
+                
+                // Retraso aleatorio en la animación
+                const delay = Math.random() * 5;
+                star.style.animationDelay = `${delay}s`;
+                
+                universe.appendChild(star);
+            }
+        }
+        
+        // Función para cambiar de pestaña
+        function openTab(tabName) {
+            // Ocultar todos los contenidos
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+            
+            // Desactivar todas las pestañas
+            const tabs = document.getElementsByClassName('tab');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            
+            // Mostrar el contenido seleccionado
+            const tabContent = document.getElementById(tabName);
+            if (tabContent) {
+                tabContent.classList.add('active');
+            }
+            
+            // Activar la pestaña seleccionada
+            const tabMapping = {
+                'intro': 'tab-intro',
+                'universos': 'tab-universos',
+                'simulador': 'tab-simulador',
+                'antimétodo': 'tab-antimetodo'
+            };
+            
+            // Intenta activar la pestaña por su ID conocido primero
+            if (tabMapping[tabName]) {
+                const tab = document.getElementById(tabMapping[tabName]);
+                if (tab) {
+                    tab.classList.add('active');
+                }
+            } else {
+                // Fallback a búsqueda por contenido de texto
+                for (let i = 0; i < tabs.length; i++) {
+                    if (tabs[i].textContent.toLowerCase().includes(tabName.toLowerCase().replace('é', 'e'))) {
+                        tabs[i].classList.add('active');
+                    }
+                }
+            }
+        }
+        
+        // Función para mostrar el resultado del escenario
+        function showResult(resultId) {
+            // Ocultar todas las opciones de resultado
+            const results = document.querySelectorAll('.result');
+            results.forEach(result => {
+                result.style.display = 'none';
+            });
+            
+            // Mostrar el resultado seleccionado
+            document.getElementById(resultId).style.display = 'block';
+        }
+        
+        // Función para avanzar al siguiente escenario
+        function nextScenario(currentScenario) {
+            // Ocultar el escenario actual
+            document.getElementById(`scenario${currentScenario}`).classList.remove('active');
+            
+            // Mostrar el siguiente escenario
+            document.getElementById(`scenario${currentScenario + 1}`).classList.add('active');
+        }
+        
+        // Función para mostrar detalles del anti-método
+        function showAntiDetail(antiId) {
+            // Ocultar todos los detalles
+            const antiDetails = document.querySelectorAll('[id^="anti"]');
+            antiDetails.forEach(detail => {
+                detail.classList.add('hidden');
+            });
+            
+            // Mostrar el detalle seleccionado
+            document.getElementById(antiId).classList.remove('hidden');
+        }
+        
+        // Función para ocultar detalles del anti-método
+        function hideAntiDetail() {
+            const antiDetails = document.querySelectorAll('[id^="anti"]');
+            antiDetails.forEach(detail => {
+                detail.classList.add('hidden');
+            });
+        }
+        
+        // Función para reiniciar el simulador
+        function resetSimulator() {
+            // Volver a la primera pestaña
+            openTab('intro');
+            
+            // Reiniciar los escenarios
+            const scenarios = document.querySelectorAll('.scenario');
+            scenarios.forEach(scenario => {
+                scenario.classList.remove('active');
+            });
+            document.getElementById('scenario1').classList.add('active');
+            
+            // Ocultar resultados
+            const results = document.querySelectorAll('.result');
+            results.forEach(result => {
+                result.style.display = 'none';
+            });
+        }
+        
+        // Función para detectar el idioma del navegador
+        function detectLanguage() {
+            const navLang = navigator.language || navigator.userLanguage;
+            if (navLang.startsWith('ca')) {
+                return 'ca';
+            } else {
+                return 'es';
+            }
+        }
+        
+        // Función para cambiar el idioma de la aplicación
+        function changeLanguage(lang) {
+            // Guardar el idioma seleccionado
+            localStorage.setItem('preferredLanguage', lang);
+            
+            // Actualizar los elementos de la interfaz
+            updateUILanguage(lang);
+            
+            // Actualizar el estado de los botones de idioma
+            updateLanguageButtons(lang);
+        }
+        
+        // Función para actualizar la interfaz con el idioma seleccionado
+        function updateUILanguage(lang) {
+            // Recorrer todos los textos del idioma seleccionado
+            Object.keys(texts[lang]).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    // Manejo especial para la lista de pasos del método científico
+                    if (key === 'scientific-method-steps') {
+                        const ol = document.getElementById('scientific-method-steps');
+                        if (ol) {
+                            ol.innerHTML = '';
+                            texts[lang][key].forEach(step => {
+                                const li = document.createElement('li');
+                                li.textContent = step;
+                                ol.appendChild(li);
+                            });
+                        }
+                    } 
+                    // Manejo especial para elementos con HTML en el texto
+                    else if (key === 'welcome-text2') {
+                        element.innerHTML = texts[lang][key];
+                    }
+                    else if (key === 'result1A-text2' || key === 'result1C-text2' || key === 'result2A-text2' || 
+                             key === 'result2C-text2' || key === 'result3A-text2' || key === 'result3C-text2' ||
+                             key === 'universe-answer' || key === 'incompatible-concepts-text') {
+                        element.innerHTML = texts[lang][key];
+                    }
+                    // Manejo especial para enlaces
+                    else if (key === 'footer-credits' || key === 'footer-license') {
+                        element.innerHTML = texts[lang][key];
+                    }
+                    // Para todos los demás elementos
+                    else {
+                        element.textContent = texts[lang][key];
+                    }
+                }
+            });
+            
+            // Actualizar el atributo lang del documento
+            document.documentElement.lang = lang;
+            
+            // Actualizar el enlace de la licencia
+            const licenseLink = document.getElementById('license-link');
+            if (licenseLink) {
+                licenseLink.href = texts[lang]['license-link'];
+            }
+        }
+        
+        // Función para actualizar el estado de los botones de idioma
+        function updateLanguageButtons(lang) {
+            const esBtn = document.getElementById('es-btn');
+            const caBtn = document.getElementById('ca-btn');
+            
+            if (lang === 'es') {
+                esBtn.classList.add('active');
+                caBtn.classList.remove('active');
+            } else {
+                esBtn.classList.remove('active');
+                caBtn.classList.add('active');
+            }
+        }
+        
+        // Inicializar la aplicación
+        window.onload = function() {
+            generateStars();
+            resetSimulator();
+            
+            // Comprobar si hay un idioma preferido guardado
+            let lang = localStorage.getItem('preferredLanguage');
+            
+            // Si no hay idioma guardado, detectar el del navegador
+            if (!lang) {
+                lang = detectLanguage();
+            }
+            
+            // Aplicar el idioma
+            changeLanguage(lang);
+        };
+    </script>
+</body>
+</html>

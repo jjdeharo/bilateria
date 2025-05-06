@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clasificación: Seres Vivos y No Vivos</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #FFC107;
+            --error-color: #F44336;
+            --success-color: #4CAF50;
+            --background-color: #f5f5f5;
+            --card-color: #ffffff;
+            --text-color: #333333;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .instructions {
+            background-color: var(--card-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .emojis-container {
+            background-color: var(--card-color);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .emoji {
+            font-size: 36px;
+            cursor: grab;
+            user-select: none;
+            transition: transform 0.2s;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--background-color);
+            border-radius: 50%;
+        }
+
+        .emoji:hover {
+            transform: scale(1.1);
+        }
+
+        .emoji.dragging {
+            opacity: 0.5;
+        }
+
+        .categories {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .categories {
+                flex-direction: column;
+            }
+        }
+
+        .category {
+            flex: 1;
+            min-height: 200px;
+            background-color: var(--card-color);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .category-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .category-container {
+            width: 100%;
+            min-height: 150px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 10px;
+            justify-content: center;
+            align-content: flex-start;
+        }
+
+        .category-container.highlight {
+            border-color: var(--primary-color);
+            background-color: rgba(76, 175, 80, 0.1);
+        }
+
+        .dropped-emoji {
+            font-size: 30px;
+            margin: 5px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #3e8e41;
+        }
+
+        .check-button {
+            background-color: var(--secondary-color);
+        }
+
+        .check-button:hover {
+            background-color: #e6af05;
+        }
+
+        .language-toggle {
+            display: flex;
+            gap: 5px;
+        }
+
+        .lang-btn {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .lang-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+
+        .feedback.success {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: var(--success-color);
+            display: block;
+        }
+
+        .feedback.error {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: var(--error-color);
+            display: block;
+        }
+
+        .footer {
+            background-color: var(--card-color);
+            text-align: center;
+            padding: 15px;
+            margin-top: 30px;
+            font-size: 14px;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+        }
+
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 id="title">Clasificación: Seres vivos y no vivos</h1>
+            <div class="language-toggle">
+                <button id="es-btn" class="lang-btn active">ES</button>
+                <button id="ca-btn" class="lang-btn">CA</button>
+            </div>
+        </header>
+
+        <div class="instructions" id="instructions">
+            Arrastra los emoticonos a la categoría correcta: seres vivos o seres inertes. 
+            Cuando hayas terminado, pulsa el botón "Comprobar respuestas" para ver si lo has hecho bien.
+        </div>
+
+        <div class="game-area">
+            <div class="emojis-container" id="emojis-source">
+                <!-- Los emojis se cargarán dinámicamente con JavaScript -->
+            </div>
+
+            <div class="categories">
+                <div class="category">
+                    <div class="category-title" id="living-title">Seres vivos</div>
+                    <div class="category-container" id="living-container" data-category="living"></div>
+                </div>
+                <div class="category">
+                    <div class="category-title" id="non-living-title">Seres inertes</div>
+                    <div class="category-container" id="non-living-container" data-category="non-living"></div>
+                </div>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+
+            <div class="controls">
+                <button class="button" id="reset-btn">Reiniciar</button>
+                <button class="button check-button" id="check-btn">Comprobar respuestas</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><a href="https://labia.tiddlyhost.com" target="_blank">Laboratorio de aplicaciones educativas</a></p>
+        <p>Aplicación hecha por <a href="https://bilateria.org" target="_blank">Juan José de Haro</a></p>
+        <p>Esta obra está bajo una licencia <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank">Creative Commons BY-SA</a></p>
+    </div>
+
+    <script>
+        // Definición de emojis y sus categorías
+        const emojis = [
+            { emoji: "🐶", category: "living" },
+            { emoji: "🐱", category: "living" },
+            { emoji: "🌳", category: "living" },
+            { emoji: "🌵", category: "living" },
+            { emoji: "🍄", category: "living" },
+            { emoji: "🦋", category: "living" },
+            { emoji: "🐠", category: "living" },
+            { emoji: "🐸", category: "living" },
+            { emoji: "👧", category: "living" },
+            { emoji: "👨", category: "living" },
+            { emoji: "🌺", category: "living" },
+            { emoji: "🦁", category: "living" },
+            { emoji: "⚽", category: "non-living" },
+            { emoji: "🚗", category: "non-living" },
+            { emoji: "🏠", category: "non-living" },
+            { emoji: "📱", category: "non-living" },
+            { emoji: "🍽️", category: "non-living" },
+            { emoji: "🪑", category: "non-living" },
+            { emoji: "📚", category: "non-living" },
+            { emoji: "⌚", category: "non-living" },
+            { emoji: "🚦", category: "non-living" },
+            { emoji: "🧸", category: "non-living" },
+            { emoji: "🎸", category: "non-living" },
+            { emoji: "🚲", category: "non-living" }
+        ];
+
+        // Textos para los diferentes idiomas
+        const texts = {
+            es: {
+                title: "Clasificación: Seres vivos y no vivos",
+                instructions: "Arrastra los emoticonos a la categoría correcta: seres vivos o seres inertes. Cuando hayas terminado, pulsa el botón \"Comprobar respuestas\" para ver si lo has hecho bien.",
+                livingTitle: "Seres vivos",
+                nonLivingTitle: "Seres inertes",
+                resetBtn: "Reiniciar",
+                checkBtn: "Comprobar respuestas",
+                successFeedback: "¡Muy bien! Has clasificado todos los emoticonos correctamente.",
+                errorFeedback: "Hay algunos errores. Intenta corregirlos."
+            },
+            ca: {
+                title: "Classificació: Éssers vius i no vius",
+                instructions: "Arrossega els emoticones a la categoria correcta: éssers vius o éssers inerts. Quan hagis acabat, prem el botó \"Comprovar respostes\" per veure si ho has fet bé.",
+                livingTitle: "Éssers vius",
+                nonLivingTitle: "Éssers inerts",
+                resetBtn: "Reiniciar",
+                checkBtn: "Comprovar respostes",
+                successFeedback: "Molt bé! Has classificat tots els emoticones correctament.",
+                errorFeedback: "Hi ha alguns errors. Intenta corregir-los."
+            }
+        };
+
+        // Variables para controlar el estado del juego
+        let currentLanguage = 'es';
+        let draggedEmoji = null;
+
+        // Función para establecer el idioma
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('classificationLang', lang);
+            
+            // Actualizar textos
+            document.getElementById('title').textContent = texts[lang].title;
+            document.getElementById('instructions').textContent = texts[lang].instructions;
+            document.getElementById('living-title').textContent = texts[lang].livingTitle;
+            document.getElementById('non-living-title').textContent = texts[lang].nonLivingTitle;
+            document.getElementById('reset-btn').textContent = texts[lang].resetBtn;
+            document.getElementById('check-btn').textContent = texts[lang].checkBtn;
+            
+            // Actualizar botones de idioma
+            document.getElementById('es-btn').classList.toggle('active', lang === 'es');
+            document.getElementById('ca-btn').classList.toggle('active', lang === 'ca');
+        }
+
+        // Detectar idioma del navegador o usar el almacenado
+        function detectLanguage() {
+            const savedLang = localStorage.getItem('classificationLang');
+            if (savedLang) {
+                setLanguage(savedLang);
+            } else {
+                const browserLang = navigator.language || navigator.userLanguage;
+                if (browserLang.startsWith('ca')) {
+                    setLanguage('ca');
+                } else {
+                    setLanguage('es');
+                }
+            }
+        }
+
+        // Inicializar emojis
+        function initEmojis() {
+            const emojiContainer = document.getElementById('emojis-source');
+            emojiContainer.innerHTML = '';
+            
+            // Mezclar los emojis para que aparezcan en orden aleatorio
+            const shuffledEmojis = [...emojis].sort(() => Math.random() - 0.5);
+            
+            shuffledEmojis.forEach(item => {
+                const emojiElement = document.createElement('div');
+                emojiElement.className = 'emoji';
+                emojiElement.textContent = item.emoji;
+                emojiElement.dataset.emoji = item.emoji;
+                emojiElement.dataset.category = item.category;
+                emojiElement.draggable = true;
+                
+                // Eventos para arrastrar
+                emojiElement.addEventListener('dragstart', dragStart);
+                emojiElement.addEventListener('dragend', dragEnd);
+                
+                emojiContainer.appendChild(emojiElement);
+            });
+        }
+
+        // Función para reiniciar el juego
+        function resetGame() {
+            const livingContainer = document.getElementById('living-container');
+            const nonLivingContainer = document.getElementById('non-living-container');
+            const feedbackElement = document.getElementById('feedback');
+            
+            livingContainer.innerHTML = '';
+            nonLivingContainer.innerHTML = '';
+            feedbackElement.textContent = '';
+            feedbackElement.className = 'feedback';
+            
+            initEmojis();
+        }
+
+        // Funciones para el sistema de arrastre y soltar
+        function dragStart(e) {
+            this.classList.add('dragging');
+            draggedEmoji = this;
+            e.dataTransfer.setData('text/plain', this.dataset.emoji);
+            setTimeout(() => {
+                this.style.display = 'none';
+            }, 0);
+        }
+
+        function dragEnd() {
+            this.classList.remove('dragging');
+            this.style.display = 'flex';
+            draggedEmoji = null;
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+            this.classList.add('highlight');
+        }
+
+        function dragLeave() {
+            this.classList.remove('highlight');
+        }
+
+        function drop(e) {
+            e.preventDefault();
+            this.classList.remove('highlight');
+            
+            if (draggedEmoji) {
+                const emojiClone = document.createElement('div');
+                emojiClone.className = 'dropped-emoji';
+                emojiClone.textContent = draggedEmoji.textContent;
+                emojiClone.dataset.emoji = draggedEmoji.dataset.emoji;
+                emojiClone.dataset.category = draggedEmoji.dataset.category;
+                
+                this.appendChild(emojiClone);
+                
+                // Eliminar el emoji original
+                draggedEmoji.remove();
+            }
+        }
+
+        // Comprobar respuestas
+        function checkAnswers() {
+            const livingContainer = document.getElementById('living-container');
+            const nonLivingContainer = document.getElementById('non-living-container');
+            const feedbackElement = document.getElementById('feedback');
+            
+            const livingEmojis = livingContainer.querySelectorAll('.dropped-emoji');
+            const nonLivingEmojis = nonLivingContainer.querySelectorAll('.dropped-emoji');
+            
+            let errors = 0;
+            
+            // Comprobar emojis en el contenedor de seres vivos
+            livingEmojis.forEach(emoji => {
+                if (emoji.dataset.category !== 'living') {
+                    errors++;
+                    emoji.style.backgroundColor = 'rgba(244, 67, 54, 0.3)';
+                } else {
+                    emoji.style.backgroundColor = 'rgba(76, 175, 80, 0.3)';
+                }
+            });
+            
+            // Comprobar emojis en el contenedor de seres inertes
+            nonLivingEmojis.forEach(emoji => {
+                if (emoji.dataset.category !== 'non-living') {
+                    errors++;
+                    emoji.style.backgroundColor = 'rgba(244, 67, 54, 0.3)';
+                } else {
+                    emoji.style.backgroundColor = 'rgba(76, 175, 80, 0.3)';
+                }
+            });
+            
+            // Mostrar feedback
+            if (errors === 0 && (livingEmojis.length + nonLivingEmojis.length === emojis.length)) {
+                feedbackElement.textContent = texts[currentLanguage].successFeedback;
+                feedbackElement.className = 'feedback success';
+            } else {
+                feedbackElement.textContent = texts[currentLanguage].errorFeedback;
+                feedbackElement.className = 'feedback error';
+            }
+        }
+
+        // Inicializar la aplicación
+        function initApp() {
+            // Detectar idioma
+            detectLanguage();
+            
+            // Inicializar emojis
+            initEmojis();
+            
+            // Configurar eventos para los contenedores de categorías
+            const containers = document.querySelectorAll('.category-container');
+            containers.forEach(container => {
+                container.addEventListener('dragover', dragOver);
+                container.addEventListener('dragleave', dragLeave);
+                container.addEventListener('drop', drop);
+            });
+            
+            // Configurar botones
+            document.getElementById('reset-btn').addEventListener('click', resetGame);
+            document.getElementById('check-btn').addEventListener('click', checkAnswers);
+            document.getElementById('es-btn').addEventListener('click', () => setLanguage('es'));
+            document.getElementById('ca-btn').addEventListener('click', () => setLanguage('ca'));
+        }
+
+        // Iniciar aplicación cuando el DOM esté cargado
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>

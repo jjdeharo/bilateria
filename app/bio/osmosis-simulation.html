@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulación de Presión Osmótica</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #e74c3c;
+            --background-color: #f4f6f7;
+            --text-color: #2c3e50;
+            --border-color: #bdc3c7;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .container {
+            width: 95%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .simulation-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            margin: 0 auto;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: white;
+        }
+        
+        #simulationCanvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 150px;
+        }
+        
+        label {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+        }
+        
+        .value-display {
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .explanation {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .formula-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+        }
+        
+        .side-counter {
+            position: absolute;
+            bottom: 10px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        .left-counter {
+            left: 20px;
+        }
+        
+        .right-counter {
+            right: 20px;
+        }
+        
+        .counter-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .counter-values {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .counter-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .osmotic-pressure-display {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid #bdc3c7;
+        }
+        
+        .osmotic-pressure-display #osmoticPressureValue {
+            font-size: 1.2em;
+            margin: 4px 0;
+            color: #e74c3c;
+        }
+        
+        .pressure-value {
+            margin-top: 5px;
+            font-size: 0.85rem;
+        }
+        
+        .value-unit {
+            font-size: 0.8rem;
+            margin-left: 2px;
+        }
+        
+        .membrane {
+            background-color: #7f8c8d;
+        }
+        
+        .solvent {
+            background-color: var(--primary-color);
+        }
+        
+        .solute {
+            background-color: var(--secondary-color);
+        }
+        
+        .language-selector {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+        
+        .lang-btn {
+            width: 30px;
+            text-align: center;
+            padding: 3px;
+            font-size: 0.8rem;
+            border-radius: 3px;
+        }
+        
+        .lang-btn.active {
+            background-color: #2c3e50;
+        }
+        
+        .pressure-indicator {
+            position: absolute;
+            width: 20px;
+            height: 100%;
+            right: 0;
+            top: 0;
+            background: linear-gradient(to bottom, #e74c3c, #f39c12, #f1c40f, #2ecc71);
+            opacity: 0.7;
+        }
+        
+        .pressure-marker {
+            position: absolute;
+            right: 0;
+            width: 20px;
+            height: 2px;
+            background-color: #000;
+            transform: translateY(-50%);
+        }
+        
+        .footer {
+            background-color: var(--text-color);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: auto;
+        }
+        
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                width: 100%;
+                padding: 10px;
+            }
+            
+            .canvas-container {
+                height: 300px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .control-group {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 id="title">Simulación de Presión Osmótica</h1>
+            <div class="language-selector">
+                <button id="es-btn" class="lang-btn active">ES</button>
+                <button id="ca-btn" class="lang-btn">CA</button>
+            </div>
+        </header>
+        
+        <div class="simulation-container">
+            <div class="canvas-container">
+                <canvas id="simulationCanvas"></canvas>
+                <div class="pressure-indicator">
+                    <div id="pressureMarker" class="pressure-marker"></div>
+                </div>
+                <div class="osmotic-pressure-display">
+                    <div id="osmoticPressureLabel">Presión osmótica:</div>
+                    <div id="osmoticPressureValue">0</div>
+                    <div class="value-unit">kPa</div>
+                </div>
+                <div class="side-counter left-counter">
+                    <div id="leftCounterLabel" class="counter-label">Lado izquierdo</div>
+                    <div class="counter-values">
+                        <div class="counter-item">
+                            <div class="legend-color solvent"></div>
+                            <span id="solventLeftCounter">0</span>
+                        </div>
+                        <div class="counter-item">
+                            <div class="legend-color solute"></div>
+                            <span id="soluteLeftCounter">0</span>
+                        </div>
+                    </div>
+                    <div class="pressure-value" id="leftPressureDisplay">
+                        <span id="leftPressureLabel">Presión: </span>
+                        <span id="leftPressureValue">0</span>
+                        <span class="value-unit">kPa</span>
+                    </div>
+                </div>
+                <div class="side-counter right-counter">
+                    <div id="rightCounterLabel" class="counter-label">Lado derecho</div>
+                    <div class="counter-values">
+                        <div class="counter-item">
+                            <div class="legend-color solvent"></div>
+                            <span id="solventRightCounter">0</span>
+                        </div>
+                        <div class="counter-item">
+                            <div class="legend-color solute"></div>
+                            <span id="soluteRightCounter">0</span>
+                        </div>
+                    </div>
+                    <div class="pressure-value" id="rightPressureDisplay">
+                        <span id="rightPressureLabel">Presión: </span>
+                        <span id="rightPressureValue">0</span>
+                        <span class="value-unit">kPa</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color membrane"></div>
+                    <span id="membrane-label">Membrana semipermeable</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color solvent"></div>
+                    <span id="solvent-label">Disolvente (Agua)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color solute"></div>
+                    <span id="solute-label">Soluto</span>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label for="soluteCountLeft" id="solute-left-label">Soluto (Izquierda):</label>
+                    <input type="range" id="soluteCountLeft" min="0" max="30" value="15" step="1">
+                    <div class="value-display"><span id="soluteCountLeftValue">15</span> <span class="value-unit">moléculas</span></div>
+                </div>
+                
+                <div class="control-group">
+                    <label for="soluteCountRight" id="solute-right-label">Soluto (Derecha):</label>
+                    <input type="range" id="soluteCountRight" min="0" max="30" value="2" step="1">
+                    <div class="value-display"><span id="soluteCountRightValue">2</span> <span class="value-unit">moléculas</span></div>
+                </div>
+                
+                <div class="control-group">
+                    <label for="solventCountLeft" id="solvent-left-label">Disolvente (Izquierda):</label>
+                    <input type="range" id="solventCountLeft" min="5" max="40" value="20" step="1">
+                    <div class="value-display"><span id="solventCountLeftValue">20</span> <span class="value-unit">moléculas</span></div>
+                </div>
+                
+                <div class="control-group">
+                    <label for="solventCountRight" id="solvent-right-label">Disolvente (Derecha):</label>
+                    <input type="range" id="solventCountRight" min="5" max="40" value="20" step="1">
+                    <div class="value-display"><span id="solventCountRightValue">20</span> <span class="value-unit">moléculas</span></div>
+                </div>
+                
+                <div class="control-group">
+                    <label for="poreSizeSlider" id="pore-size-label">Tamaño de poro:</label>
+                    <input type="range" id="poreSizeSlider" min="10" max="40" value="15" step="1">
+                    <div class="value-display"><span id="poreSizeValue">15</span> <span class="value-unit">nm</span></div>
+                </div>
+                
+                <div class="control-group">
+                    <label for="temperatureSlider" id="temperature-label">Temperatura:</label>
+                    <input type="range" id="temperatureSlider" min="1" max="10" value="5" step="0.5">
+                    <div class="value-display"><span id="temperatureValue">5</span> <span class="value-unit">K</span></div>
+                </div>
+                
+                <button id="pauseBtn">Pausar</button>
+            </div>
+        </div>
+        
+        <div class="explanation">
+            <h2 id="explanation-title">¿Qué es la presión osmótica?</h2>
+            <p id="explanation-text">La presión osmótica es la presión que se debe aplicar a una solución para detener el flujo de disolvente a través de una membrana semipermeable. En esta simulación, puedes observar cómo las moléculas de disolvente (azul) pueden atravesar la membrana, mientras que las moléculas de soluto (rojo) no pueden pasar. La tendencia natural es que el disolvente se mueva desde la zona de menor concentración de soluto hacia la de mayor concentración, generando una presión osmótica.</p>
+            
+            <div class="formula-container">
+                <p id="formula-title">La fórmula de la presión osmótica es:</p>
+                <div id="formula">\[ P = \frac{nRT}{V} \]</div>
+                <p id="formula-explanation">Donde \(P\) es la presión total (Pa), \(n\) es el número de moles de partículas, \(V\) es el volumen (L), \(R\) es la constante de los gases (8.314 J/mol·K) y \(T\) es la temperatura absoluta (K).</p>
+                <p>La presión osmótica \(\pi\) es la diferencia de presión entre dos soluciones separadas por una membrana semipermeable.</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <p><a href="https://labia.tiddlyhost.com" target="_blank">Laboratorio de aplicaciones educativas</a></p>
+        <p><a href="https://bilateria.org" target="_blank">Aplicación hecha por Juan José de Haro</a></p>
+        <p><a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank">Esta obra está bajo una licencia Creative Commons BY-SA</a></p>
+    </footer>
+
+    <script>
+        // Variables globales
+        let isPaused = false;
+        let animationId = null;
+        let currentTemperatureSpeed = 5; // Variable para mantener el valor actual de la velocidad de temperatura
+        let baseTemp = 273; // 0°C en K
+        let tempFactor = 10; // Factor de escala
+
+        // Detección del idioma del navegador y traducciones
+        const translations = {
+            es: {
+                title: "Simulación de Presión Osmótica",
+                membraneLabel: "Membrana semipermeable",
+                solventLabel: "Disolvente (Agua)",
+                soluteLabel: "Soluto",
+                soluteLeftLabel: "Soluto (Izquierda):",
+                soluteRightLabel: "Soluto (Derecha):",
+                solventLeftLabel: "Disolvente (Izquierda):",
+                solventRightLabel: "Disolvente (Derecha):",
+                poreSizeLabel: "Tamaño de poro:",
+                temperatureLabel: "Temperatura:",
+                // resetBtn eliminado
+                pauseBtn: "Pausar",
+                resumeBtn: "Reanudar",
+                explanationTitle: "¿Qué es la presión osmótica?",
+                explanationText: "La presión osmótica es la presión que se debe aplicar a una solución para detener el flujo de disolvente a través de una membrana semipermeable. En esta simulación, puedes observar cómo las moléculas de disolvente (azul) pueden atravesar la membrana, mientras que las moléculas de soluto (rojo) no pueden pasar a menos que el poro sea lo suficientemente grande. La tendencia natural es que el disolvente se mueva desde la zona de menor concentración de soluto hacia la de mayor concentración, generando una presión osmótica. La presión total en cada lado está determinada por todas las moléculas presentes (soluto + disolvente).",
+                formulaTitle: "La fórmula de la presión es:",
+                formulaExplanation: "Donde \\(P\\) es la presión total (Pa), \\(n\\) es el número de moles de partículas, \\(V\\) es el volumen (L), \\(R\\) es la constante de los gases (8.314 J/mol·K) y \\(T\\) es la temperatura absoluta (K).",
+                formulaExplanation2: "La presión osmótica \\(\\pi\\) es la diferencia de presión entre dos soluciones separadas por una membrana semipermeable.",
+                leftCounterLabel: "Lado izquierdo",
+                rightCounterLabel: "Lado derecho",
+                pressureLabel: "Presión: ",
+                osmoticPressureLabel: "Presión osmótica:"
+            },
+            ca: {
+                title: "Simulació de Pressió Osmòtica",
+                membraneLabel: "Membrana semipermeable",
+                solventLabel: "Dissolvent (Aigua)",
+                soluteLabel: "Solut",
+                soluteLeftLabel: "Solut (Esquerra):",
+                soluteRightLabel: "Solut (Dreta):",
+                solventLeftLabel: "Dissolvent (Esquerra):",
+                solventRightLabel: "Dissolvent (Dreta):",
+                poreSizeLabel: "Mida del porus:",
+                temperatureLabel: "Temperatura:",
+                // resetBtn eliminado
+                pauseBtn: "Pausar",
+                resumeBtn: "Reprendre",
+                explanationTitle: "Què és la pressió osmòtica?",
+                explanationText: "La pressió osmòtica és la pressió que s'ha d'aplicar a una solució per aturar el flux de dissolvent a través d'una membrana semipermeable. En aquesta simulació, pots observar com les molècules de dissolvent (blau) poden travessar la membrana, mentre que les molècules de solut (vermell) no poden passar a menys que el porus sigui prou gran. La tendència natural és que el dissolvent es mogui des de la zona de menor concentració de solut cap a la de major concentració, generant una pressió osmòtica. La pressió total a cada costat està determinada per totes les molècules presents (solut + dissolvent).",
+                formulaTitle: "La fórmula de la pressió és:",
+                formulaExplanation: "On \\(P\\) és la pressió total (Pa), \\(n\\) és el nombre de mols de partícules, \\(V\\) és el volum (L), \\(R\\) és la constant dels gasos (8.314 J/mol·K) i \\(T\\) és la temperatura absoluta (K).",
+                formulaExplanation2: "La pressió osmòtica \\(\\pi\\) és la diferència de pressió entre dues solucions separades per una membrana semipermeable.",
+                leftCounterLabel: "Costat esquerre",
+                rightCounterLabel: "Costat dret",
+                pressureLabel: "Pressió: ",
+                osmoticPressureLabel: "Pressió osmòtica:"
+            }
+        };
+
+        // Detectar idioma del navegador
+        let userLang = navigator.language || navigator.userLanguage;
+        userLang = userLang.substring(0, 2).toLowerCase();
+        
+        // Si no es catalán, usar español por defecto
+        let currentLang = userLang === 'ca' ? 'ca' : 'es';
+        
+        // Función para cambiar el idioma
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('title').innerText = translations[lang].title;
+            document.getElementById('membrane-label').innerText = translations[lang].membraneLabel;
+            document.getElementById('solvent-label').innerText = translations[lang].solventLabel;
+            document.getElementById('solute-label').innerText = translations[lang].soluteLabel;
+            document.getElementById('solute-left-label').innerText = translations[lang].soluteLeftLabel;
+            document.getElementById('solute-right-label').innerText = translations[lang].soluteRightLabel;
+            document.getElementById('solvent-left-label').innerText = translations[lang].solventLeftLabel;
+            document.getElementById('solvent-right-label').innerText = translations[lang].solventRightLabel;
+            document.getElementById('pore-size-label').innerText = translations[lang].poreSizeLabel;
+            document.getElementById('temperature-label').innerText = translations[lang].temperatureLabel;
+            // Botón de reinicio eliminado
+            document.getElementById('pauseBtn').innerText = isPaused ? translations[lang].resumeBtn : translations[lang].pauseBtn;
+            document.getElementById('explanation-title').innerText = translations[lang].explanationTitle;
+            document.getElementById('explanation-text').innerText = translations[lang].explanationText;
+            document.getElementById('formula-title').innerText = translations[lang].formulaTitle;
+            document.getElementById('formula-explanation').innerText = translations[lang].formulaExplanation;
+            // Comprobar si existe formulaExplanation2 y actualizarlo
+            const formulaExplanation2 = document.querySelector('.formula-container p:last-child');
+            if (formulaExplanation2) {
+                formulaExplanation2.innerText = translations[lang].formulaExplanation2;
+            }
+            document.getElementById('leftCounterLabel').innerText = translations[lang].leftCounterLabel;
+            document.getElementById('rightCounterLabel').innerText = translations[lang].rightCounterLabel;
+            document.getElementById('leftPressureLabel').innerText = translations[lang].pressureLabel;
+            document.getElementById('rightPressureLabel').innerText = translations[lang].pressureLabel;
+            document.getElementById('osmoticPressureLabel').innerText = translations[lang].osmoticPressureLabel;
+            
+            // Actualizar clases de los botones
+            document.getElementById('es-btn').classList.toggle('active', lang === 'es');
+            document.getElementById('ca-btn').classList.toggle('active', lang === 'ca');
+            
+            // Renderizar fórmulas matemáticas después de cambiar el texto
+            if (typeof MathJax !== 'undefined') {
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+            }
+        }
+        
+        // Configurar botones de idioma
+        document.getElementById('es-btn').addEventListener('click', () => setLanguage('es'));
+        document.getElementById('ca-btn').addEventListener('click', () => setLanguage('ca'));
+        
+        // Establecer idioma inicial
+        setLanguage(currentLang);
+
+        // Configuración de la simulación
+        const canvas = document.getElementById('simulationCanvas');
+        const ctx = canvas.getContext('2d');
+        const pressureMarker = document.getElementById('pressureMarker');
+        
+        // Ajustar el tamaño del canvas
+        function resizeCanvas() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        
+        // Clase para las partículas - CORREGIDA para mantener velocidades consistentes
+        class Particle {
+            constructor(x, y, radius, color, type, side) {
+                this.x = x;
+                this.y = y;
+                this.radius = radius;
+                this.color = color;
+                this.type = type; // 'solvent' o 'solute'
+                this.side = side; // 'left' o 'right'
+                
+                // En lugar de usar currentTemperatureSpeed directamente, usamos un enfoque más controlado
+                // para establecer las velocidades iniciales
+                this.setVelocityFromTemperature(currentTemperatureSpeed);
+            }
+            
+            // Nuevo método para establecer velocidades basadas en la temperatura
+            setVelocityFromTemperature(tempSpeed) {
+                // Establecer un rango de velocidad para que sea más predecible
+                const maxSpeed = tempSpeed;
+                // Usar números aleatorios para la dirección, pero con magnitud controlada
+                const angle = Math.random() * Math.PI * 2;
+                const speed = (0.5 + Math.random() * 0.5) * maxSpeed; // Entre 50% y 100% de maxSpeed
+                
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+            }
+            
+            update() {
+                // Actualizar posición
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                // Rebote en los bordes superior e inferior
+                if (this.y - this.radius < 0 || this.y + this.radius > canvas.height) {
+                    this.vy = -this.vy;
+                }
+                
+                // Rebote en los bordes laterales
+                if (this.x - this.radius < 0 || this.x + this.radius > canvas.width) {
+                    this.vx = -this.vx;
+                }
+                
+                // Interacción con la membrana
+                const membraneX = canvas.width / 2;
+                const membraneWidth = 10;
+                const poreSize = parseInt(document.getElementById('poreSizeSlider').value);
+                const poreSpacing = 40;
+                const solutePassThreshold = 25; // Umbral a partir del cual el soluto puede pasar
+                
+                // Verificar si la partícula está cerca de la membrana
+                if (Math.abs(this.x - membraneX) < this.radius + membraneWidth / 2) {
+                    // Comprobar si pasa por un poro o rebota
+                    let canPass = false;
+                    
+                    // El disolvente siempre puede pasar por los poros
+                    // El soluto solo puede pasar si el poro es suficientemente grande
+                    const canSolutePass = poreSize >= solutePassThreshold;
+                    
+                    if (this.type === 'solvent' || (this.type === 'solute' && canSolutePass)) {
+                        for (let y = poreSize; y < canvas.height; y += poreSpacing) {
+                            if (this.y > y - poreSize / 2 && this.y < y + poreSize / 2) {
+                                // Verificar posición para evitar que quede atrapada en la membrana
+                                if ((this.vx > 0 && this.x < membraneX) || (this.vx < 0 && this.x > membraneX)) {
+                                    canPass = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Si no puede pasar, rebota
+                    if (!canPass) {
+                        if ((this.vx > 0 && this.x < membraneX) || (this.vx < 0 && this.x > membraneX)) {
+                            this.vx = -this.vx;
+                        }
+                    }
+                }
+                
+                // Actualizar el lado donde está la partícula
+                if (this.x < canvas.width / 2) {
+                    this.side = 'left';
+                } else {
+                    this.side = 'right';
+                }
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.closePath();
+            }
+        }
+        
+        // Variables globales
+        let particles = [];
+        const solventColor = '#3498db'; // Azul
+        const soluteColor = '#e74c3c';  // Rojo
+        
+        // Inicializar la simulación
+        function initSimulation() {
+            particles = [];
+            
+            // Crear espacio para las partículas de soluto
+            const soluteCountLeft = parseInt(document.getElementById('soluteCountLeft').value);
+            const soluteCountRight = parseInt(document.getElementById('soluteCountRight').value);
+            const solventCountLeft = parseInt(document.getElementById('solventCountLeft').value);
+            const solventCountRight = parseInt(document.getElementById('solventCountRight').value);
+            
+            // Posiciones iniciales para evitar solapamientos
+            const particlePositions = [];
+            const checkOverlap = (x, y, radius) => {
+                for (let pos of particlePositions) {
+                    const distance = Math.sqrt(Math.pow(x - pos.x, 2) + Math.pow(y - pos.y, 2));
+                    if (distance < radius + pos.radius) {
+                        return true; // Hay solapamiento
+                    }
+                }
+                return false; // No hay solapamiento
+            };
+            
+            // Función para crear una partícula en un lado dado
+            const createParticle = (type, side, count) => {
+                for (let i = 0; i < count; i++) {
+                    let x, y, radius;
+                    const maxAttempts = 100; // Máximo de intentos para encontrar posición sin solapamiento
+                    let attempts = 0;
+                    
+                    // Establecer propiedades según el tipo de partícula
+                    if (type === 'solute') {
+                        radius = 8;
+                    } else { // solvent
+                        radius = 5;
+                    }
+                    
+                    // Intentar encontrar posición sin solapamiento
+                    do {
+                        if (side === 'left') {
+                            x = radius + Math.random() * (canvas.width / 2 - 2 * radius - 15);
+                        } else { // right
+                            x = canvas.width / 2 + 15 + Math.random() * (canvas.width / 2 - 2 * radius - 15);
+                        }
+                        y = radius + Math.random() * (canvas.height - 2 * radius);
+                        attempts++;
+                    } while (checkOverlap(x, y, radius) && attempts < maxAttempts);
+                    
+                    // Si encontramos posición válida o se agotaron los intentos
+                    if (attempts < maxAttempts) {
+                        particlePositions.push({ x, y, radius });
+                        
+                        const color = type === 'solute' ? soluteColor : solventColor;
+                        particles.push(new Particle(x, y, radius, color, type, side));
+                    }
+                }
+            };
+            
+            // Crear partículas en orden para priorizar las más importantes
+            createParticle('solute', 'left', soluteCountLeft);
+            createParticle('solute', 'right', soluteCountRight);
+            createParticle('solvent', 'left', solventCountLeft);
+            createParticle('solvent', 'right', solventCountRight);
+        }
+        
+        // Dibujar la membrana semipermeable
+        function drawMembrane() {
+            const membraneX = canvas.width / 2;
+            const membraneWidth = 10;
+            const poreSize = parseInt(document.getElementById('poreSizeSlider').value);
+            const poreSpacing = 40;
+            
+            ctx.fillStyle = '#7f8c8d';
+            ctx.fillRect(membraneX - membraneWidth / 2, 0, membraneWidth, canvas.height);
+            
+            // Dibujar los poros
+            ctx.fillStyle = '#ffffff';
+            for (let y = poreSize; y < canvas.height; y += poreSpacing) {
+                ctx.beginPath();
+                ctx.arc(membraneX, y, poreSize / 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.closePath();
+            }
+        }
+        
+        // Calcular y mostrar la presión osmótica
+        function calculateOsmoticPressure() {
+            // Contar partículas en cada lado
+            let solventLeft = 0;
+            let solventRight = 0;
+            let soluteLeft = 0;
+            let soluteRight = 0;
+            
+            particles.forEach(particle => {
+                if (particle.type === 'solvent') {
+                    if (particle.side === 'left') {
+                        solventLeft++;
+                    } else {
+                        solventRight++;
+                    }
+                } else {
+                    if (particle.side === 'left') {
+                        soluteLeft++;
+                    } else {
+                        soluteRight++;
+                    }
+                }
+            });
+            
+            // Actualizar los contadores en la interfaz
+            document.getElementById('solventLeftCounter').innerText = solventLeft;
+            document.getElementById('solventRightCounter').innerText = solventRight;
+            document.getElementById('soluteLeftCounter').innerText = soluteLeft;
+            document.getElementById('soluteRightCounter').innerText = soluteRight;
+            
+            // Constantes físicas
+            const R = 8.314; // Constante de los gases (J/mol·K)
+            const V = 1; // Volumen en litros (L)
+            
+            // Factor de conversión de partículas a molaridad (mol/L)
+            const factorToMolarity = 0.01; // Este factor traduce las partículas visuales a concentración molar
+            
+            // Temperatura en K (convertir del slider)
+            const baseTemp = 273; // 0°C en K
+            const tempFactor = 10; // Factor de escala
+            const temperature = baseTemp + parseFloat(document.getElementById('temperatureSlider').value) * tempFactor;
+            
+            // Actualizar el valor mostrado en kelvin
+            document.getElementById('temperatureValue').innerText = temperature.toFixed(0);
+            
+            // Calcular molaridades para TODAS las moléculas (soluto + disolvente)
+            // En un sistema real, la presión está determinada por el número total de partículas
+            const molarityTotalLeft = ((solventLeft + soluteLeft) * factorToMolarity);
+            const molarityTotalRight = ((solventRight + soluteRight) * factorToMolarity);
+            
+            // Calcular presión total de cada lado según la ley de los gases ideales P = nRT/V
+            // Donde n/V es la molaridad total (moléculas por unidad de volumen)
+            const pressureLeftKPa = (molarityTotalLeft * R * temperature) / 1000; // Dividimos por 1000 para convertir a kPa
+            const pressureRightKPa = (molarityTotalRight * R * temperature) / 1000;
+            
+            // Mostramos presiones en kPa
+            document.getElementById('leftPressureValue').innerText = pressureLeftKPa.toFixed(1);
+            document.getElementById('rightPressureValue').innerText = pressureRightKPa.toFixed(1);
+            
+            // La presión osmótica es la diferencia entre las presiones ejercidas por las soluciones
+            const osmoticPressureKPa = Math.abs(pressureLeftKPa - pressureRightKPa);
+            
+            // Mostramos la presión osmótica en el indicador principal
+            document.getElementById('osmoticPressureValue').innerText = osmoticPressureKPa.toFixed(1);
+            
+            // Normalizar para el indicador visual (escalado visual)
+            const maxVisualPressure = 2; // Presión máxima que mostramos visualmente en kPa
+            const normalizedPressure = Math.min(osmoticPressureKPa / maxVisualPressure, 1);
+            
+            // Actualizar el indicador de presión osmótica global
+            const markerPosition = (1 - normalizedPressure) * canvas.height;
+            pressureMarker.style.top = `${markerPosition}px`;
+            
+            return {
+                solventLeft,
+                solventRight,
+                soluteLeft,
+                soluteRight,
+                pressureLeftKPa,
+                pressureRightKPa,
+                osmoticPressureKPa
+            };
+        }
+        
+        // Función principal de animación
+        function animate() {
+            if (!isPaused) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Dibujar la membrana
+                drawMembrane();
+                
+                // Actualizar y dibujar las partículas
+                particles.forEach(particle => {
+                    particle.update();
+                    particle.draw();
+                });
+                
+                // Calcular la presión osmótica
+                calculateOsmoticPressure();
+            }
+            
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // Función para pausar/reanudar la simulación
+        function togglePause() {
+            isPaused = !isPaused;
+            const pauseBtn = document.getElementById('pauseBtn');
+            if (isPaused) {
+                pauseBtn.innerText = currentLang === 'es' ? 'Reanudar' : 'Reprendre';
+            } else {
+                pauseBtn.innerText = currentLang === 'es' ? 'Pausar' : 'Pausar';
+            }
+        }
+        
+        // Función CORREGIDA para actualizar velocidades de partículas
+        function updateParticleVelocities(speed) {
+            // Actualizamos el valor global para usarlo cuando creemos nuevas partículas
+            currentTemperatureSpeed = speed;
+            
+            // Para cada partícula, establecemos una nueva velocidad basada en el valor de temperatura
+            particles.forEach(particle => {
+                particle.setVelocityFromTemperature(speed);
+            });
+        }
+
+        // Inicializar sliders y sus valores
+        document.getElementById('soluteCountLeft').addEventListener('input', function() {
+            document.getElementById('soluteCountLeftValue').innerText = this.value;
+            initSimulation();
+        });
+        
+        document.getElementById('soluteCountRight').addEventListener('input', function() {
+            document.getElementById('soluteCountRightValue').innerText = this.value;
+            initSimulation();
+        });
+        
+        document.getElementById('solventCountLeft').addEventListener('input', function() {
+            document.getElementById('solventCountLeftValue').innerText = this.value;
+            initSimulation();
+        });
+        
+        document.getElementById('solventCountRight').addEventListener('input', function() {
+            document.getElementById('solventCountRightValue').innerText = this.value;
+            initSimulation();
+        });
+        
+        document.getElementById('poreSizeSlider').addEventListener('input', function() {
+            document.getElementById('poreSizeValue').innerText = this.value;
+        });
+        
+        document.getElementById('temperatureSlider').addEventListener('input', function() {
+            const temperatureValue = parseFloat(this.value);
+            // Guardar la velocidad actual para que se mantenga cuando cambiemos otras configuraciones
+            currentTemperatureSpeed = temperatureValue;
+            
+            // Actualizar el valor mostrado
+            const temperature = baseTemp + temperatureValue * tempFactor;
+            document.getElementById('temperatureValue').innerText = temperature.toFixed(0);
+            
+            // Actualizar velocidad de las partículas
+            updateParticleVelocities(temperatureValue);
+        });
+        
+        // El botón de reinicio ha sido eliminado
+        document.getElementById('pauseBtn').addEventListener('click', togglePause);
+        
+        // Iniciar la simulación
+        window.addEventListener('load', function() {
+            // Actualizar todos los valores mostrados en la interfaz
+            document.getElementById('soluteCountLeftValue').innerText = document.getElementById('soluteCountLeft').value;
+            document.getElementById('soluteCountRightValue').innerText = document.getElementById('soluteCountRight').value;
+            document.getElementById('solventCountLeftValue').innerText = document.getElementById('solventCountLeft').value;
+            document.getElementById('solventCountRightValue').innerText = document.getElementById('solventCountRight').value;
+            document.getElementById('poreSizeValue').innerText = document.getElementById('poreSizeSlider').value;
+            
+            // Inicializar el valor de la temperatura
+            const tempSlider = document.getElementById('temperatureSlider');
+            currentTemperatureSpeed = parseFloat(tempSlider.value);
+            const temperature = baseTemp + currentTemperatureSpeed * tempFactor;
+            document.getElementById('temperatureValue').innerText = temperature.toFixed(0);
+            
+            initSimulation();
+            animate();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualización de la ley de los grandes números</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        label {
+            font-weight: bold;
+        }
+        select, button {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }
+        .explanation {
+            background-color: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .stats-panel {
+            background-color: #f0f8ff;
+            border-radius: 6px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .stats-panel h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 8px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .stat-label {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 4px;
+        }
+        .stat-value {
+            font-family: monospace;
+            font-size: 1.1em;
+            color: #2980b9;
+        }
+        .param-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .param-group input {
+            width: 80px;
+            padding: 6px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        #language-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 5px;
+        }
+        .lang-btn {
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            background-color: #f8f8f8;
+            color: #333;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .lang-btn.active {
+            background-color: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+            font-size: 0.9em;
+            color: #555;
+        }
+        footer a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+        footer p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="language-selector">
+        <button id="ca-btn" class="lang-btn">CA</button>
+        <button id="es-btn" class="lang-btn active">ES</button>
+    </div>
+    
+    <h1 id="title">Visualización de la ley de los grandes números</h1>
+    
+    <div class="container">
+        <div class="controls">
+            <div class="control-group">
+                <label for="distribution" id="label-distribution">Distribución:</label>
+                <select id="distribution">
+                    <option value="uniform" id="uniform-option">Uniforme</option>
+                    <option value="normal" id="normal-option">Normal</option>
+                    <option value="bernoulli" id="bernoulli-option">Bernoulli</option>
+                    <option value="exponential" id="exponential-option">Exponencial</option>
+                    <option value="dice" id="dice-option">Dado</option>
+                </select>
+            </div>
+            
+            <!-- Parámetros de distribución (mostrados dinámicamente) -->
+            <div id="distribution-params">
+                <!-- Parámetros de Uniforme -->
+                <div class="param-group" id="uniform-params">
+                    <div class="control-group">
+                        <label for="uniform-min" id="label-uniform-min">Mínimo:</label>
+                        <input type="number" id="uniform-min" value="0" step="0.1">
+                    </div>
+                    <div class="control-group">
+                        <label for="uniform-max" id="label-uniform-max">Máximo:</label>
+                        <input type="number" id="uniform-max" value="1" step="0.1">
+                    </div>
+                </div>
+                
+                <!-- Parámetros de Normal -->
+                <div class="param-group" id="normal-params" style="display: none;">
+                    <div class="control-group">
+                        <label for="normal-mean" id="label-normal-mean">Media (μ):</label>
+                        <input type="number" id="normal-mean" value="0" step="0.1">
+                    </div>
+                    <div class="control-group">
+                        <label for="normal-stddev" id="label-normal-stddev">Desv. Est. (σ):</label>
+                        <input type="number" id="normal-stddev" value="1" min="0.1" step="0.1">
+                    </div>
+                </div>
+                
+                <!-- Parámetros de Bernoulli -->
+                <div class="param-group" id="bernoulli-params" style="display: none;">
+                    <div class="control-group">
+                        <label for="bernoulli-p" id="label-bernoulli-p">Probabilidad (p):</label>
+                        <input type="number" id="bernoulli-p" value="0.5" min="0" max="1" step="0.01">
+                    </div>
+                </div>
+                
+                <!-- Parámetros de Exponencial -->
+                <div class="param-group" id="exponential-params" style="display: none;">
+                    <div class="control-group">
+                        <label for="exponential-lambda" id="label-exponential-lambda">Lambda (λ):</label>
+                        <input type="number" id="exponential-lambda" value="1" min="0.1" step="0.1">
+                    </div>
+                </div>
+                
+                <!-- Parámetros de Dado -->
+                <div class="param-group" id="dice-params" style="display: none;">
+                    <div class="control-group">
+                        <label for="dice-sides" id="label-dice-sides">Caras:</label>
+                        <input type="number" id="dice-sides" value="6" min="2" step="1">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label for="iterations" id="label-iterations">Número de iteraciones:</label>
+                <select id="iterations">
+                    <option value="100">100</option>
+                    <option value="500">500</option>
+                    <option value="1000" selected>1.000</option>
+                    <option value="5000">5.000</option>
+                    <option value="10000">10.000</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="speed" id="label-speed">Velocidad:</label>
+                <select id="speed">
+                    <option value="fast" id="speed-fast">Rápida</option>
+                    <option value="medium" id="speed-medium" selected>Media</option>
+                    <option value="slow" id="speed-slow">Lenta</option>
+                </select>
+            </div>
+            
+            <button id="start">Iniciar Simulación</button>
+            <button id="reset">Reiniciar</button>
+        </div>
+        
+        <div class="chart-container">
+            <canvas id="convergenceChart"></canvas>
+        </div>
+        
+        <div class="stats-panel" id="statistics">
+            <h3 id="stats-title">Estadísticas</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-label" id="label-final-mean">Media final:</span>
+                    <span class="stat-value" id="final-mean">-</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label" id="label-expected-value">Valor esperado:</span>
+                    <span class="stat-value" id="expected-value">-</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label" id="label-absolute-error">Error absoluto:</span>
+                    <span class="stat-value" id="absolute-error">-</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label" id="label-relative-error">Error relativo (%):</span>
+                    <span class="stat-value" id="relative-error">-</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label" id="label-convergence-1p">Convergencia al 1%:</span>
+                    <span class="stat-value" id="convergence-1p">-</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label" id="label-convergence-01p">Convergencia al 0,1%:</span>
+                    <span class="stat-value" id="convergence-01p">-</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="explanation">
+            <h3 id="explanation-title">¿Qué es la ley de los grandes números?</h3>
+            <p id="explanation-p1">La ley de los grandes números es un teorema fundamental en la teoría de probabilidad que describe el resultado de realizar el mismo experimento un gran número de veces.</p>
+            <p id="explanation-p2">Según esta ley, a medida que aumenta el número de ensayos, la media de los resultados tiende a aproximarse y estabilizarse alrededor del valor esperado teórico.</p>
+            <p id="explanation-p3">En esta simulación:</p>
+            <ul>
+                <li id="explanation-li1">La línea azul muestra la media acumulada en cada paso.</li>
+                <li id="explanation-li2">La línea roja punteada indica el valor esperado teórico para la distribución seleccionada.</li>
+            </ul>
+            <p id="explanation-p4">Observa cómo a medida que aumenta el número de ensayos, la media se estabiliza cada vez más cerca del valor esperado, aunque con algunas fluctuaciones.</p>
+        </div>
+    </div>
+    
+    <footer>
+        <p><a href="https://labia.tiddlyhost.com" target="_blank">Laboratorio de aplicaciones educativas</a></p>
+        <p>Aplicación hecha por <a href="https://bilateria.org" target="_blank">Juan José de Haro</a></p>
+        <p>Esta obra está bajo una licencia <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank">Creative Commons BY-SA</a></p>
+    </footer>
+
+    <script>
+        // Configuración de idiomas
+        const translations = {
+            'es': {
+                'title': 'Visualización de la ley de los grandes números',
+                'label-distribution': 'Distribución:',
+                'uniform-option': 'Uniforme',
+                'normal-option': 'Normal',
+                'bernoulli-option': 'Bernoulli',
+                'exponential-option': 'Exponencial',
+                'dice-option': 'Dado',
+                'label-uniform-min': 'Mínimo:',
+                'label-uniform-max': 'Máximo:',
+                'label-normal-mean': 'Media (μ):',
+                'label-normal-stddev': 'Desv. Est. (σ):',
+                'label-bernoulli-p': 'Probabilidad (p):',
+                'label-exponential-lambda': 'Lambda (λ):',
+                'label-dice-sides': 'Caras:',
+                'label-iterations': 'Número de iteraciones:',
+                'label-speed': 'Velocidad:',
+                'speed-fast': 'Rápida',
+                'speed-medium': 'Media',
+                'speed-slow': 'Lenta',
+                'start': 'Iniciar Simulación',
+                'reset': 'Reiniciar',
+                'stats-title': 'Estadísticas',
+                'label-final-mean': 'Media final:',
+                'label-expected-value': 'Valor esperado:',
+                'label-absolute-error': 'Error absoluto:',
+                'label-relative-error': 'Error relativo (%):',
+                'label-convergence-1p': 'Convergencia al 1%:',
+                'label-convergence-01p': 'Convergencia al 0,1%:',
+                'explanation-title': '¿Qué es la ley de los grandes números?',
+                'explanation-p1': 'La ley de los grandes números es un teorema fundamental en la teoría de probabilidad que describe el resultado de realizar el mismo experimento un gran número de veces.',
+                'explanation-p2': 'Según esta ley, a medida que aumenta el número de ensayos, la media de los resultados tiende a aproximarse y estabilizarse alrededor del valor esperado teórico.',
+                'explanation-p3': 'En esta simulación:',
+                'explanation-li1': 'La línea azul muestra la media acumulada en cada paso.',
+                'explanation-li2': 'La línea roja punteada indica el valor esperado teórico para la distribución seleccionada.',
+                'explanation-p4': 'Observa cómo a medida que aumenta el número de ensayos, la media se estabiliza cada vez más cerca del valor esperado, aunque con algunas fluctuaciones.',
+                'chart-title': 'Visualización de la ley de los grandes números',
+                'x-axis': 'Número de Ensayos',
+                'y-axis': 'Media',
+                'accumulated-mean': 'Media Acumulada',
+                'expected-value': 'Valor Esperado'
+            },
+            'ca': {
+                'title': 'Visualització de la llei dels grans nombres',
+                'label-distribution': 'Distribució:',
+                'uniform-option': 'Uniforme',
+                'normal-option': 'Normal',
+                'bernoulli-option': 'Bernoulli',
+                'exponential-option': 'Exponencial',
+                'dice-option': 'Dau',
+                'label-uniform-min': 'Mínim:',
+                'label-uniform-max': 'Màxim:',
+                'label-normal-mean': 'Mitjana (μ):',
+                'label-normal-stddev': 'Desv. Est. (σ):',
+                'label-bernoulli-p': 'Probabilitat (p):',
+                'label-exponential-lambda': 'Lambda (λ):',
+                'label-dice-sides': 'Cares:',
+                'label-iterations': 'Nombre d\'iteracions:',
+                'label-speed': 'Velocitat:',
+                'speed-fast': 'Ràpida',
+                'speed-medium': 'Mitjana',
+                'speed-slow': 'Lenta',
+                'start': 'Iniciar Simulació',
+                'reset': 'Reiniciar',
+                'stats-title': 'Estadístiques',
+                'label-final-mean': 'Mitjana final:',
+                'label-expected-value': 'Valor esperat:',
+                'label-absolute-error': 'Error absolut:',
+                'label-relative-error': 'Error relatiu (%):',
+                'label-convergence-1p': 'Convergència a l\'1%:',
+                'label-convergence-01p': 'Convergència al 0,1%:',
+                'explanation-title': 'Què és la llei dels grans nombres?',
+                'explanation-p1': 'La llei dels grans nombres és un teorema fonamental en la teoria de probabilitat que descriu el resultat de realitzar el mateix experiment un gran nombre de vegades.',
+                'explanation-p2': 'Segons aquesta llei, a mesura que augmenta el nombre d\'assajos, la mitjana dels resultats tendeix a aproximar-se i estabilitzar-se al voltant del valor esperat teòric.',
+                'explanation-p3': 'En aquesta simulació:',
+                'explanation-li1': 'La línia blava mostra la mitjana acumulada a cada pas.',
+                'explanation-li2': 'La línia vermella puntejada indica el valor esperat teòric per a la distribució seleccionada.',
+                'explanation-p4': 'Observa com a mesura que augmenta el nombre d\'assajos, la mitjana s\'estabilitza cada vegada més a prop del valor esperat, tot i que amb algunes fluctuacions.',
+                'chart-title': 'Visualització de la llei dels grans nombres',
+                'x-axis': 'Nombre d\'Assajos',
+                'y-axis': 'Mitjana',
+                'accumulated-mean': 'Mitjana Acumulada',
+                'expected-value': 'Valor Esperat'
+            }
+        };
+        
+        // Obtener el idioma predeterminado del navegador
+        function getDefaultLanguage() {
+            const storedLang = localStorage.getItem('simulationLanguage');
+            if (storedLang) {
+                return storedLang;
+            }
+            
+            const browserLang = navigator.language || navigator.userLanguage;
+            return browserLang.startsWith('ca') ? 'ca' : 'es';
+        }
+        
+        // Establecer el idioma de la interfaz
+        function setLanguage(lang) {
+            document.documentElement.lang = lang;
+            
+            // Actualizar los botones de idioma
+            document.getElementById('ca-btn').classList.toggle('active', lang === 'ca');
+            document.getElementById('es-btn').classList.toggle('active', lang === 'es');
+            
+            // Actualizar textos
+            for (const [id, text] of Object.entries(translations[lang])) {
+                const element = document.getElementById(id);
+                if (element) {
+                    // Para elementos normales, actualizar el contenido de texto
+                    element.textContent = text;
+                }
+            }
+            
+            // Actualizar textos de botones específicos
+            document.getElementById('start').textContent = translations[lang]['start'];
+            document.getElementById('reset').textContent = translations[lang]['reset'];
+            
+            // Actualizar opciones de velocidad
+            document.getElementById('speed-fast').textContent = translations[lang]['speed-fast'];
+            document.getElementById('speed-medium').textContent = translations[lang]['speed-medium'];
+            document.getElementById('speed-slow').textContent = translations[lang]['speed-slow'];
+            
+            // Actualizar opciones de distribución
+            document.getElementById('uniform-option').textContent = translations[lang]['uniform-option'];
+            document.getElementById('normal-option').textContent = translations[lang]['normal-option'];
+            document.getElementById('bernoulli-option').textContent = translations[lang]['bernoulli-option'];
+            document.getElementById('exponential-option').textContent = translations[lang]['exponential-option'];
+            document.getElementById('dice-option').textContent = translations[lang]['dice-option'];
+            
+            // Actualizar etiquetas del gráfico si ya se ha inicializado
+            if (convergenceChart) {
+                convergenceChart.options.plugins.title.text = translations[lang]['chart-title'];
+                convergenceChart.options.scales.x.title.text = translations[lang]['x-axis'];
+                convergenceChart.options.scales.y.title.text = translations[lang]['y-axis'];
+                convergenceChart.data.datasets[0].label = translations[lang]['accumulated-mean'];
+                convergenceChart.data.datasets[1].label = translations[lang]['expected-value'];
+                convergenceChart.update();
+            }
+            
+            // Guardar preferencia en localStorage
+            localStorage.setItem('simulationLanguage', lang);
+        }
+        
+        // Event Listeners para cambio de idioma
+        document.getElementById('ca-btn').addEventListener('click', function() {
+            setLanguage('ca');
+        });
+        
+        document.getElementById('es-btn').addEventListener('click', function() {
+            setLanguage('es');
+        });
+        
+        // Configuración del gráfico
+        const ctx = document.getElementById('convergenceChart').getContext('2d');
+        let convergenceChart;
+        
+        // Variables para la simulación
+        let means = [];
+        let iterations = [];
+        let animationId;
+        let currentIteration = 0;
+        let sumValues = 0;
+        let isRunning = false;
+        
+        // Valores esperados para cada distribución
+        function getExpectedValue(distribution) {
+            switch (distribution) {
+                case 'uniform':
+                    const min = parseFloat(document.getElementById('uniform-min').value);
+                    const max = parseFloat(document.getElementById('uniform-max').value);
+                    return (min + max) / 2;
+                case 'normal':
+                    return parseFloat(document.getElementById('normal-mean').value);
+                case 'bernoulli':
+                    return parseFloat(document.getElementById('bernoulli-p').value);
+                case 'exponential':
+                    const lambda = parseFloat(document.getElementById('exponential-lambda').value);
+                    return 1 / lambda;
+                case 'dice':
+                    const sides = parseInt(document.getElementById('dice-sides').value);
+                    return (sides + 1) / 2;
+                default:
+                    return 0;
+            }
+        }
+        
+        // Generar un valor aleatorio según la distribución seleccionada
+        function generateRandomValue(distribution) {
+            switch (distribution) {
+                case 'uniform':
+                    const uMin = parseFloat(document.getElementById('uniform-min').value);
+                    const uMax = parseFloat(document.getElementById('uniform-max').value);
+                    return uMin + Math.random() * (uMax - uMin);
+                case 'normal':
+                    // Aproximación a la distribución normal usando el Teorema del Límite Central
+                    const nMean = parseFloat(document.getElementById('normal-mean').value);
+                    const nStdDev = parseFloat(document.getElementById('normal-stddev').value);
+                    let sum = 0;
+                    for (let i = 0; i < 12; i++) {
+                        sum += Math.random();
+                    }
+                    // Convertir a distribución N(μ, σ) desde N(6, 1)
+                    return nMean + nStdDev * ((sum - 6) / Math.sqrt(1));
+                case 'bernoulli':
+                    const p = parseFloat(document.getElementById('bernoulli-p').value);
+                    return Math.random() < p ? 1 : 0;
+                case 'exponential':
+                    const lambda = parseFloat(document.getElementById('exponential-lambda').value);
+                    return -Math.log(1 - Math.random()) / lambda;
+                case 'dice':
+                    const sides = parseInt(document.getElementById('dice-sides').value);
+                    return Math.floor(Math.random() * sides) + 1;
+                default:
+                    return Math.random();
+            }
+        }
+        
+        // Inicializar el gráfico
+        function initChart() {
+            if (convergenceChart) {
+                convergenceChart.destroy();
+            }
+            
+            const currentLang = document.documentElement.lang || 'es';
+            
+            convergenceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: translations[currentLang]['accumulated-mean'],
+                            data: [],
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            tension: 0.1,
+                            borderWidth: 1.5,
+                            pointRadius: 1,
+                            pointHoverRadius: 3
+                        },
+                        {
+                            label: translations[currentLang]['expected-value'],
+                            data: [],
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 0
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: translations[currentLang]['chart-title'],
+                            font: {
+                                size: 16
+                            }
+                        },
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: translations[currentLang]['x-axis']
+                            },
+                            ticks: {
+                                maxTicksLimit: 10
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: translations[currentLang]['y-axis']
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Actualizar el gráfico con nuevos datos
+        function updateChart(newValue) {
+            currentIteration++;
+            sumValues += newValue;
+            const currentMean = sumValues / currentIteration;
+            
+            iterations.push(currentIteration);
+            means.push(currentMean);
+            
+            // Determinar el valor esperado
+            const distribution = document.getElementById('distribution').value;
+            const expectedValue = getExpectedValue(distribution);
+            
+            // Actualizar datos del gráfico
+            convergenceChart.data.labels = iterations;
+            convergenceChart.data.datasets[0].data = means;
+            
+            // Actualizar la línea del valor esperado
+            convergenceChart.data.datasets[1].data = Array(iterations.length).fill(expectedValue);
+            
+            convergenceChart.update();
+        }
+        
+        // Función para actualizar las estadísticas
+        function updateStatistics() {
+            const distribution = document.getElementById('distribution').value;
+            const expectedValue = getExpectedValue(distribution);
+            const finalMean = means[means.length - 1] || 0;
+            const absError = Math.abs(finalMean - expectedValue);
+            const relError = expectedValue !== 0 ? (absError / Math.abs(expectedValue)) * 100 : 0;
+            
+            // Encontrar punto de convergencia al 1% y 0,1%
+            let convergence1P = '-';
+            let convergence01P = '-';
+            
+            if (expectedValue !== 0) {
+                for (let i = 0; i < means.length; i++) {
+                    const errRel = Math.abs(means[i] - expectedValue) / Math.abs(expectedValue) * 100;
+                    
+                    if (convergence1P === '-' && errRel <= 1) {
+                        convergence1P = i + 1;
+                    }
+                    
+                    if (convergence01P === '-' && errRel <= 0.1) {
+                        convergence01P = i + 1;
+                    }
+                }
+            }
+            
+            // Actualizar los elementos del DOM con verificación de null
+            const finalMeanEl = document.getElementById('final-mean');
+            const expectedValueEl = document.getElementById('expected-value');
+            const absoluteErrorEl = document.getElementById('absolute-error');
+            const relativeErrorEl = document.getElementById('relative-error');
+            const convergence1pEl = document.getElementById('convergence-1p');
+            const convergence01pEl = document.getElementById('convergence-01p');
+            
+            if (finalMeanEl) finalMeanEl.textContent = finalMean.toFixed(6);
+            if (expectedValueEl) expectedValueEl.textContent = expectedValue.toFixed(6);
+            if (absoluteErrorEl) absoluteErrorEl.textContent = absError.toFixed(6);
+            if (relativeErrorEl) relativeErrorEl.textContent = relError.toFixed(4);
+            if (convergence1pEl) convergence1pEl.textContent = convergence1P;
+            if (convergence01pEl) convergence01pEl.textContent = convergence01P;
+        }
+        
+        // Función para ejecutar la simulación
+        function runSimulation() {
+            if (!isRunning) return;
+            
+            const distribution = document.getElementById('distribution').value;
+            const maxIterations = parseInt(document.getElementById('iterations').value);
+            const speed = document.getElementById('speed').value;
+            
+            // Determinar la velocidad de la simulación
+            let delay;
+            switch (speed) {
+                case 'fast':
+                    delay = 0;
+                    break;
+                case 'medium':
+                    delay = 10;
+                    break;
+                case 'slow':
+                    delay = 50;
+                    break;
+                default:
+                    delay = 10;
+            }
+            
+            // Generar un nuevo valor y actualizar el gráfico
+            const newValue = generateRandomValue(distribution);
+            updateChart(newValue);
+            
+            // Actualizar estadísticas cada 10 iteraciones o en la última
+            if (currentIteration % 10 === 0 || currentIteration >= maxIterations) {
+                updateStatistics();
+            }
+            
+            // Verificar si hemos alcanzado el número máximo de iteraciones
+            if (currentIteration >= maxIterations) {
+                isRunning = false;
+                updateStatistics(); // Asegurar que las estadísticas finales están actualizadas
+                return;
+            }
+            
+            // Programar la próxima iteración
+            setTimeout(runSimulation, delay);
+        }
+        
+        // Evento para iniciar la simulación
+        document.getElementById('start').addEventListener('click', function() {
+            if (isRunning) return;
+            
+            isRunning = true;
+            runSimulation();
+        });
+        
+        // Evento para reiniciar la simulación
+        document.getElementById('reset').addEventListener('click', function() {
+            isRunning = false;
+            currentIteration = 0;
+            sumValues = 0;
+            means = [];
+            iterations = [];
+            initChart();
+            
+            // Reiniciar estadísticas
+            const finalMeanEl = document.getElementById('final-mean');
+            const expectedValueEl = document.getElementById('expected-value');
+            const absoluteErrorEl = document.getElementById('absolute-error');
+            const relativeErrorEl = document.getElementById('relative-error');
+            const convergence1pEl = document.getElementById('convergence-1p');
+            const convergence01pEl = document.getElementById('convergence-01p');
+            
+            if (finalMeanEl) finalMeanEl.textContent = '-';
+            if (expectedValueEl) {
+                const distribution = document.getElementById('distribution').value;
+                expectedValueEl.textContent = getExpectedValue(distribution).toFixed(6);
+            }
+            if (absoluteErrorEl) absoluteErrorEl.textContent = '-';
+            if (relativeErrorEl) relativeErrorEl.textContent = '-';
+            if (convergence1pEl) convergence1pEl.textContent = '-';
+            if (convergence01pEl) convergence01pEl.textContent = '-';
+        });
+        
+        // Evento para cambiar la distribución
+        document.getElementById('distribution').addEventListener('change', function() {
+            const selectedDist = this.value;
+            
+            // Ocultar todos los grupos de parámetros
+            document.querySelectorAll('.param-group').forEach(group => {
+                group.style.display = 'none';
+            });
+            
+            // Mostrar solo el grupo de parámetros correspondiente
+            const paramGroup = document.getElementById(selectedDist + '-params');
+            if (paramGroup) {
+                paramGroup.style.display = 'flex';
+            }
+            
+            if (!isRunning) {
+                document.getElementById('reset').click();
+            }
+        });
+        
+        // Inicializar el gráfico y las estadísticas cuando se carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Establecer el idioma basado en la preferencia del navegador o almacenamiento local
+            const defaultLang = getDefaultLanguage();
+            setLanguage(defaultLang);
+            
+            // Mostrar el grupo de parámetros correspondiente a la distribución inicial
+            const selectedDist = document.getElementById('distribution').value;
+            
+            // Asegurarse de que el elemento existe antes de intentar modificarlo
+            const paramGroup = document.getElementById(selectedDist + '-params');
+            if (paramGroup) {
+                paramGroup.style.display = 'flex';
+            }
+            
+            initChart();
+            
+            // Establecer el valor esperado inicial
+            const expectedValueEl = document.getElementById('expected-value');
+            if (expectedValueEl) {
+                expectedValueEl.textContent = getExpectedValue(selectedDist).toFixed(6);
+            }
+            
+            // Configurar los event listeners para los inputs
+            const inputs = document.querySelectorAll('#distribution-params input');
+            if (inputs) {
+                inputs.forEach(input => {
+                    input.addEventListener('change', function() {
+                        if (!isRunning) {
+                            // Actualizar valor esperado
+                            const distribution = document.getElementById('distribution').value;
+                            const expectedValueEl = document.getElementById('expected-value');
+                            if (expectedValueEl) {
+                                expectedValueEl.textContent = getExpectedValue(distribution).toFixed(6);
+                            }
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

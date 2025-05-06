@@ -1,0 +1,1966 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Leyes de Mendel - Práctica interactiva</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #2196F3;
+            --text-color: #333;
+            --bg-color: #f9f9f9;
+            --card-bg: #fff;
+            --card-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            --correct-color: #4CAF50;
+            --incorrect-color: #f44336;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1, h2, h3 {
+            font-weight: 600;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #e9e9e9;
+            border: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .tab:hover {
+            background-color: #d4d4d4;
+        }
+        
+        .tab.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .punnet-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .punnet-grid-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: center;
+            background-color: #f5f5f5;
+        }
+        
+        .punnet-label {
+            font-weight: bold;
+            padding: 15px;
+            text-align: center;
+            background-color: #e9e9e9;
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #3e8e41;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #0b7dda;
+        }
+        
+        .answer-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .answer-option:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .answer-option input {
+            margin-right: 10px;
+        }
+        
+        .feedback {
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .feedback.correct {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: var(--correct-color);
+            display: block;
+        }
+        
+        .feedback.incorrect {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: var(--incorrect-color);
+            display: block;
+        }
+        
+        .organism {
+            display: inline-flex;
+            align-items: center;
+            margin: 5px;
+        }
+        
+        .allele {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            border-radius: 50%;
+            font-weight: bold;
+            margin: 0 2px;
+        }
+        
+        .dominant {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .recessive {
+            background-color: white;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .visual-example {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+            gap: 15px;
+        }
+        
+        .phenotype {
+            text-align: center;
+            margin: 10px;
+        }
+        
+        .phenotype-img {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 10px;
+            object-fit: contain;
+        }
+        
+        .pea-yellow, .pea-green {
+            margin: 0 auto 10px auto;
+        }
+        
+        .problem-container {
+            margin: 20px 0;
+        }
+        
+        .explanation {
+            margin: 15px 0;
+            padding: 15px;
+            background-color: #e8f5e9;
+            border-radius: 5px;
+        }
+        
+        .results-ratio {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        
+        .ratio-item {
+            text-align: center;
+        }
+        
+        .ratio-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .language-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+        }
+        
+        .lang-btn {
+            padding: 5px 10px;
+            margin: 0 5px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        .lang-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .pea-yellow {
+            background-color: #FFD700;
+            border-radius: 50%;
+        }
+        
+        .pea-green {
+            background-color: #4CAF50;
+            border-radius: 50%;
+        }
+        
+        .offspring-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        @media (min-width: 768px) {
+            .offspring-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        .offspring-item {
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid #ddd;
+        }
+        
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Responsive styling */
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                border-radius: 0;
+                margin-right: 0;
+                margin-bottom: 2px;
+            }
+            
+            .punnet-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .visual-example {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .results-ratio {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-selector">
+        <button id="lang-es" class="lang-btn active">ES</button>
+        <button id="lang-ca" class="lang-btn">CA</button>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1 id="main-title">Leyes de Mendel - Práctica interactiva</h1>
+            <p id="intro-text">Aprende y practica los principios básicos de la genética mendeliana con ejercicios interactivos y autocorregibles.</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="intro" id="tab-intro">Introducción</button>
+            <button class="tab" data-tab="first-law" id="tab-first-law">Primera ley</button>
+            <button class="tab" data-tab="second-law" id="tab-second-law">Segunda ley</button>
+            <button class="tab" data-tab="third-law" id="tab-third-law">Tercera ley</button>
+            <button class="tab" data-tab="practice" id="tab-practice">Práctica</button>
+        </div>
+
+        <div id="intro" class="tab-content active">
+            <div class="card">
+                <h2 id="intro-title">Introducción a las leyes de Mendel</h2>
+                <p id="intro-description">Gregor Mendel estableció los principios fundamentales de la herencia a través de sus experimentos con guisantes. Sus tres leyes nos ayudan a entender cómo se transmiten los caracteres de padres a hijos.</p>
+                
+                <div class="explanation">
+                    <h3 id="concepts-title">Conceptos básicos</h3>
+                    <ul>
+                        <li id="concept-1">Genotipo: Conjunto de genes que posee un organismo.</li>
+                        <li id="concept-2">Fenotipo: Manifestación física de los genes.</li>
+                        <li id="concept-3">Alelo dominante (A): Se expresa aun en presencia de otro alelo.</li>
+                        <li id="concept-4">Alelo recesivo (a): Solo se expresa en ausencia del dominante.</li>
+                        <li id="concept-5">Homocigoto: Organismo con dos alelos iguales (AA o aa).</li>
+                        <li id="concept-6">Heterocigoto: Organismo con dos alelos diferentes (Aa).</li>
+                    </ul>
+                </div>
+                
+                <div class="visual-example">
+                    <div class="phenotype">
+                        <div class="pea-yellow" style="width: 60px; height: 60px; margin: 0 auto;"></div>
+                        <p id="yellow-pea" style="text-align: center;">Guisante amarillo (A)</p>
+                    </div>
+                    <div class="phenotype">
+                        <div class="pea-green" style="width: 60px; height: 60px; margin: 0 auto;"></div>
+                        <p id="green-pea" style="text-align: center;">Guisante verde (a)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="first-law" class="tab-content">
+            <div class="card">
+                <h2 id="first-law-title">Primera ley: Principio de la uniformidad</h2>
+                <p id="first-law-description">"Al cruzar dos razas puras para un determinado carácter, los descendientes de la primera generación son todos iguales entre sí e iguales a uno de los progenitores para ese carácter."</p>
+                
+                <div class="visual-example">
+                    <div>
+                        <h3 id="first-law-example">Ejemplo: Color de los guisantes</h3>
+                        <div class="parents">
+                            <div class="organism">
+                                <p id="parent1">Progenitor 1 (AA):</p>
+                                <span class="allele dominant">A</span>
+                                <span class="allele dominant">A</span>
+                            </div>
+                            <span style="margin: 0 10px;">×</span>
+                            <div class="organism">
+                                <p id="parent2">Progenitor 2 (aa):</p>
+                                <span class="allele recessive">a</span>
+                                <span class="allele recessive">a</span>
+                            </div>
+                        </div>
+                        
+                        <h4 id="first-law-offspring">Descendencia (F1):</h4>
+                        <div class="offspring-grid">
+                            <div class="offspring-item">
+                                <div class="organism">
+                                    <span class="allele dominant">A</span>
+                                    <span class="allele recessive">a</span>
+                                </div>
+                                <div class="pea-yellow" style="width: 40px; height: 40px; margin: 10px auto;"></div>
+                            </div>
+                            <div class="offspring-item">
+                                <div class="organism">
+                                    <span class="allele dominant">A</span>
+                                    <span class="allele recessive">a</span>
+                                </div>
+                                <div class="pea-yellow" style="width: 40px; height: 40px; margin: 10px auto;"></div>
+                            </div>
+                            <div class="offspring-item">
+                                <div class="organism">
+                                    <span class="allele dominant">A</span>
+                                    <span class="allele recessive">a</span>
+                                </div>
+                                <div class="pea-yellow" style="width: 40px; height: 40px; margin: 10px auto;"></div>
+                            </div>
+                            <div class="offspring-item">
+                                <div class="organism">
+                                    <span class="allele dominant">A</span>
+                                    <span class="allele recessive">a</span>
+                                </div>
+                                <div class="pea-yellow" style="width: 40px; height: 40px; margin: 10px auto;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="explanation">
+                            <p id="first-law-explanation">Todos los descendientes son heterocigotos (Aa) y muestran el fenotipo dominante (guisantes amarillos). Aunque portan el alelo recesivo, este no se manifiesta en presencia del dominante.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="problem-container">
+                    <h3 id="first-law-practice">Práctica: Primera ley</h3>
+                    <div id="first-law-problem"></div>
+                    <div id="first-law-feedback" class="feedback"></div>
+                    <button id="generate-first-law" class="btn btn-primary"></button>
+                    <button id="check-first-law" class="btn btn-secondary"></button>
+                </div>
+            </div>
+        </div>
+
+        <div id="second-law" class="tab-content">
+            <div class="card">
+                <h2 id="second-law-title">Segunda ley: Principio de la segregación</h2>
+                <p id="second-law-description">"Al cruzar dos híbridos de la primera generación (F1), en la segunda generación (F2) reaparece el carácter recesivo en una proporción de 3:1 respecto al carácter dominante."</p>
+                
+                <div class="visual-example">
+                    <div>
+                        <h3 id="second-law-example">Ejemplo: Cruce de híbridos</h3>
+                        <div class="parents">
+                            <div class="organism">
+                                <p id="hybrid1">Híbrido 1 (Aa):</p>
+                                <span class="allele dominant">A</span>
+                                <span class="allele recessive">a</span>
+                            </div>
+                            <span style="margin: 0 10px;">×</span>
+                            <div class="organism">
+                                <p id="hybrid2">Híbrido 2 (Aa):</p>
+                                <span class="allele dominant">A</span>
+                                <span class="allele recessive">a</span>
+                            </div>
+                        </div>
+                        
+                        <h4 id="punnet-title">Cuadro de Punnett:</h4>
+                        <div class="punnet-grid">
+                            <div class="punnet-label"></div>
+                            <div class="punnet-label">A</div>
+                            <div class="punnet-label">a</div>
+                            <div class="punnet-label">A</div>
+                            <div class="punnet-grid-item">
+                                <div class="organism">
+                                    <span class="allele dominant">A</span>
+                                    <span class="allele dominant">A</span>
+                                </div>
+                                <div class="pea-yellow" style="width: 30px; height: 30px; margin: 5px auto;"></div>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <div class="organism">
+                                    <span class="allele dominant">A</span>
+                                    <span class="allele recessive">a</span>
+                                </div>
+                                <div class="pea-yellow" style="width: 30px; height: 30px; margin: 5px auto;"></div>
+                            </div>
+                            <div class="punnet-label">a</div>
+                            <div class="punnet-grid-item">
+                                <div class="organism">
+                                    <span class="allele dominant">A</span>
+                                    <span class="allele recessive">a</span>
+                                </div>
+                                <div class="pea-yellow" style="width: 30px; height: 30px; margin: 5px auto;"></div>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <div class="organism">
+                                    <span class="allele recessive">a</span>
+                                    <span class="allele recessive">a</span>
+                                </div>
+                                <div class="pea-green" style="width: 30px; height: 30px; margin: 5px auto;"></div>
+                            </div>
+                        </div>
+                        
+                        <h4 id="second-law-ratio">Proporción fenotípica:</h4>
+                        <div class="results-ratio">
+                            <div class="ratio-item">
+                                <div class="pea-yellow" style="width: 40px; height: 40px; margin: 0 auto;"></div>
+                                <div class="ratio-number">3</div>
+                                <p id="yellow-ratio">Guisantes amarillos</p>
+                            </div>
+                            <div class="ratio-item">
+                                <div class="pea-green" style="width: 40px; height: 40px; margin: 0 auto;"></div>
+                                <div class="ratio-number">1</div>
+                                <p id="green-ratio">Guisantes verdes</p>
+                            </div>
+                        </div>
+                        
+                        <div class="explanation">
+                            <p id="second-law-explanation">En la segunda generación (F2), el carácter recesivo reaparece en una proporción de 3:1. Esto ocurre porque los alelos se segregan durante la formación de gametos, y cada gameto lleva solo un alelo de cada gen.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="problem-container">
+                    <h3 id="second-law-practice">Práctica: Segunda ley</h3>
+                    <div id="second-law-problem"></div>
+                    <div id="second-law-feedback" class="feedback"></div>
+                    <button id="generate-second-law" class="btn btn-primary"></button>
+                    <button id="check-second-law" class="btn btn-secondary"></button>
+                </div>
+            </div>
+        </div>
+
+        <div id="third-law" class="tab-content">
+            <div class="card">
+                <h2 id="third-law-title">Tercera ley: Principio de la herencia independiente</h2>
+                <p id="third-law-description">"Los diferentes rasgos se heredan de manera independiente unos de otros, sin influir en la presencia o ausencia del otro."</p>
+                
+                <div class="visual-example">
+                    <div>
+                        <h3 id="third-law-example">Ejemplo: Herencia de dos caracteres</h3>
+                        <p id="third-law-traits">Color (A/a) y textura (B/b) de los guisantes:</p>
+                        <ul>
+                            <li id="trait-1">A: Amarillo (dominante)</li>
+                            <li id="trait-2">a: Verde (recesivo)</li>
+                            <li id="trait-3">B: Liso (dominante)</li>
+                            <li id="trait-4">b: Rugoso (recesivo)</li>
+                        </ul>
+                        
+                        <div class="parents">
+                            <div class="organism">
+                                <p id="dihybrid1">Progenitor (AABB):</p>
+                                <span class="allele dominant">A</span>
+                                <span class="allele dominant">A</span>
+                                <span class="allele dominant">B</span>
+                                <span class="allele dominant">B</span>
+                            </div>
+                            <span style="margin: 0 10px;">×</span>
+                            <div class="organism">
+                                <p id="dihybrid2">Progenitor (aabb):</p>
+                                <span class="allele recessive">a</span>
+                                <span class="allele recessive">a</span>
+                                <span class="allele recessive">b</span>
+                                <span class="allele recessive">b</span>
+                            </div>
+                        </div>
+                        
+                        <h4 id="third-law-f2-title">Proporción en F2:</h4>
+                        <div class="results-ratio">
+                            <div class="ratio-item">
+                                <p id="genotype-aabb">A_B_</p>
+                                <div class="ratio-number">9</div>
+                                <p id="phenotype-aabb">Amarillo y liso</p>
+                            </div>
+                            <div class="ratio-item">
+                                <p id="genotype-aab">A_bb</p>
+                                <div class="ratio-number">3</div>
+                                <p id="phenotype-aab">Amarillo y rugoso</p>
+                            </div>
+                            <div class="ratio-item">
+                                <p id="genotype-abb">aaB_</p>
+                                <div class="ratio-number">3</div>
+                                <p id="phenotype-abb">Verde y liso</p>
+                            </div>
+                            <div class="ratio-item">
+                                <p id="genotype-ab">aabb</p>
+                                <div class="ratio-number">1</div>
+                                <p id="phenotype-ab">Verde y rugoso</p>
+                            </div>
+                        </div>
+                        
+                        <div class="explanation">
+                            <p id="third-law-explanation">La tercera ley demuestra que los caracteres se heredan de manera independiente, resultando en una proporción fenotípica de 9:3:3:1 en la generación F2 para dos caracteres.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="problem-container">
+                    <h3 id="third-law-practice">Práctica: Tercera ley</h3>
+                    <div id="third-law-problem"></div>
+                    <div id="third-law-feedback" class="feedback"></div>
+                    <button id="generate-third-law" class="btn btn-primary"></button>
+                    <button id="check-third-law" class="btn btn-secondary"></button>
+                </div>
+            </div>
+        </div>
+
+        <div id="practice" class="tab-content">
+            <div class="card">
+                <h2 id="practice-title">Práctica general</h2>
+                <p id="practice-description">Resuelve problemas de genética mendeliana combinando los conceptos de las tres leyes.</p>
+                
+                <div class="problem-container">
+                    <div id="practice-problem"></div>
+                    <div id="practice-feedback" class="feedback"></div>
+                    <button id="generate-practice" class="btn btn-primary"></button>
+                    <button id="check-practice" class="btn btn-secondary"></button>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>Laboratorio de aplicaciones educativas <a href="https://labia.tiddlyhost.com" target="_blank">labia.tiddlyhost.com</a></p>
+            <p>Aplicación hecha por <a href="https://bilateria.org" target="_blank">Juan José de Haro</a></p>
+            <p>Esta obra está bajo una licencia <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" target="_blank">Creative Commons BY-SA</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // Language management
+        const translations = {
+            es: {
+                pageTitle: "Leyes de Mendel - Práctica interactiva",
+                mainTitle: "Leyes de Mendel - Práctica interactiva",
+                introText: "Aprende y practica los principios básicos de la genética mendeliana con ejercicios interactivos y autocorregibles.",
+                tabIntro: "Introducción",
+                tabFirstLaw: "Primera ley",
+                tabSecondLaw: "Segunda ley",
+                tabThirdLaw: "Tercera ley",
+                tabPractice: "Práctica",
+                introTitle: "Introducción a las leyes de Mendel",
+                introDescription: "Gregor Mendel estableció los principios fundamentales de la herencia a través de sus experimentos con guisantes. Sus tres leyes nos ayudan a entender cómo se transmiten los caracteres de padres a hijos.",
+                conceptsTitle: "Conceptos básicos",
+                concept1: "Genotipo: Conjunto de genes que posee un organismo.",
+                concept2: "Fenotipo: Manifestación física de los genes.",
+                concept3: "Alelo dominante (A): Se expresa aun en presencia de otro alelo.",
+                concept4: "Alelo recesivo (a): Solo se expresa en ausencia del dominante.",
+                concept5: "Homocigoto: Organismo con dos alelos iguales (AA o aa).",
+                concept6: "Heterocigoto: Organismo con dos alelos diferentes (Aa).",
+                yellowPea: "Guisante amarillo (A)",
+                greenPea: "Guisante verde (a)",
+                firstLawTitle: "Primera ley: Principio de la uniformidad",
+                firstLawDescription: "\"Al cruzar dos razas puras para un determinado carácter, los descendientes de la primera generación son todos iguales entre sí e iguales a uno de los progenitores para ese carácter.\"",
+                firstLawExample: "Ejemplo: Color de los guisantes",
+                parent1: "Progenitor 1 (AA):",
+                parent2: "Progenitor 2 (aa):",
+                firstLawOffspring: "Descendencia (F1):",
+                firstLawExplanation: "Todos los descendientes son heterocigotos (Aa) y muestran el fenotipo dominante (guisantes amarillos). Aunque portan el alelo recesivo, este no se manifiesta en presencia del dominante.",
+                firstLawPractice: "Práctica: Primera ley",
+                generateButton: "Generar nuevo problema",
+                checkButton: "Comprobar respuesta",
+                correctFeedback: "¡Correcto! Tu respuesta es acertada.",
+                incorrectFeedback: "Incorrecto. Inténtalo de nuevo.",
+                secondLawTitle: "Segunda ley: Principio de la segregación",
+                secondLawDescription: "\"Al cruzar dos híbridos de la primera generación (F1), en la segunda generación (F2) reaparece el carácter recesivo en una proporción de 3:1 respecto al carácter dominante.\"",
+                secondLawExample: "Ejemplo: Cruce de híbridos",
+                hybrid1: "Híbrido 1 (Aa):",
+                hybrid2: "Híbrido 2 (Aa):",
+                punnetTitle: "Cuadro de Punnett:",
+                secondLawRatio: "Proporción fenotípica:",
+                yellowRatio: "Guisantes amarillos",
+                greenRatio: "Guisantes verdes",
+                secondLawExplanation: "En la segunda generación (F2), el carácter recesivo reaparece en una proporción de 3:1. Esto ocurre porque los alelos se segregan durante la formación de gametos, y cada gameto lleva solo un alelo de cada gen.",
+                secondLawPractice: "Práctica: Segunda ley",
+                thirdLawTitle: "Tercera ley: Principio de la herencia independiente",
+                thirdLawDescription: "\"Los diferentes rasgos se heredan de manera independiente unos de otros, sin influir en la presencia o ausencia del otro.\"",
+                thirdLawExample: "Ejemplo: Herencia de dos caracteres",
+                thirdLawTraits: "Color (A/a) y textura (B/b) de los guisantes:",
+                trait1: "A: Amarillo (dominante)",
+                trait2: "a: Verde (recesivo)",
+                trait3: "B: Liso (dominante)",
+                trait4: "b: Rugoso (recesivo)",
+                dihybrid1: "Progenitor (AABB):",
+                dihybrid2: "Progenitor (aabb):",
+                thirdLawF2Title: "Proporción en F2:",
+                genotypeAabb: "A_B_",
+                phenotypeAabb: "Amarillo y liso",
+                genotypeAab: "A_bb",
+                phenotypeAab: "Amarillo y rugoso",
+                genotypeAbb: "aaB_",
+                phenotypeAbb: "Verde y liso",
+                genotypeAb: "aabb",
+                phenotypeAb: "Verde y rugoso",
+                thirdLawExplanation: "La tercera ley demuestra que los caracteres se heredan de manera independiente, resultando en una proporción fenotípica de 9:3:3:1 en la generación F2 para dos caracteres.",
+                thirdLawPractice: "Práctica: Tercera ley",
+                practiceTitle: "Práctica general",
+                practiceDescription: "Resuelve problemas de genética mendeliana combinando los conceptos de las tres leyes.",
+                // Solution texts
+                solutionTitle: "Solución",
+                resultsTitle: "Resultados:",
+                simplifiedVersion: "Versión simplificada",
+                firstLawSolutionIntro: "En este problema aplicamos la primera ley de Mendel (principio de la uniformidad). Al cruzar dos organismos homocigotos con características opuestas, toda la descendencia será heterocigota.",
+                firstLawSolutionExplanation: "Como podemos ver en el cuadro de Punnett, todos los descendientes tienen el genotipo Aa. Al ser heterocigotos, todos expresarán el fenotipo dominante, pero llevarán el alelo recesivo.",
+                secondLawSolutionIntro: "En este problema aplicamos la segunda ley de Mendel (principio de la segregación). Al cruzar dos organismos heterocigotos (Aa), obtenemos una proporción fenotípica de 3:1 (tres dominantes por cada recesivo).",
+                secondLawSolutionExplanation: "El cuadro de Punnett muestra que de cuatro posibles combinaciones, tres expresan el fenotipo dominante (AA, Aa, Aa) y solo una expresa el recesivo (aa), lo que explica la proporción 3:1.",
+                thirdLawSolutionIntro: "En este problema aplicamos la tercera ley de Mendel (principio de la herencia independiente). Al cruzar organismos dihíbridos (AaBb), los caracteres se heredan de forma independiente.",
+                thirdLawSolutionExplanation: "El resultado es una proporción 9:3:3:1, donde 9/16 muestran ambos fenotipos dominantes, 3/16 muestran un fenotipo dominante y uno recesivo, y 1/16 muestra ambos fenotipos recesivos.",
+                yellowSmooth: "Amarillo y liso",
+                yellowWrinkled: "Amarillo y rugoso",
+                greenSmooth: "Verde y liso",
+                greenWrinkled: "Verde y rugoso",
+                practiceSolution1Intro: "En este problema, cruzamos un conejo BbSs (negro y pelo corto, heterocigoto para ambos rasgos) con un conejo bbss (blanco y pelo largo, homocigoto recesivo para ambos rasgos).",
+                practiceSolution1Explanation: "En este cruce testcross, la distribución de genotipos es 1:1:1:1, lo que significa que 1/4 (25%) de la descendencia tendrá pelo negro y corto (BbSs), 1/4 tendrá pelo negro y largo (Bbss), 1/4 tendrá pelo blanco y corto (bbSs), y 1/4 tendrá pelo blanco y largo (bbss).",
+                practiceSolution2Intro: "En este problema, cruzamos una gallina RrBb (cresta en rosa y plumas negras, heterocigota para ambos rasgos) con un gallo rrbb (cresta simple y plumas blancas, homocigoto recesivo para ambos rasgos).",
+                practiceSolution2Explanation: "En este cruce testcross, la distribución de genotipos es 1:1:1:1, lo que significa que 1/4 (25%) de la descendencia tendrá cresta en rosa y plumas negras (RrBb), 1/4 tendrá cresta en rosa y plumas blancas (Rrbb), 1/4 tendrá cresta simple y plumas negras (rrBb), y 1/4 tendrá cresta simple y plumas blancas (rrbb).",
+                blackShort: "Pelo negro y corto",
+                blackLong: "Pelo negro y largo",
+                whiteShort: "Pelo blanco y corto",
+                whiteLong: "Pelo blanco y largo",
+                roseBlack: "Cresta en rosa y plumas negras",
+                roseWhite: "Cresta en rosa y plumas blancas",
+                simpleBlack: "Cresta simple y plumas negras",
+                simpleWhite: "Cresta simple y plumas blancas",
+                // Problem generation texts
+                firstLawProblem1: "Si el alelo para el color púrpura de las flores (P) es dominante sobre el color blanco (p), ¿qué genotipo tendrán todos los descendientes del cruce entre una planta homocigota de flores púrpuras (PP) y una planta homocigota de flores blancas (pp)?",
+                firstLawProblem2: "La altura alta en las plantas de guisante (T) es dominante sobre la altura baja (t). Al cruzar una planta homocigota alta (TT) con una homocigota baja (tt), ¿qué proporción de la descendencia será heterocigota?",
+                firstLawOption1: "Todos serán Pp (heterocigotos)",
+                firstLawOption2: "Todos serán PP (homocigotos dominantes)",
+                firstLawOption3: "Todos serán pp (homocigotos recesivos)",
+                firstLawOption4: "50% PP y 50% pp",
+                secondLawProblem1: "Al cruzar dos plantas de guisante heterocigotas para el color de la semilla (Aa), donde A representa el color amarillo (dominante) y a representa el color verde (recesivo), ¿cuál será la proporción fenotípica esperada en la descendencia?",
+                secondLawProblem2: "En los cobayas, el pelo negro (B) es dominante sobre el pelo blanco (b). Al cruzar dos cobayas heterocigotos (Bb), ¿qué fracción de la descendencia se espera que tenga pelo blanco?",
+                secondLawOption1: "3 amarillos : 1 verde",
+                secondLawOption2: "1 amarillo : 1 verde",
+                secondLawOption3: "2 amarillos : 2 verdes",
+                secondLawOption4: "Todos amarillos",
+                secondLawOption5: "1/4 (25%)",
+                secondLawOption6: "1/2 (50%)",
+                secondLawOption7: "3/4 (75%)",
+                secondLawOption8: "0 (0%)",
+                thirdLawProblem1: "En los guisantes, el color amarillo (A) es dominante sobre el verde (a), y la forma lisa (B) es dominante sobre la rugosa (b). Si se cruzan dos plantas heterocigotas para ambos caracteres (AaBb × AaBb), ¿cuál será la proporción fenotípica en la descendencia?",
+                thirdLawProblem2: "En los tomates, el fruto rojo (R) es dominante sobre el amarillo (r), y la forma redonda (S) es dominante sobre la ovalada (s). Al cruzar plantas dihíbridas (RrSs × RrSs), ¿qué proporción de la descendencia presentará ambos caracteres recesivos (amarillo y ovalado)?",
+                thirdLawOption1: "9 amarillo-liso : 3 amarillo-rugoso : 3 verde-liso : 1 verde-rugoso",
+                thirdLawOption2: "1 amarillo-liso : 1 amarillo-rugoso : 1 verde-liso : 1 verde-rugoso",
+                thirdLawOption3: "12 dominantes : 4 recesivos",
+                thirdLawOption4: "3 dominantes : 1 recesivo",
+                thirdLawOption5: "1/16 (6.25%)",
+                thirdLawOption6: "1/4 (25%)",
+                thirdLawOption7: "3/16 (18.75%)",
+                thirdLawOption8: "4/16 (25%)",
+                practiceProblem1: "En los conejos, el pelo negro (B) es dominante sobre el blanco (b), y el pelo corto (S) es dominante sobre el largo (s). Se cruza un conejo negro de pelo corto, heterocigoto para ambos caracteres (BbSs), con un conejo blanco de pelo largo (bbss). ¿Qué proporción de la descendencia se espera que tenga pelo negro y corto?",
+                practiceProblem2: "En las gallinas, la cresta en rosa (R) es dominante sobre la cresta simple (r), y las plumas negras (B) son dominantes sobre las blancas (b). Una gallina heterocigota para ambos caracteres (RrBb) se cruza con un gallo de cresta simple y plumas blancas (rrbb). ¿Qué fracción de la descendencia tendrá cresta en rosa y plumas negras?",
+                practiceOption1: "1/4 (25%)",
+                practiceOption2: "1/2 (50%)",
+                practiceOption3: "3/4 (75%)",
+                practiceOption4: "1/16 (6.25%)",
+                practiceOption5: "9/16 (56.25%)",
+                practiceOption6: "3/16 (18.75%)"
+            },
+            ca: {
+                pageTitle: "Lleis de Mendel - Pràctica interactiva",
+                mainTitle: "Lleis de Mendel - Pràctica interactiva",
+                introText: "Aprèn i practica els principis bàsics de la genètica mendeliana amb exercicis interactius i autocorregibles.",
+                tabIntro: "Introducció",
+                tabFirstLaw: "Primera llei",
+                tabSecondLaw: "Segona llei",
+                tabThirdLaw: "Tercera llei",
+                tabPractice: "Pràctica",
+                introTitle: "Introducció a les lleis de Mendel",
+                introDescription: "Gregor Mendel va establir els principis fonamentals de l'herència a través dels seus experiments amb pèsols. Les seves tres lleis ens ajuden a entendre com es transmeten els caràcters de pares a fills.",
+                conceptsTitle: "Conceptes bàsics",
+                concept1: "Genotip: Conjunt de gens que posseeix un organisme.",
+                concept2: "Fenotip: Manifestació física dels gens.",
+                concept3: "Al·lel dominant (A): S'expressa fins i tot en presència d'un altre al·lel.",
+                concept4: "Al·lel recessiu (a): Només s'expressa en absència del dominant.",
+                concept5: "Homozigot: Organisme amb dos al·lels iguals (AA o aa).",
+                concept6: "Heterozigot: Organisme amb dos al·lels diferents (Aa).",
+                yellowPea: "Pèsol groc (A)",
+                greenPea: "Pèsol verd (a)",
+                firstLawTitle: "Primera llei: Principi de la uniformitat",
+                firstLawDescription: "\"En creuar dues races pures per a un determinat caràcter, els descendents de la primera generació són tots iguals entre si i iguals a un dels progenitors per a aquest caràcter.\"",
+                firstLawExample: "Exemple: Color dels pèsols",
+                parent1: "Progenitor 1 (AA):",
+                parent2: "Progenitor 2 (aa):",
+                firstLawOffspring: "Descendència (F1):",
+                firstLawExplanation: "Tots els descendents són heterozigots (Aa) i mostren el fenotip dominant (pèsols grocs). Tot i que porten l'al·lel recessiu, aquest no es manifesta en presència del dominant.",
+                firstLawPractice: "Pràctica: Primera llei",
+                generateButton: "Generar nou problema",
+                checkButton: "Comprovar resposta",
+                correctFeedback: "Correcte! La teva resposta és encertada.",
+                incorrectFeedback: "Incorrecte. Intenta-ho de nou.",
+                secondLawTitle: "Segona llei: Principi de la segregació",
+                secondLawDescription: "\"En creuar dos híbrids de la primera generació (F1), a la segona generació (F2) reapareix el caràcter recessiu en una proporció de 3:1 respecte al caràcter dominant.\"",
+                secondLawExample: "Exemple: Encreuament d'híbrids",
+                hybrid1: "Híbrid 1 (Aa):",
+                hybrid2: "Híbrid 2 (Aa):",
+                punnetTitle: "Quadre de Punnett:",
+                secondLawRatio: "Proporció fenotípica:",
+                yellowRatio: "Pèsols grocs",
+                greenRatio: "Pèsols verds",
+                secondLawExplanation: "A la segona generació (F2), el caràcter recessiu reapareix en una proporció de 3:1. Això passa perquè els al·lels se segreguen durant la formació de gàmetes, i cada gàmeta porta només un al·lel de cada gen.",
+                secondLawPractice: "Pràctica: Segona llei",
+                thirdLawTitle: "Tercera llei: Principi de l'herència independent",
+                thirdLawDescription: "\"Els diferents trets s'hereten de manera independent els uns dels altres, sense influir en la presència o absència de l'altre.\"",
+                thirdLawExample: "Exemple: Herència de dos caràcters",
+                thirdLawTraits: "Color (A/a) i textura (B/b) dels pèsols:",
+                trait1: "A: Groc (dominant)",
+                trait2: "a: Verd (recessiu)",
+                trait3: "B: Llis (dominant)",
+                trait4: "b: Rugós (recessiu)",
+                dihybrid1: "Progenitor (AABB):",
+                dihybrid2: "Progenitor (aabb):",
+                thirdLawF2Title: "Proporció en F2:",
+                genotypeAabb: "A_B_",
+                phenotypeAabb: "Groc i llis",
+                genotypeAab: "A_bb",
+                phenotypeAab: "Groc i rugós",
+                genotypeAbb: "aaB_",
+                phenotypeAbb: "Verd i llis",
+                genotypeAb: "aabb",
+                phenotypeAb: "Verd i rugós",
+                thirdLawExplanation: "La tercera llei demostra que els caràcters s'hereten de manera independent, resultant en una proporció fenotípica de 9:3:3:1a la generació F2 per a dos caràcters.",
+                thirdLawPractice: "Pràctica: Tercera llei",
+                practiceTitle: "Pràctica general",
+                practiceDescription: "Resol problemes de genètica mendeliana combinant els conceptes de les tres lleis.",
+                // Solution texts
+                solutionTitle: "Solució",
+                resultsTitle: "Resultats:",
+                simplifiedVersion: "Versió simplificada",
+                firstLawSolutionIntro: "En aquest problema apliquem la primera llei de Mendel (principi de la uniformitat). En creuar dos organismes homozigots amb característiques oposades, tota la descendència serà heterozigota.",
+                firstLawSolutionExplanation: "Com podem veure al quadre de Punnett, tots els descendents tenen el genotip Aa. En ser heterozigots, tots expressaran el fenotip dominant, però portaran l'al·lel recessiu.",
+                secondLawSolutionIntro: "En aquest problema apliquem la segona llei de Mendel (principi de la segregació). En creuar dos organismes heterozigots (Aa), obtenim una proporció fenotípica de 3:1 (tres dominants per cada recessiu).",
+                secondLawSolutionExplanation: "El quadre de Punnett mostra que de quatre possibles combinacions, tres expressen el fenotip dominant (AA, Aa, Aa) i només una expressa el recessiu (aa), el que explica la proporció 3:1.",
+                thirdLawSolutionIntro: "En aquest problema apliquem la tercera llei de Mendel (principi de l'herència independent). En creuar organismes dihíbrids (AaBb), els caràcters s'hereten de forma independent.",
+                thirdLawSolutionExplanation: "El resultat és una proporció 9:3:3:1, on 9/16 mostren ambdós fenotips dominants, 3/16 mostren un fenotip dominant i un recessiu, i 1/16 mostra ambdós fenotips recessius.",
+                yellowSmooth: "Groc i llis",
+                yellowWrinkled: "Groc i rugós",
+                greenSmooth: "Verd i llis",
+                greenWrinkled: "Verd i rugós",
+                practiceSolution1Intro: "En aquest problema, creuem un conill BbSs (negre i pèl curt, heterozigot per a ambdós trets) amb un conill bbss (blanc i pèl llarg, homozigot recessiu per a ambdós trets).",
+                practiceSolution1Explanation: "En aquest encreuament de prova, la distribució de genotips és 1:1:1:1, el que significa que 1/4 (25%) de la descendència tindrà pèl negre i curt (BbSs), 1/4 tindrà pèl negre i llarg (Bbss), 1/4 tindrà pèl blanc i curt (bbSs), i 1/4 tindrà pèl blanc i llarg (bbss).",
+                practiceSolution2Intro: "En aquest problema, creuem una gallina RrBb (cresta en rosa i plomes negres, heterozigota per a ambdós trets) amb un gall rrbb (cresta simple i plomes blanques, homozigot recessiu per a ambdós trets).",
+                practiceSolution2Explanation: "En aquest encreuament de prova, la distribució de genotips és 1:1:1:1, el que significa que 1/4 (25%) de la descendència tindrà cresta en rosa i plomes negres (RrBb), 1/4 tindrà cresta en rosa i plomes blanques (Rrbb), 1/4 tindrà cresta simple i plomes negres (rrBb), i 1/4 tindrà cresta simple i plomes blanques (rrbb).",
+                blackShort: "Pèl negre i curt",
+                blackLong: "Pèl negre i llarg",
+                whiteShort: "Pèl blanc i curt",
+                whiteLong: "Pèl blanc i llarg",
+                roseBlack: "Cresta en rosa i plomes negres",
+                roseWhite: "Cresta en rosa i plomes blanques",
+                simpleBlack: "Cresta simple i plomes negres",
+                simpleWhite: "Cresta simple i plomes blanques",
+                // Problem generation texts
+                firstLawProblem1: "Si l'al·lel per al color porpra de les flors (P) és dominant sobre el color blanc (p), quin genotip tindran tots els descendents de l'encreuament entre una planta homozigota de flors porpres (PP) i una planta homozigota de flors blanques (pp)?",
+                firstLawProblem2: "L'alçada alta en les plantes de pèsol (T) és dominant sobre l'alçada baixa (t). En creuar una planta homozigota alta (TT) amb una homozigota baixa (tt), quina proporció de la descendència serà heterozigota?",
+                firstLawOption1: "Tots seran Pp (heterozigots)",
+                firstLawOption2: "Tots seran PP (homozigots dominants)",
+                firstLawOption3: "Tots seran pp (homozigots recessius)",
+                firstLawOption4: "50% PP i 50% pp",
+                secondLawProblem1: "En creuar dues plantes de pèsol heterozigotes per al color de la llavor (Aa), on A representa el color groc (dominant) i a representa el color verd (recessiu), quina serà la proporció fenotípica esperada en la descendència?",
+                secondLawProblem2: "En els cobais, el pèl negre (B) és dominant sobre el pèl blanc (b). En creuar dos cobais heterozigots (Bb), quina fracció de la descendència s'espera que tingui pèl blanc?",
+                secondLawOption1: "3 grocs : 1 verd",
+                secondLawOption2: "1 groc : 1 verd",
+                secondLawOption3: "2 grocs : 2 verds",
+                secondLawOption4: "Tots grocs",
+                secondLawOption5: "1/4 (25%)",
+                secondLawOption6: "1/2 (50%)",
+                secondLawOption7: "3/4 (75%)",
+                secondLawOption8: "0 (0%)",
+                thirdLawProblem1: "En els pèsols, el color groc (A) és dominant sobre el verd (a), i la forma llisa (B) és dominant sobre la rugosa (b). Si s'encreuen dues plantes heterozigotes per a ambdós caràcters (AaBb × AaBb), quina serà la proporció fenotípica en la descendència?",
+                thirdLawProblem2: "En els tomàquets, el fruit vermell (R) és dominant sobre el groc (r), i la forma rodona (S) és dominant sobre l'ovalada (s). En creuar plantes dihíbrides (RrSs × RrSs), quina proporció de la descendència presentarà ambdós caràcters recessius (groc i ovalat)?",
+                thirdLawOption1: "9 groc-llis : 3 groc-rugós : 3 verd-llis : 1 verd-rugós",
+                thirdLawOption2: "1 groc-llis : 1 groc-rugós : 1 verd-llis : 1 verd-rugós",
+                thirdLawOption3: "12 dominants : 4 recessius",
+                thirdLawOption4: "3 dominants : 1 recessiu",
+                thirdLawOption5: "1/16 (6.25%)",
+                thirdLawOption6: "1/4 (25%)",
+                thirdLawOption7: "3/16 (18.75%)",
+                thirdLawOption8: "4/16 (25%)",
+                practiceProblem1: "En els conills, el pèl negre (B) és dominant sobre el blanc (b), i el pèl curt (S) és dominant sobre el llarg (s). S'encreua un conill negre de pèl curt, heterozigot per a ambdós caràcters (BbSs), amb un conill blanc de pèl llarg (bbss). Quina proporció de la descendència s'espera que tingui pèl negre i curt?",
+                practiceProblem2: "En les gallines, la cresta en rosa (R) és dominant sobre la cresta simple (r), i les plomes negres (B) són dominants sobre les blanques (b). Una gallina heterozigota per a ambdós caràcters (RrBb) s'encreua amb un gall de cresta simple i plomes blanques (rrbb). Quina fracció de la descendència tindrà cresta en rosa i plomes negres?",
+                practiceOption1: "1/4 (25%)",
+                practiceOption2: "1/2 (50%)",
+                practiceOption3: "3/4 (75%)",
+                practiceOption4: "1/16 (6.25%)",
+                practiceOption5: "9/16 (56.25%)",
+                practiceOption6: "3/16 (18.75%)"
+            }
+        };
+        
+        // Set default language based on browser settings
+        let currentLang = navigator.language.startsWith('ca') ? 'ca' : 'es';
+        
+        // Get language from localStorage if exists
+        if (localStorage.getItem('mendelLang')) {
+            currentLang = localStorage.getItem('mendelLang');
+        }
+        
+        // Apply translations
+        function applyTranslations() {
+            const t = translations[currentLang];
+            
+            // Update document title
+            document.getElementById('page-title').textContent = t.pageTitle;
+            document.title = t.pageTitle;
+            
+            // Update UI elements
+            document.getElementById('main-title').textContent = t.mainTitle;
+            document.getElementById('intro-text').textContent = t.introText;
+            
+            // Tabs
+            document.getElementById('tab-intro').textContent = t.tabIntro;
+            document.getElementById('tab-first-law').textContent = t.tabFirstLaw;
+            document.getElementById('tab-second-law').textContent = t.tabSecondLaw;
+            document.getElementById('tab-third-law').textContent = t.tabThirdLaw;
+            document.getElementById('tab-practice').textContent = t.tabPractice;
+            
+            // Intro tab
+            document.getElementById('intro-title').textContent = t.introTitle;
+            document.getElementById('intro-description').textContent = t.introDescription;
+            document.getElementById('concepts-title').textContent = t.conceptsTitle;
+            document.getElementById('concept-1').textContent = t.concept1;
+            document.getElementById('concept-2').textContent = t.concept2;
+            document.getElementById('concept-3').textContent = t.concept3;
+            document.getElementById('concept-4').textContent = t.concept4;
+            document.getElementById('concept-5').textContent = t.concept5;
+            document.getElementById('concept-6').textContent = t.concept6;
+            document.getElementById('yellow-pea').textContent = t.yellowPea;
+            document.getElementById('green-pea').textContent = t.greenPea;
+            
+            // First law tab
+            document.getElementById('first-law-title').textContent = t.firstLawTitle;
+            document.getElementById('first-law-description').textContent = t.firstLawDescription;
+            document.getElementById('first-law-example').textContent = t.firstLawExample;
+            document.getElementById('parent1').textContent = t.parent1;
+            document.getElementById('parent2').textContent = t.parent2;
+            document.getElementById('first-law-offspring').textContent = t.firstLawOffspring;
+            document.getElementById('first-law-explanation').textContent = t.firstLawExplanation;
+            document.getElementById('first-law-practice').textContent = t.firstLawPractice;
+            document.getElementById('generate-first-law').textContent = t.generateButton;
+            document.getElementById('check-first-law').textContent = t.checkButton;
+            
+            // Second law tab
+            document.getElementById('second-law-title').textContent = t.secondLawTitle;
+            document.getElementById('second-law-description').textContent = t.secondLawDescription;
+            document.getElementById('second-law-example').textContent = t.secondLawExample;
+            document.getElementById('hybrid1').textContent = t.hybrid1;
+            document.getElementById('hybrid2').textContent = t.hybrid2;
+            document.getElementById('punnet-title').textContent = t.punnetTitle;
+            document.getElementById('second-law-ratio').textContent = t.secondLawRatio;
+            document.getElementById('yellow-ratio').textContent = t.yellowRatio;
+            document.getElementById('green-ratio').textContent = t.greenRatio;
+            document.getElementById('second-law-explanation').textContent = t.secondLawExplanation;
+            document.getElementById('second-law-practice').textContent = t.secondLawPractice;
+            document.getElementById('generate-second-law').textContent = t.generateButton;
+            document.getElementById('check-second-law').textContent = t.checkButton;
+            
+            // Third law tab
+            document.getElementById('third-law-title').textContent = t.thirdLawTitle;
+            document.getElementById('third-law-description').textContent = t.thirdLawDescription;
+            document.getElementById('third-law-example').textContent = t.thirdLawExample;
+            document.getElementById('third-law-traits').textContent = t.thirdLawTraits;
+            document.getElementById('trait-1').textContent = t.trait1;
+            document.getElementById('trait-2').textContent = t.trait2;
+            document.getElementById('trait-3').textContent = t.trait3;
+            document.getElementById('trait-4').textContent = t.trait4;
+            document.getElementById('dihybrid1').textContent = t.dihybrid1;
+            document.getElementById('dihybrid2').textContent = t.dihybrid2;
+            document.getElementById('third-law-f2-title').textContent = t.thirdLawF2Title;
+            document.getElementById('genotype-aabb').textContent = t.genotypeAabb;
+            document.getElementById('phenotype-aabb').textContent = t.phenotypeAabb;
+            document.getElementById('genotype-aab').textContent = t.genotypeAab;
+            document.getElementById('phenotype-aab').textContent = t.phenotypeAab;
+            document.getElementById('genotype-abb').textContent = t.genotypeAbb;
+            document.getElementById('phenotype-abb').textContent = t.phenotypeAbb;
+            document.getElementById('genotype-ab').textContent = t.genotypeAb;
+            document.getElementById('phenotype-ab').textContent = t.phenotypeAb;
+            document.getElementById('third-law-explanation').textContent = t.thirdLawExplanation;
+            document.getElementById('third-law-practice').textContent = t.thirdLawPractice;
+            document.getElementById('generate-third-law').textContent = t.generateButton;
+            document.getElementById('check-third-law').textContent = t.checkButton;
+            
+            // Practice tab
+            document.getElementById('practice-title').textContent = t.practiceTitle;
+            document.getElementById('practice-description').textContent = t.practiceDescription;
+            document.getElementById('generate-practice').textContent = t.generateButton;
+            document.getElementById('check-practice').textContent = t.checkButton;
+            
+            // Update language buttons
+            document.getElementById('lang-es').classList.toggle('active', currentLang === 'es');
+            document.getElementById('lang-ca').classList.toggle('active', currentLang === 'ca');
+            
+            // Regenerate problems
+            generateFirstLawProblem();
+            generateSecondLawProblem();
+            generateThirdLawProblem();
+            generatePracticeProblem();
+        }
+        
+        // Set language and update UI
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('mendelLang', lang);
+            applyTranslations();
+        }
+        
+        // Add event listeners to language buttons
+        document.getElementById('lang-es').addEventListener('click', () => setLanguage('es'));
+        document.getElementById('lang-ca').addEventListener('click', () => setLanguage('ca'));
+        
+        // Tab switching functionality
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                
+                // Remove active class from all tabs and contents
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding content
+                tab.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Problem generation and checking
+        let currentFirstLawAnswer = "";
+        let currentSecondLawAnswer = "";
+        let currentThirdLawAnswer = "";
+        let currentPracticeAnswer = "";
+        
+        function generateFirstLawProblem() {
+            const t = translations[currentLang];
+            const problemContainer = document.getElementById('first-law-problem');
+            const feedback = document.getElementById('first-law-feedback');
+            feedback.classList.remove('correct', 'incorrect');
+            feedback.style.display = 'none';
+            
+            // Randomly choose one of the problems
+            const randomProblem = Math.random() < 0.5 ? t.firstLawProblem1 : t.firstLawProblem2;
+            
+            // Create options array with correct answer marked
+            const options = [
+                { text: t.firstLawOption1, isCorrect: true },
+                { text: t.firstLawOption2, isCorrect: false },
+                { text: t.firstLawOption3, isCorrect: false },
+                { text: t.firstLawOption4, isCorrect: false }
+            ];
+            
+            // Shuffle options
+            shuffleArray(options);
+            
+            // Find the correct answer
+            currentFirstLawAnswer = "";
+            for (let i = 0; i < options.length; i++) {
+                if (options[i].isCorrect) {
+                    currentFirstLawAnswer = "option" + (i + 1);
+                    break;
+                }
+            }
+            
+            // Create problem HTML
+            let problemHTML = `
+                <div class="problem">
+                    <p>${randomProblem}</p>
+                    <div class="options">
+                        <label class="answer-option">
+                            <input type="radio" name="first-law" value="option1">
+                            ${options[0].text}
+                        </label>
+                        <label class="answer-option">
+                            <input type="radio" name="first-law" value="option2">
+                            ${options[1].text}
+                        </label>
+                        <label class="answer-option">
+                            <input type="radio" name="first-law" value="option3">
+                            ${options[2].text}
+                        </label>
+                        <label class="answer-option">
+                            <input type="radio" name="first-law" value="option4">
+                            ${options[3].text}
+                        </label>
+                    </div>
+                </div>
+            `;
+            
+            problemContainer.innerHTML = problemHTML;
+        }
+        
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+        
+        function generateSecondLawProblem() {
+            const t = translations[currentLang];
+            const problemContainer = document.getElementById('second-law-problem');
+            const feedback = document.getElementById('second-law-feedback');
+            feedback.classList.remove('correct', 'incorrect');
+            feedback.style.display = 'none';
+            
+            // Randomly choose one of the problems
+            const randomProblem = Math.random() < 0.5 ? t.secondLawProblem1 : t.secondLawProblem2;
+            
+            // Create problem HTML with appropriate options for each problem
+            let problemHTML = `
+                <div class="problem">
+                    <p>${randomProblem}</p>
+                    <div class="options">
+            `;
+            
+            let options = [];
+            
+            if (randomProblem === t.secondLawProblem1) {
+                options = [
+                    { text: t.secondLawOption1, isCorrect: true },
+                    { text: t.secondLawOption2, isCorrect: false },
+                    { text: t.secondLawOption3, isCorrect: false },
+                    { text: t.secondLawOption4, isCorrect: false }
+                ];
+            } else {
+                options = [
+                    { text: t.secondLawOption5, isCorrect: true },
+                    { text: t.secondLawOption6, isCorrect: false },
+                    { text: t.secondLawOption7, isCorrect: false },
+                    { text: t.secondLawOption8, isCorrect: false }
+                ];
+            }
+            
+            // Shuffle options
+            shuffleArray(options);
+            
+            // Find correct answer
+            currentSecondLawAnswer = "";
+            for (let i = 0; i < options.length; i++) {
+                if (options[i].isCorrect) {
+                    currentSecondLawAnswer = "option" + (i + 1);
+                    break;
+                }
+            }
+            
+            // Add options to HTML
+            for (let i = 0; i < options.length; i++) {
+                problemHTML += `
+                    <label class="answer-option">
+                        <input type="radio" name="second-law" value="option${i+1}">
+                        ${options[i].text}
+                    </label>
+                `;
+            }
+            
+            problemHTML += `
+                    </div>
+                </div>
+            `;
+            
+            problemContainer.innerHTML = problemHTML;
+        }
+        
+        function generateThirdLawProblem() {
+            const t = translations[currentLang];
+            const problemContainer = document.getElementById('third-law-problem');
+            const feedback = document.getElementById('third-law-feedback');
+            feedback.classList.remove('correct', 'incorrect');
+            feedback.style.display = 'none';
+            
+            // Randomly choose one of the problems
+            const randomProblem = Math.random() < 0.5 ? t.thirdLawProblem1 : t.thirdLawProblem2;
+            
+            // Create problem HTML with appropriate options for each problem
+            let problemHTML = `
+                <div class="problem">
+                    <p>${randomProblem}</p>
+                    <div class="options">
+            `;
+            
+            let options = [];
+            
+            if (randomProblem === t.thirdLawProblem1) {
+                options = [
+                    { text: t.thirdLawOption1, isCorrect: true },
+                    { text: t.thirdLawOption2, isCorrect: false },
+                    { text: t.thirdLawOption3, isCorrect: false },
+                    { text: t.thirdLawOption4, isCorrect: false }
+                ];
+            } else {
+                options = [
+                    { text: t.thirdLawOption5, isCorrect: true },
+                    { text: t.thirdLawOption6, isCorrect: false },
+                    { text: t.thirdLawOption7, isCorrect: false },
+                    { text: t.thirdLawOption8, isCorrect: false }
+                ];
+            }
+            
+            // Shuffle options
+            shuffleArray(options);
+            
+            // Find correct answer
+            currentThirdLawAnswer = "";
+            for (let i = 0; i < options.length; i++) {
+                if (options[i].isCorrect) {
+                    currentThirdLawAnswer = "option" + (i + 1);
+                    break;
+                }
+            }
+            
+            // Add options to HTML
+            for (let i = 0; i < options.length; i++) {
+                problemHTML += `
+                    <label class="answer-option">
+                        <input type="radio" name="third-law" value="option${i+1}">
+                        ${options[i].text}
+                    </label>
+                `;
+            }
+            
+            problemHTML += `
+                    </div>
+                </div>
+            `;
+            
+            problemContainer.innerHTML = problemHTML;
+        }
+        
+        function generatePracticeProblem() {
+            const t = translations[currentLang];
+            const problemContainer = document.getElementById('practice-problem');
+            const feedback = document.getElementById('practice-feedback');
+            feedback.classList.remove('correct', 'incorrect');
+            feedback.style.display = 'none';
+            
+            // Randomly choose one of the problems
+            const randomProblem = Math.random() < 0.5 ? t.practiceProblem1 : t.practiceProblem2;
+            
+            // Create options array with correct answer marked
+            let options = [
+                { text: t.practiceOption1, isCorrect: false },
+                { text: t.practiceOption2, isCorrect: false },
+                { text: t.practiceOption3, isCorrect: false },
+                { text: t.practiceOption4, isCorrect: false },
+                { text: t.practiceOption5, isCorrect: false },
+                { text: t.practiceOption6, isCorrect: false }
+            ];
+            
+            // Set correct option based on problem
+            if (randomProblem === t.practiceProblem1) {
+                options[1].isCorrect = true; // 1/2 (50%)
+            } else {
+                options[0].isCorrect = true; // 1/4 (25%)
+            }
+            
+            // Shuffle options
+            shuffleArray(options);
+            
+            // Find correct answer
+            currentPracticeAnswer = "";
+            for (let i = 0; i < options.length; i++) {
+                if (options[i].isCorrect) {
+                    currentPracticeAnswer = "option" + (i + 1);
+                    break;
+                }
+            }
+            
+            // Create problem HTML
+            let problemHTML = `
+                <div class="problem">
+                    <p>${randomProblem}</p>
+                    <div class="options">
+            `;
+            
+            for (let i = 0; i < options.length; i++) {
+                problemHTML += `
+                    <label class="answer-option">
+                        <input type="radio" name="practice" value="option${i+1}">
+                        ${options[i].text}
+                    </label>
+                `;
+            }
+            
+            problemHTML += `
+                    </div>
+                </div>
+            `;
+            
+            problemContainer.innerHTML = problemHTML;
+        }
+        
+        function checkFirstLawAnswer() {
+            const t = translations[currentLang];
+            const selectedOption = document.querySelector('input[name="first-law"]:checked');
+            const feedback = document.getElementById('first-law-feedback');
+            
+            if (!selectedOption) {
+                return; // No option selected
+            }
+            
+            // Create Punnett square for visualization
+            let punnettHTML = `
+                <div class="explanation">
+                    <h4>${t.solutionTitle}</h4>
+                    <p>${t.firstLawSolutionIntro}</p>
+                    
+                    <div class="parents">
+                        <div class="organism">
+                            <p>${t.parent1}</p>
+                            <span class="allele dominant">A</span>
+                            <span class="allele dominant">A</span>
+                        </div>
+                        <span style="margin: 0 10px;">×</span>
+                        <div class="organism">
+                            <p>${t.parent2}</p>
+                            <span class="allele recessive">a</span>
+                            <span class="allele recessive">a</span>
+                        </div>
+                    </div>
+                    
+                    <h4>${t.punnetTitle}</h4>
+                    <div class="punnet-grid" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="punnet-label"></div>
+                        <div class="punnet-label">A</div>
+                        <div class="punnet-label">A</div>
+                        
+                        <div class="punnet-label">a</div>
+                        <div class="punnet-grid-item">
+                            <div class="organism">
+                                <span class="allele dominant">A</span>
+                                <span class="allele recessive">a</span>
+                            </div>
+                        </div>
+                        <div class="punnet-grid-item">
+                            <div class="organism">
+                                <span class="allele dominant">A</span>
+                                <span class="allele recessive">a</span>
+                            </div>
+                        </div>
+                        
+                        <div class="punnet-label">a</div>
+                        <div class="punnet-grid-item">
+                            <div class="organism">
+                                <span class="allele dominant">A</span>
+                                <span class="allele recessive">a</span>
+                            </div>
+                        </div>
+                        <div class="punnet-grid-item">
+                            <div class="organism">
+                                <span class="allele dominant">A</span>
+                                <span class="allele recessive">a</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p>${t.firstLawSolutionExplanation}</p>
+                </div>
+            `;
+            
+            if (selectedOption.value === currentFirstLawAnswer) {
+                feedback.innerHTML = `<p>${t.correctFeedback}</p>${punnettHTML}`;
+                feedback.classList.add('correct');
+                feedback.classList.remove('incorrect');
+            } else {
+                feedback.innerHTML = `<p>${t.incorrectFeedback}</p>${punnettHTML}`;
+                feedback.classList.add('incorrect');
+                feedback.classList.remove('correct');
+            }
+            
+            feedback.style.display = 'block';
+        }
+        
+        function checkSecondLawAnswer() {
+            const t = translations[currentLang];
+            const selectedOption = document.querySelector('input[name="second-law"]:checked');
+            const feedback = document.getElementById('second-law-feedback');
+            
+            if (!selectedOption) {
+                return; // No option selected
+            }
+            
+            // Create Punnett square for visualization
+            let punnettHTML = `
+                <div class="explanation">
+                    <h4>${t.solutionTitle}</h4>
+                    <p>${t.secondLawSolutionIntro}</p>
+                    
+                    <div class="parents">
+                        <div class="organism">
+                            <p>${t.hybrid1}</p>
+                            <span class="allele dominant">A</span>
+                            <span class="allele recessive">a</span>
+                        </div>
+                        <span style="margin: 0 10px;">×</span>
+                        <div class="organism">
+                            <p>${t.hybrid2}</p>
+                            <span class="allele dominant">A</span>
+                            <span class="allele recessive">a</span>
+                        </div>
+                    </div>
+                    
+                    <h4>${t.punnetTitle}</h4>
+                    <div class="punnet-grid">
+                        <div class="punnet-label"></div>
+                        <div class="punnet-label">A</div>
+                        <div class="punnet-label">a</div>
+                        
+                        <div class="punnet-label">A</div>
+                        <div class="punnet-grid-item">
+                            <div class="organism">
+                                <span class="allele dominant">A</span>
+                                <span class="allele dominant">A</span>
+                            </div>
+                            <div class="pea-yellow" style="width: 30px; height: 30px; margin: 5px auto;"></div>
+                        </div>
+                        <div class="punnet-grid-item">
+                            <div class="organism">
+                                <span class="allele dominant">A</span>
+                                <span class="allele recessive">a</span>
+                            </div>
+                            <div class="pea-yellow" style="width: 30px; height: 30px; margin: 5px auto;"></div>
+                        </div>
+                        
+                        <div class="punnet-label">a</div>
+                        <div class="punnet-grid-item">
+                            <div class="organism">
+                                <span class="allele dominant">A</span>
+                                <span class="allele recessive">a</span>
+                            </div>
+                            <div class="pea-yellow" style="width: 30px; height: 30px; margin: 5px auto;"></div>
+                        </div>
+                        <div class="punnet-grid-item">
+                            <div class="organism">
+                                <span class="allele recessive">a</span>
+                                <span class="allele recessive">a</span>
+                            </div>
+                            <div class="pea-green" style="width: 30px; height: 30px; margin: 5px auto;"></div>
+                        </div>
+                    </div>
+                    
+                    <h4>${t.resultsTitle}</h4>
+                    <div class="results-ratio">
+                        <div class="ratio-item">
+                            <div class="pea-yellow" style="width: 40px; height: 40px; margin: 0 auto;"></div>
+                            <div class="ratio-number">3</div>
+                            <p>${t.yellowRatio}</p>
+                        </div>
+                        <div class="ratio-item">
+                            <div class="pea-green" style="width: 40px; height: 40px; margin: 0 auto;"></div>
+                            <div class="ratio-number">1</div>
+                            <p>${t.greenRatio}</p>
+                        </div>
+                    </div>
+                    
+                    <p>${t.secondLawSolutionExplanation}</p>
+                </div>
+            `;
+            
+            if (selectedOption.value === currentSecondLawAnswer) {
+                feedback.innerHTML = `<p>${t.correctFeedback}</p>${punnettHTML}`;
+                feedback.classList.add('correct');
+                feedback.classList.remove('incorrect');
+            } else {
+                feedback.innerHTML = `<p>${t.incorrectFeedback}</p>${punnettHTML}`;
+                feedback.classList.add('incorrect');
+                feedback.classList.remove('correct');
+            }
+            
+            feedback.style.display = 'block';
+        }
+        
+        function checkThirdLawAnswer() {
+            const t = translations[currentLang];
+            const selectedOption = document.querySelector('input[name="third-law"]:checked');
+            const feedback = document.getElementById('third-law-feedback');
+            
+            if (!selectedOption) {
+                return; // No option selected
+            }
+            
+            // Create dihybrid Punnett square for visualization - simplified version showing the 9:3:3:1 ratio
+            let punnettHTML = `
+                <div class="explanation">
+                    <h4>${t.solutionTitle}</h4>
+                    <p>${t.thirdLawSolutionIntro}</p>
+                    
+                    <div class="parents">
+                        <div class="organism">
+                            <p>F1 (AaBb):</p>
+                            <span class="allele dominant">A</span>
+                            <span class="allele recessive">a</span>
+                            <span class="allele dominant">B</span>
+                            <span class="allele recessive">b</span>
+                        </div>
+                        <span style="margin: 0 10px;">×</span>
+                        <div class="organism">
+                            <p>F1 (AaBb):</p>
+                            <span class="allele dominant">A</span>
+                            <span class="allele recessive">a</span>
+                            <span class="allele dominant">B</span>
+                            <span class="allele recessive">b</span>
+                        </div>
+                    </div>
+                    
+                    <h4>${t.punnetTitle} (${t.simplifiedVersion})</h4>
+                    <div class="dihybrid-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin: 20px 0;">
+                        <div class="punnet-label"></div>
+                        <div class="punnet-label">AB</div>
+                        <div class="punnet-label">Ab</div>
+                        <div class="punnet-label">aB</div>
+                        <div class="punnet-label">ab</div>
+                        
+                        <div class="punnet-label">AB</div>
+                        <div class="punnet-grid-item" style="background-color: #e8f5e9;">
+                            <p>AABB</p>
+                            <small>${t.yellowSmooth}</small>
+                        </div>
+                        <div class="punnet-grid-item" style="background-color: #e8f5e9;">
+                            <p>AABb</p>
+                            <small>${t.yellowSmooth}</small>
+                        </div>
+                        <div class="punnet-grid-item" style="background-color: #e8f5e9;">
+                            <p>AaBB</p>
+                            <small>${t.yellowSmooth}</small>
+                        </div>
+                        <div class="punnet-grid-item" style="background-color: #e8f5e9;">
+                            <p>AaBb</p>
+                            <small>${t.yellowSmooth}</small>
+                        </div>
+                        
+                        <div class="punnet-label">Ab</div>
+                        <div class="punnet-grid-item" style="background-color: #fff9c4;">
+                            <p>AABb</p>
+                            <small>${t.yellowSmooth}</small>
+                        </div>
+                        <div class="punnet-grid-item" style="background-color: #fff9c4;">
+                            <p>AAbb</p>
+                            <small>${t.yellowWrinkled}</small>
+                        </div>
+                        <div class="punnet-grid-item" style="background-color: #fff9c4;">
+                            <p>AaBb</p>
+                            <small>${t.yellowSmooth}</small>
+                        </div>
+                        <div class="punnet-grid-item" style="background-color: #fff9c4;">
+                            <p>Aabb</p>
+                            <small>${t.yellowWrinkled}</small>
+                        </div>
+                        
+                        <div class="punnet-label">aB</div>
+                        <div class="punnet-grid-item" style="background-color: #c8e6c9;">
+                            <p>AaBB</p>
+                            <small>${t.yellowSmooth}</small>
+                        </div>
+                        <div class="punnet-grid-item" style="background-color: #c8e6c9;">
+                            <p>AaBb</p>
+                            <small>${t.yellowSmooth}</small>
+                        </div>
+                        <div class="punnet-grid-item" style="background-color: #c8e6c9;">
+                            <p>aaBB</p>
+                            <small>${t.greenSmooth}</small>
+                        </div>
+                        <div class="punnet-grid-item" style="background-color: #c8e6c9;">
+                            <p>aaBb</p>
+                            <small>${t.greenSmooth}</small>
+                        </div>
+                        
+                        <div class="punnet-label">ab</div>
+                        <div class="punnet-grid-item" style="background-color: #dcedc8;">
+                            <p>AaBb</p>
+                            <small>${t.yellowSmooth}</small>
+                        </div>
+                        <div class="punnet-grid-item" style="background-color: #dcedc8;">
+                            <p>Aabb</p>
+                            <small>${t.yellowWrinkled}</small>
+                        </div>
+                        <div class="punnet-grid-item" style="background-color: #dcedc8;">
+                            <p>aaBb</p>
+                            <small>${t.greenSmooth}</small>
+                        </div>
+                        <div class="punnet-grid-item" style="background-color: #dcedc8;">
+                            <p>aabb</p>
+                            <small>${t.greenWrinkled}</small>
+                        </div>
+                    </div>
+                    
+                    <h4>${t.resultsTitle}</h4>
+                    <div class="results-ratio">
+                        <div class="ratio-item">
+                            <p>${t.phenotypeAabb}</p>
+                            <div class="ratio-number">9</div>
+                        </div>
+                        <div class="ratio-item">
+                            <p>${t.phenotypeAab}</p>
+                            <div class="ratio-number">3</div>
+                        </div>
+                        <div class="ratio-item">
+                            <p>${t.phenotypeAbb}</p>
+                            <div class="ratio-number">3</div>
+                        </div>
+                        <div class="ratio-item">
+                            <p>${t.phenotypeAb}</p>
+                            <div class="ratio-number">1</div>
+                        </div>
+                    </div>
+                    
+                    <p>${t.thirdLawSolutionExplanation}</p>
+                </div>
+            `;
+            
+            if (selectedOption.value === currentThirdLawAnswer) {
+                feedback.innerHTML = `<p>${t.correctFeedback}</p>${punnettHTML}`;
+                feedback.classList.add('correct');
+                feedback.classList.remove('incorrect');
+            } else {
+                feedback.innerHTML = `<p>${t.incorrectFeedback}</p>${punnettHTML}`;
+                feedback.classList.add('incorrect');
+                feedback.classList.remove('correct');
+            }
+            
+            feedback.style.display = 'block';
+        }
+        
+        function checkPracticeAnswer() {
+            const t = translations[currentLang];
+            const selectedOption = document.querySelector('input[name="practice"]:checked');
+            const feedback = document.getElementById('practice-feedback');
+            const problemText = document.querySelector('#practice-problem p').textContent;
+            
+            if (!selectedOption) {
+                return; // No option selected
+            }
+            
+            // Create appropriate Punnett square based on the problem
+            let punnettHTML = '';
+            
+            if (problemText === t.practiceProblem1) {
+                // Problem about BbSs × bbss cross
+                punnettHTML = `
+                    <div class="explanation">
+                        <h4>${t.solutionTitle}</h4>
+                        <p>${t.practiceSolution1Intro}</p>
+                        
+                        <div class="parents">
+                            <div class="organism">
+                                <p>BbSs:</p>
+                                <span class="allele dominant">B</span>
+                                <span class="allele recessive">b</span>
+                                <span class="allele dominant">S</span>
+                                <span class="allele recessive">s</span>
+                            </div>
+                            <span style="margin: 0 10px;">×</span>
+                            <div class="organism">
+                                <p>bbss:</p>
+                                <span class="allele recessive">b</span>
+                                <span class="allele recessive">b</span>
+                                <span class="allele recessive">s</span>
+                                <span class="allele recessive">s</span>
+                            </div>
+                        </div>
+                        
+                        <h4>${t.punnetTitle}</h4>
+                        <div class="punnet-grid" style="grid-template-columns: repeat(5, 1fr);">
+                            <div class="punnet-label"></div>
+                            <div class="punnet-label">bs</div>
+                            <div class="punnet-label">bs</div>
+                            <div class="punnet-label">bs</div>
+                            <div class="punnet-label">bs</div>
+                            
+                            <div class="punnet-label">BS</div>
+                            <div class="punnet-grid-item">
+                                <p>BbSs</p>
+                                <small>${t.blackShort}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>BbSs</p>
+                                <small>${t.blackShort}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>BbSs</p>
+                                <small>${t.blackShort}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>BbSs</p>
+                                <small>${t.blackShort}</small>
+                            </div>
+                            
+                            <div class="punnet-label">Bs</div>
+                            <div class="punnet-grid-item">
+                                <p>Bbss</p>
+                                <small>${t.blackLong}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>Bbss</p>
+                                <small>${t.blackLong}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>Bbss</p>
+                                <small>${t.blackLong}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>Bbss</p>
+                                <small>${t.blackLong}</small>
+                            </div>
+                            
+                            <div class="punnet-label">bS</div>
+                            <div class="punnet-grid-item">
+                                <p>bbSs</p>
+                                <small>${t.whiteShort}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>bbSs</p>
+                                <small>${t.whiteShort}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>bbSs</p>
+                                <small>${t.whiteShort}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>bbSs</p>
+                                <small>${t.whiteShort}</small>
+                            </div>
+                            
+                            <div class="punnet-label">bs</div>
+                            <div class="punnet-grid-item">
+                                <p>bbss</p>
+                                <small>${t.whiteLong}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>bbss</p>
+                                <small>${t.whiteLong}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>bbss</p>
+                                <small>${t.whiteLong}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>bbss</p>
+                                <small>${t.whiteLong}</small>
+                            </div>
+                        </div>
+                        
+                        <h4>${t.resultsTitle}</h4>
+                        <div class="results-ratio">
+                            <div class="ratio-item">
+                                <p>${t.blackShort}</p>
+                                <div class="ratio-number">4/16</div>
+                                <small>(25%)</small>
+                            </div>
+                            <div class="ratio-item">
+                                <p>${t.blackLong}</p>
+                                <div class="ratio-number">4/16</div>
+                                <small>(25%)</small>
+                            </div>
+                            <div class="ratio-item">
+                                <p>${t.whiteShort}</p>
+                                <div class="ratio-number">4/16</div>
+                                <small>(25%)</small>
+                            </div>
+                            <div class="ratio-item">
+                                <p>${t.whiteLong}</p>
+                                <div class="ratio-number">4/16</div>
+                                <small>(25%)</small>
+                            </div>
+                        </div>
+                        
+                        <p>${t.practiceSolution1Explanation}</p>
+                    </div>
+                `;
+            } else {
+                // Problem about RrBb × rrbb cross
+                punnettHTML = `
+                    <div class="explanation">
+                        <h4>${t.solutionTitle}</h4>
+                        <p>${t.practiceSolution2Intro}</p>
+                        
+                        <div class="parents">
+                            <div class="organism">
+                                <p>RrBb:</p>
+                                <span class="allele dominant">R</span>
+                                <span class="allele recessive">r</span>
+                                <span class="allele dominant">B</span>
+                                <span class="allele recessive">b</span>
+                            </div>
+                            <span style="margin: 0 10px;">×</span>
+                            <div class="organism">
+                                <p>rrbb:</p>
+                                <span class="allele recessive">r</span>
+                                <span class="allele recessive">r</span>
+                                <span class="allele recessive">b</span>
+                                <span class="allele recessive">b</span>
+                            </div>
+                        </div>
+                        
+                        <h4>${t.punnetTitle}</h4>
+                        <div class="punnet-grid" style="grid-template-columns: repeat(5, 1fr);">
+                            <div class="punnet-label"></div>
+                            <div class="punnet-label">rb</div>
+                            <div class="punnet-label">rb</div>
+                            <div class="punnet-label">rb</div>
+                            <div class="punnet-label">rb</div>
+                            
+                            <div class="punnet-label">RB</div>
+                            <div class="punnet-grid-item">
+                                <p>RrBb</p>
+                                <small>${t.roseBlack}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>RrBb</p>
+                                <small>${t.roseBlack}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>RrBb</p>
+                                <small>${t.roseBlack}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>RrBb</p>
+                                <small>${t.roseBlack}</small>
+                            </div>
+                            
+                            <div class="punnet-label">Rb</div>
+                            <div class="punnet-grid-item">
+                                <p>Rrbb</p>
+                                <small>${t.roseWhite}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>Rrbb</p>
+                                <small>${t.roseWhite}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>Rrbb</p>
+                                <small>${t.roseWhite}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>Rrbb</p>
+                                <small>${t.roseWhite}</small>
+                            </div>
+                            
+                            <div class="punnet-label">rB</div>
+                            <div class="punnet-grid-item">
+                                <p>rrBb</p>
+                                <small>${t.simpleBlack}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>rrBb</p>
+                                <small>${t.simpleBlack}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>rrBb</p>
+                                <small>${t.simpleBlack}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>rrBb</p>
+                                <small>${t.simpleBlack}</small>
+                            </div>
+                            
+                            <div class="punnet-label">rb</div>
+                            <div class="punnet-grid-item">
+                                <p>rrbb</p>
+                                <small>${t.simpleWhite}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>rrbb</p>
+                                <small>${t.simpleWhite}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>rrbb</p>
+                                <small>${t.simpleWhite}</small>
+                            </div>
+                            <div class="punnet-grid-item">
+                                <p>rrbb</p>
+                                <small>${t.simpleWhite}</small>
+                            </div>
+                        </div>
+                        
+                        <h4>${t.resultsTitle}</h4>
+                        <div class="results-ratio">
+                            <div class="ratio-item">
+                                <p>${t.roseBlack}</p>
+                                <div class="ratio-number">4/16</div>
+                                <small>(25%)</small>
+                            </div>
+                            <div class="ratio-item">
+                                <p>${t.roseWhite}</p>
+                                <div class="ratio-number">4/16</div>
+                                <small>(25%)</small>
+                            </div>
+                            <div class="ratio-item">
+                                <p>${t.simpleBlack}</p>
+                                <div class="ratio-number">4/16</div>
+                                <small>(25%)</small>
+                            </div>
+                            <div class="ratio-item">
+                                <p>${t.simpleWhite}</p>
+                                <div class="ratio-number">4/16</div>
+                                <small>(25%)</small>
+                            </div>
+                        </div>
+                        
+                        <p>${t.practiceSolution2Explanation}</p>
+                    </div>
+                `;
+            }
+            
+            if (selectedOption.value === currentPracticeAnswer) {
+                feedback.innerHTML = `<p>${t.correctFeedback}</p>${punnettHTML}`;
+                feedback.classList.add('correct');
+                feedback.classList.remove('incorrect');
+            } else {
+                feedback.innerHTML = `<p>${t.incorrectFeedback}</p>${punnettHTML}`;
+                feedback.classList.add('incorrect');
+                feedback.classList.remove('correct');
+            }
+            
+            feedback.style.display = 'block';
+        }
+        
+        // Add event listeners to buttons
+        document.getElementById('generate-first-law').addEventListener('click', generateFirstLawProblem);
+        document.getElementById('check-first-law').addEventListener('click', checkFirstLawAnswer);
+        
+        document.getElementById('generate-second-law').addEventListener('click', generateSecondLawProblem);
+        document.getElementById('check-second-law').addEventListener('click', checkSecondLawAnswer);
+        
+        document.getElementById('generate-third-law').addEventListener('click', generateThirdLawProblem);
+        document.getElementById('check-third-law').addEventListener('click', checkThirdLawAnswer);
+        
+        document.getElementById('generate-practice').addEventListener('click', generatePracticeProblem);
+        document.getElementById('check-practice').addEventListener('click', checkPracticeAnswer);
+        
+        // Initial setup
+        applyTranslations();
+    </script>
+</body>
+</html>
